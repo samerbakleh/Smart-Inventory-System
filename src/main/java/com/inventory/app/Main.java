@@ -1,7 +1,14 @@
 package com.inventory.app;
 
 import com.inventory.app.util.AppConstants;
-import javax.swing.SwingUtilities;
+
+import javax.swing.*;
+
+import com.inventory.app.viewer.MainFrame;
+
+import com.inventory.app.viewer.LogInPanel;
+
+import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
@@ -9,8 +16,15 @@ public class Main {
 
         // تشغيل الواجهة في الثريد الخاص بها (Best Practice for Swing)
         SwingUtilities.invokeLater(() -> {
-            System.out.println("GUI Thread Started...");
+            try {
+                // محاولة تفعيل الستايل الخاص بالنظام
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            new MainFrame().setVisible(true);
         });
-    }
+}
+
 }
 
