@@ -36,14 +36,6 @@ public class Item implements Serializable {
         }
     }
 
-    public synchronized void addQuantity(int amount) {
-        if (amount > 0) this.quantity += amount;
-    }
-
-    public synchronized void deductQuantity(int amount) {
-        this.quantity -= amount;
-    }
-
     public int getId() {
         return id;
     }
