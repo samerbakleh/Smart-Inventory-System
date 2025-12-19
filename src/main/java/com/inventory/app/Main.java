@@ -1,7 +1,13 @@
 package com.inventory.app;
 
+import com.inventory.app.model.Person;
+import com.inventory.app.model.Product;
+import com.inventory.app.model.ProductLine;
+import com.inventory.app.model.Task;
+import com.inventory.app.service.TaskService;
 import com.inventory.app.util.AppConstants;
 import javax.swing.SwingUtilities;
+import java.time.LocalDate;
 
 public class Main {
     public static void main(String[] args) {

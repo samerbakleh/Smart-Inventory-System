@@ -4,6 +4,8 @@ import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.repository.TaskRepository;
 
+import java.time.LocalDate;
+
 public class TaskService {
     private TaskRepository taskRepository = new TaskRepository();
 
@@ -16,6 +18,7 @@ public class TaskService {
             throw new IllegalArgumentException("Task not found ");
         }
         task.setTaskStatus(TaskStatus.IN_PROGRESS);
+        task.setStartDate(LocalDate.now());
     }
     public void completeTask (int taskID){
         Task task = taskRepository.findById(taskID);
@@ -34,6 +37,4 @@ public class TaskService {
         task.setProgress(0);
         task.setTaskStatus(TaskStatus.CANCELLED);
     }
-
-
 }
