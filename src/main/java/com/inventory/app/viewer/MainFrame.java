@@ -10,14 +10,22 @@ public class MainFrame extends JFrame {
         setTitle("Production & Inventory Management System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // إعداد النافذة لتكون ملء الشاشة
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        // ensure a sensible minimum so components render nicely when not maximized
         setMinimumSize(new Dimension(900, 600));
 
-        // Add login panel (the panel itself handles its internal layout)
         add(new LogInPanel(), BorderLayout.CENTER);
-        // center on screen
         setLocationRelativeTo(null);
+    }
+    public static void StartMainFraim()
+    {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // محاولة تفعيل الستايل الخاص بالنظام
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            new MainFrame().setVisible(true);
+        });
     }
 }

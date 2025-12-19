@@ -1,5 +1,5 @@
 package com.inventory.app.repository;
-
+import com.inventory.app.model.enums.Role;
 import java.util.ArrayList;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,7 +12,7 @@ public class UserRepository {
 
     public static ArrayList<User> LoadUsersFromFile() {
         ArrayList<User> ArrayUsers = new ArrayList<>();
-        String FilePath = "Smart-Inventory-System\\src\\main\\java\\com\\inventory\\app\\repository\\Users.txt";
+        String FilePath = "src\\main\\java\\com\\inventory\\app\\repository\\Users.txt";
         try {
             List<String> ArrayLines = Files.readAllLines(Paths.get(FilePath));
             for (String Line : ArrayLines) {
@@ -25,21 +25,21 @@ public class UserRepository {
         return ArrayUsers;
     }
 
-    public static String GetTextRole(User.enRole role) {
-        if (role == User.enRole.eMANAGER)
+    public static String GetTextRole(Role role) {
+        if (role == Role.eMANAGER)
             return "Manager";
-        if (role == User.enRole.eSUPERVISOR)
+        if (role == Role.eSUPERVISOR)
             return "Supervisor";
 
         return "Empty";
     }
 
-    public static User.enRole GetEnumRole(String role) {
+    public static Role GetEnumRole(String role) {
         if (role.equals("Manager"))
-            return User.enRole.eMANAGER;
+            return Role.eMANAGER;
         if (role.equals("Superviosr"))
-            return User.enRole.eSUPERVISOR;
-        return User.enRole.eEmptyRole;
+            return Role.eSUPERVISOR;
+        return Role.eEmptyRole;
     }
 
     private static User _ConvertLineToUserObject(String line) {
@@ -61,5 +61,11 @@ public class UserRepository {
         );
     }
 
-
+    public static User FindByUsername(String username) {
+        ArrayList<User> users = LoadUsersFromFile(); // مسؤولية Repository فقط
+        for (User u : users) {
+            if (u.get_UserName().equals(username)) return u;
+        }
+        return null;
+    }
 }

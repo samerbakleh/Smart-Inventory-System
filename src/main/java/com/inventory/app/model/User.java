@@ -1,10 +1,10 @@
 package com.inventory.app.model;
-
+import com.inventory.app.model.enums.Role;
 public class User extends Person {
     private String _UserName;
     private String _Password;
-    enRole _Role ;
-    public User(String FirstName , String LastName , String Email,String Phone,String userName, String password , enRole role) {
+    Role _Role ;
+    public User(String FirstName , String LastName , String Email,String Phone,String userName, String password , Role role) {
         super(FirstName,LastName,Email,Phone);
         _UserName = userName;
         _Password = password;
@@ -28,13 +28,8 @@ public class User extends Person {
         _Password = password;
     }
 
-    public enum enRole {
-        eMANAGER,
-        eSUPERVISOR,
-        eEmptyRole
-    }
 
-    public enRole get_Role() {
+    public Role get_Role() {
         return _Role;
     }
 

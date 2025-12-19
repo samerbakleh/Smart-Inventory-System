@@ -1,16 +1,14 @@
 package com.inventory.app.viewer;
 
+import com.inventory.app.controller.AuthenticationController;
+import com.inventory.app.service.LoginResult;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.border.*;
 import java.awt.event.*;
 import java.awt.geom.*;
-
 
 public class LogInPanel extends JPanel {
 
@@ -38,35 +36,98 @@ public class LogInPanel extends JPanel {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw gradient background
                 g2.setPaint(new GradientPaint(0, 0, GRADIENT_START, getWidth(), getHeight(), GRADIENT_END));
                 g2.fillRect(0, 0, getWidth(), getHeight());
 
-                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f));
-                g2.setColor(Color.WHITE);
+                // Draw animated circles with reduced opacity and darker color for better contrast
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.08f));
+                g2.setColor(new Color(255, 255, 255, 200)); // Slightly darker white
                 int o1 = (int)(Math.sin(animProgress * 2) * 30);
                 int o2 = (int)(Math.cos(animProgress * 3) * 20);
                 g2.fillOval(-150 + o1, -150 + o1, 500, 500);
                 g2.fillOval(getWidth() - 400 + o2, getHeight() - 400 - o2, 500, 500);
             }
         };
+        panel.setOpaque(false);
+        panel.setBorder(null);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
         gbc.insets = new Insets(10, 40, 10, 40);
 
-        JLabel icon = new JLabel("🏭");
+        // Icon with improved visibility
+        JLabel icon = new JLabel("🏭") {
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Draw a subtle glow/shadow behind the icon
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+                g2.setColor(Color.BLACK);
+                for (int i = 0; i < 3; i++) {
+                    g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 80 + i * 2));
+                    FontMetrics fm = g2.getFontMetrics();
+                    int x = (getWidth() - fm.stringWidth("🏭")) / 2 + i;
+                    int y = (getHeight() + fm.getAscent()) / 2 + i;
+                    g2.drawString("🏭", x, y);
+                }
+
+                g2.dispose();
+                super.paintComponent(g);
+            }
+        };
         icon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 80));
+        icon.setForeground(Color.WHITE);
+        icon.setOpaque(false);
         panel.add(icon, gbc);
 
-        JLabel title = new JLabel("Production System");
-        title.setFont(new Font("Segoe UI", Font.BOLD, 48));
+        // Title with text shadow for better visibility
+        JLabel title = new JLabel("Production System") {
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                // Draw text shadow for depth and contrast
+                g2.setFont(getFont());
+                FontMetrics fm = g2.getFontMetrics();
+                String text = getText();
+                int x = (getWidth() - fm.stringWidth(text)) / 2;
+                int y = (getHeight() + fm.getAscent()) / 2;
+
+                // Draw shadow (multiple layers for better visibility)
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.6f));
+                g2.setColor(Color.BLACK);
+                for (int i = 1; i <= 3; i++) {
+                    g2.drawString(text, x + i, y + i);
+                }
+
+                // Draw main text
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+                g2.setColor(Color.WHITE);
+                g2.drawString(text, x, y);
+
+                g2.dispose();
+            }
+        };
+        Font titleFont = new Font("Segoe UI", Font.BOLD, 48);
+        title.setFont(titleFont.deriveFont(Font.BOLD)); // Ensure no underline decoration
         title.setForeground(Color.WHITE);
+        title.setOpaque(false);
+        title.setBorder(null);
+        title.setFocusable(false);
+        title.setDisplayedMnemonic(0); // Disable mnemonic to prevent underline
+        title.setDisplayedMnemonicIndex(-1); // Ensure no mnemonic index
         panel.add(title, gbc);
 
         JPanel divider = new JPanel();
         divider.setPreferredSize(new Dimension(100, 4));
         divider.setBackground(ACCENT);
+        divider.setOpaque(true);
+        divider.setBorder(null);
         panel.add(divider, gbc);
 
         addLabel(panel, "Manage Production Lines", 22, gbc);
@@ -76,9 +137,38 @@ public class LogInPanel extends JPanel {
     }
 
     private void addLabel(JPanel panel, String text, int size, GridBagConstraints gbc) {
-        JLabel label = new JLabel(text);
+        JLabel label = new JLabel(text) {
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                // Draw text shadow for better contrast
+                g2.setFont(getFont());
+                FontMetrics fm = g2.getFontMetrics();
+                String labelText = getText();
+                int x = (getWidth() - fm.stringWidth(labelText)) / 2;
+                int y = (getHeight() + fm.getAscent()) / 2;
+
+                // Draw shadow
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+                g2.setColor(Color.BLACK);
+                for (int i = 1; i <= 2; i++) {
+                    g2.drawString(labelText, x + i, y + i);
+                }
+
+                // Draw main text with brighter color
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+                g2.setColor(new Color(255, 255, 255)); // Pure white for better contrast
+                g2.drawString(labelText, x, y);
+
+                g2.dispose();
+            }
+        };
         label.setFont(new Font("Segoe UI", Font.PLAIN, size));
-        label.setForeground(new Color(240, 240, 255));
+        label.setForeground(new Color(255, 255, 255)); // Changed to pure white
+        label.setOpaque(false);
+        label.setBorder(null);
         panel.add(label, gbc);
     }
 
@@ -102,7 +192,7 @@ public class LogInPanel extends JPanel {
         userField = addField(form, "Username", new JTextField(20));
         passField = addField(form, "Password", new JPasswordField(20));
 
-        errorLabel = new JLabel("✖ Invalid username or password");
+        errorLabel = new JLabel("✖ Invalid username or password or Role");
         errorLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         errorLabel.setForeground(new Color(239, 68, 68));
         errorLabel.setVisible(false);
@@ -144,14 +234,66 @@ public class LogInPanel extends JPanel {
         field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         field.setAlignmentX(LEFT_ALIGNMENT);
         field.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        field.setBorder(BorderFactory.createCompoundBorder(
-                new RoundedBorder(BORDER, 10),
-                new EmptyBorder(12, 16, 12, 16)
-        ));
 
         if (field instanceof JComboBox) {
-            ((JComboBox)field).setBackground(Color.WHITE);
+            JComboBox<?> combo = (JComboBox<?>) field;
+            combo.setBackground(Color.WHITE);
+            combo.setOpaque(true);
+            // Apply only the outer rounded border, no inner borders
+            combo.setBorder(BorderFactory.createCompoundBorder(
+                    new RoundedBorder(BORDER, 10),
+                    new EmptyBorder(12, 16, 12, 16)
+            ));
+            // Remove all borders from combo box components
+            combo.setRenderer(new DefaultListCellRenderer() {
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (c instanceof JComponent) {
+                        JComponent jc = (JComponent) c;
+                        jc.setBorder(null);
+                        // Normalize all properties to ensure consistent behavior for both items
+                        // This ensures Manager and Supervisor have identical hover/selection behavior
+                        jc.setOpaque(false);
+                        // Set consistent background (transparent/white) regardless of selection state
+                        jc.setBackground(Color.WHITE);
+                        // Use consistent foreground color for all items
+                        jc.setForeground(new Color(31, 41, 55));
+                        // Ensure consistent alignment for both items
+                        if (c instanceof JLabel) {
+                            JLabel label = (JLabel) c;
+                            label.setHorizontalAlignment(SwingConstants.LEFT);
+                            // Ensure consistent insets/padding
+                            label.setIconTextGap(0);
+                        }
+                    }
+                    return c;
+                }
+            });
+            // Remove border from editor component
+            if (combo.getEditor() != null && combo.getEditor().getEditorComponent() != null) {
+                Component editorComp = combo.getEditor().getEditorComponent();
+                if (editorComp instanceof JComponent) {
+                    ((JComponent) editorComp).setBorder(null);
+                    ((JComponent) editorComp).setOpaque(false);
+                }
+            }
+            // Customize arrow button to remove border - need to do this after combo is added
+            SwingUtilities.invokeLater(() -> {
+                for (Component comp : combo.getComponents()) {
+                    if (comp instanceof JButton) {
+                        JButton arrowButton = (JButton) comp;
+                        arrowButton.setBorder(null);
+                        arrowButton.setContentAreaFilled(false);
+                        arrowButton.setFocusPainted(false);
+                        arrowButton.setOpaque(false);
+                    }
+                }
+            });
         } else {
+            field.setBorder(BorderFactory.createCompoundBorder(
+                    new RoundedBorder(BORDER, 10),
+                    new EmptyBorder(12, 16, 12, 16)
+            ));
             field.addFocusListener(new FocusAdapter() {
                 public void focusGained(FocusEvent e) {
                     field.setBorder(BorderFactory.createCompoundBorder(
@@ -173,12 +315,12 @@ public class LogInPanel extends JPanel {
         String role = (String) roleCombo.getSelectedItem();
         String username = userField.getText();
         String password = new String(passField.getPassword());
-        boolean success = ("Manager".equals(role) && "admin".equals(username) && "admin123".equals(password)) ||
-                ("Supervisor".equals(role) && "sup".equals(username) && "sup123".equals(password));
 
-        errorLabel.setVisible(!success);
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Welcome " + role + "!");
+        LoginResult result= AuthenticationController.LoginController(username,password,role);
+
+        errorLabel.setVisible(!result.isSuccess());
+        if (result.isSuccess()) {
+            JOptionPane.showMessageDialog(this, "Welcome " + role + "! Next Window Will Be here...");
         }
     }
 
@@ -231,3 +373,4 @@ public class LogInPanel extends JPanel {
         }
     }
 }
+
