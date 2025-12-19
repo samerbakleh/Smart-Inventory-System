@@ -1,5 +1,7 @@
 package com.inventory.app.model;
 
+import com.inventory.app.model.enums.TaskStatus;
+
 import java.time.LocalDate;
 
 public class Task {
@@ -12,19 +14,18 @@ public class Task {
     private Product product;
     private ProductLine productLine;
 
-    private enTaskStatus taskStatus ;
+    private TaskStatus taskStatus ;
 
     private LocalDate startDate; // when status become "IN_PROGRESS"
     private LocalDate deliveryDate;
 
-    public Task(int quantityRequired, Person client, int progress, Product product, ProductLine productLine,LocalDate deliveryDate) {
+    public Task(int quantityRequired, Person client, Product product, ProductLine productLine,LocalDate deliveryDate) {
         this.quantityRequired = quantityRequired;
         this.client = client;
-        this.progress = progress;
         this.product = product;
         this.productLine = productLine;
-        this.deliveryDate=deliveryDate;
-        this.taskStatus=enTaskStatus.PENDING;
+        this.deliveryDate= deliveryDate;
+        this.taskStatus= TaskStatus.PENDING;
         this.progress=0;
     }
 
@@ -68,11 +69,11 @@ public class Task {
         this.productLine = productLine;
     }
 
-    public enTaskStatus getTaskStatus() {
+    public TaskStatus getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(enTaskStatus taskStatus) {
+    public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
 
@@ -90,5 +91,9 @@ public class Task {
 
     public void setDeliveryDate(LocalDate deliveryDate) {
         this.deliveryDate = deliveryDate;
+    }
+
+    public int getTaskID() {
+        return taskID;
     }
 }
