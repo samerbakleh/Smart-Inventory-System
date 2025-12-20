@@ -12,6 +12,7 @@ public class AppConstants {
     public static final String INVENTORY_FILE = DATA_DIR + "initial_inventory.csv";
     public static final String USERS_FILE = DATA_DIR + "users.txt";
     public static final String LOG_FILE = DATA_DIR + "error_log.txt";
+    public static final String PRODUCTLINE_FILE = DATA_DIR + "product_line.txt";
 
     // Colors (For UI consistency)
     public static final Color PRIMARY_COLOR = new Color(70, 130, 180); // Steel Blue

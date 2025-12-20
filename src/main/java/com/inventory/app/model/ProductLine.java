@@ -7,9 +7,9 @@ import java.util.ArrayDeque;
 
 public class ProductLine {
 
-    private static int IDCounter = 0;
+    private static int idCounter = 0;
 
-    private final int ID = IDCounter++;
+    private final int id = idCounter++;
     private String name;
     private ProductLineState state = ProductLineState.ACTIVE;
     private HashMap<Product, Queue<Task>> tasks = new HashMap<>();   // ( maybe changed later ) Product is a placeholder for key
@@ -22,7 +22,7 @@ public class ProductLine {
     }
 
     public int getID() {
-        return ID;
+        return id;
     }
     public String getName() {
         return name;
@@ -39,6 +39,12 @@ public class ProductLine {
     }
     public void setState(ProductLineState state) {
         this.state = state;
+    }
+
+    public void addTask(Task task) {
+        Queue<Task> taskQueue = tasks.get(task.getProduct());
+        if(taskQueue == null)
+            throw new IllegalArgumentException("");
     }
 
 }
