@@ -3,8 +3,8 @@ package com.inventory.app.model;
 import java.time.LocalDate;
 
 public class Task {
-    private static int IDCounter = 10000;
-    private int taskID = IDCounter++;
+    private static int idCounter = 10000;
+    private int taskId = idCounter++;
 
     private int quantityRequired ;
     private Person client ;
@@ -12,7 +12,7 @@ public class Task {
     private Product product;
     private ProductLine productLine;
 
-    private enTaskStatus taskStatus ;
+    private TaskStatus taskStatus ;
 
     private LocalDate startDate; // when status become "IN_PROGRESS"
     private LocalDate deliveryDate;
@@ -24,7 +24,7 @@ public class Task {
         this.product = product;
         this.productLine = productLine;
         this.deliveryDate=deliveryDate;
-        this.taskStatus=enTaskStatus.PENDING;
+        this.taskStatus=TaskStatus.PENDING;
         this.progress=0;
     }
 
@@ -68,11 +68,11 @@ public class Task {
         this.productLine = productLine;
     }
 
-    public enTaskStatus getTaskStatus() {
+    public TaskStatus getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(enTaskStatus taskStatus) {
+    public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
 

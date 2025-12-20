@@ -1,15 +1,13 @@
 package com.inventory.app;
 
 import com.inventory.app.util.AppConstants;
-import javax.swing.SwingUtilities;
+
+import com.inventory.app.viewer.MainFrame;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Starting " + AppConstants.APP_NAME + " v" + AppConstants.VERSION);
-
-        // تشغيل الواجهة في الثريد الخاص بها (Best Practice for Swing)
-        SwingUtilities.invokeLater(() -> {
-            System.out.println("GUI Thread Started...");
-        });
-    }
+      MainFrame.startMainFrame();
 }
+}
+
