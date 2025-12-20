@@ -1,36 +1,36 @@
 package com.inventory.app.model;
 import com.inventory.app.model.enums.Role;
 public class User extends Person {
-    private String _UserName;
-    private String _Password;
-    Role _Role ;
-    public User(String FirstName , String LastName , String Email,String Phone,String userName, String password , Role role) {
-        super(FirstName,LastName,Email,Phone);
-        _UserName = userName;
-        _Password = password;
-        _Role = role;
+    private String userName;
+    private String password;
+    Role role ;
+    public User(String firstName , String lastName , String email,String phone,String userName, String password , Role role) {
+        super(firstName,lastName,email,phone);
+        this.userName = userName;
+        this.password = password;
+        this.role = role;
     }
 
-    public String get_UserName() {
-        return _UserName;
+    public String getUserName() {
+        return userName;
     }
 
-    public String get_Password() {
-        return _Password;
+    public String getPassword() {
+        return password;
     }
 
     public void setUserName(String userName) {
-        _UserName = userName;
+        this.userName = userName;
     }
 
 
     public void setPassword(String password) {
-        _Password = password;
+        this.password = password;
     }
 
 
-    public Role get_Role() {
-        return _Role;
+    public Role getRole() {
+        return role;
     }
 
 

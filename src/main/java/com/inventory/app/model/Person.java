@@ -1,48 +1,48 @@
 package com.inventory.app.model;
 
 public class Person {
-    private String _FirstName;
-    private String _LastName;
-    private String _Email;
-    private String _Phone;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
 
-    public Person(String _FirstName, String _LastName, String _Email, String _Phone) {
-        this._FirstName = _FirstName;
-        this._LastName = _LastName;
-        this._Email = _Email;
-        this._Phone = _Phone;
+    public Person(String firstName, String lastName, String email, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
     }
 
-    public String get_FirstName() {
-        return _FirstName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void set_FirstName(String _FirstName) {
-        this._FirstName = _FirstName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String get_LastName() {
-        return _LastName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void set_LastName(String _LastName) {
-        this._LastName = _LastName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String get_Email() {
-        return _Email;
+    public String getEmail() {
+        return email;
     }
 
-    public void set_Email(String _Email) {
-        this._Email = _Email;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String get_Phone() {
-        return _Phone;
+    public String getPhone() {
+        return phone;
     }
 
-    public void set_Phone(String _Phone) {
-        this._Phone = _Phone;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
 }

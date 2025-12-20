@@ -10,45 +10,45 @@ import com.inventory.app.model.User;
 
 public class UserRepository {
 
-    public static ArrayList<User> LoadUsersFromFile() {
-        ArrayList<User> ArrayUsers = new ArrayList<>();
-        String FilePath = "src\\main\\java\\com\\inventory\\app\\repository\\Users.txt";
+    public static ArrayList<User> loadUsersFromFile() {
+        ArrayList<User> arrayUsers = new ArrayList<>();
+        String filePath = "src\\main\\java\\com\\inventory\\app\\repository\\Users.txt";
         try {
-            List<String> ArrayLines = Files.readAllLines(Paths.get(FilePath));
-            for (String Line : ArrayLines) {
-                ArrayUsers.add(_ConvertLineToUserObject(Line));
+            List<String> arrayLines = Files.readAllLines(Paths.get(filePath));
+            for (String line : arrayLines) {
+                arrayUsers.add(convertLineToUserObject(line));
             }
         } catch (IOException e) {
             System.out.println("حدث خطأ أثناء قراءة الملف: " + e.getMessage());
         }
 
-        return ArrayUsers;
+        return arrayUsers;
     }
 
-    public static String GetTextRole(Role role) {
-        if (role == Role.eMANAGER)
+    public static String getTextRole(Role role) {
+        if (role == Role.MANAGER)
             return "Manager";
-        if (role == Role.eSUPERVISOR)
+        if (role == Role.SUPERVISOR)
             return "Supervisor";
 
         return "Empty";
     }
 
-    public static Role GetEnumRole(String role) {
+    public static Role getEnumRole(String role) {
         if (role.equals("Manager"))
-            return Role.eMANAGER;
+            return Role.MANAGER;
         if (role.equals("Superviosr"))
-            return Role.eSUPERVISOR;
-        return Role.eEmptyRole;
+            return Role.SUPERVISOR;
+        return Role.EMPTY_ROLE;
     }
 
-    private static User _ConvertLineToUserObject(String line) {
-        return _ConvertLineToUserObject(line, "#//#");
+    private static User convertLineToUserObject(String line) {
+        return convertLineToUserObject(line, "#//#");
     }
 
-    private static User _ConvertLineToUserObject(String Line, String Separator) {
+    private static User convertLineToUserObject(String line, String separator) {
 
-        String[] data = Line.split(Separator);
+        String[] data = line.split(separator);
 
         return new User(
                 data[0],
@@ -57,14 +57,14 @@ public class UserRepository {
                 data[3],
                 data[4],
                 data[5],
-                GetEnumRole(data[6])
+                getEnumRole(data[6])
         );
     }
 
-    public static User FindByUsername(String username) {
-        ArrayList<User> users = LoadUsersFromFile(); // مسؤولية Repository فقط
+    public static User findByUsername(String username) {
+        ArrayList<User> users = loadUsersFromFile(); // مسؤولية Repository فقط
         for (User u : users) {
-            if (u.get_UserName().equals(username)) return u;
+            if (u.getUserName().equals(username)) return u;
         }
         return null;
     }

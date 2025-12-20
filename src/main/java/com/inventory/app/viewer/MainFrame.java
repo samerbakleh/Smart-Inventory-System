@@ -16,7 +16,7 @@ public class MainFrame extends JFrame {
         add(new LogInPanel(), BorderLayout.CENTER);
         setLocationRelativeTo(null);
     }
-    public static void StartMainFraim()
+    public static void startMainFrame()
     {
         SwingUtilities.invokeLater(() -> {
             try {

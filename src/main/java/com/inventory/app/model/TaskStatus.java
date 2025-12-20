@@ -1,6 +1,6 @@
 package com.inventory.app.model;
 
-public enum enTaskStatus {
+public enum TaskStatus {
     PENDING,
     IN_PROGRESS,
     COMPLETED,

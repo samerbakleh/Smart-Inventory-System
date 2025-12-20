@@ -1,7 +1,7 @@
 package com.inventory.app.model.enums;
 
 public enum Role {
-    eMANAGER,
-    eSUPERVISOR,
-    eEmptyRole
+    MANAGER,
+    SUPERVISOR,
+    EMPTY_ROLE
 }

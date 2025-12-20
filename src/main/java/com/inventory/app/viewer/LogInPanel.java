@@ -316,7 +316,7 @@ public class LogInPanel extends JPanel {
         String username = userField.getText();
         String password = new String(passField.getPassword());
 
-        LoginResult result= AuthenticationController.LoginController(username,password,role);
+        LoginResult result= AuthenticationController.loginController(username,password,role);
 
         errorLabel.setVisible(!result.isSuccess());
         if (result.isSuccess()) {
