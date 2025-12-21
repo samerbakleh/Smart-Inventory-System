@@ -9,21 +9,22 @@ public class Task {
     private int taskID = IDCounter++;
 
     private int quantityRequired ;
-    private Person client ;
-    private int progress;  // 0 - 100
-    private Product product;
-    private ProductLine productLine;
+    private String clientName;
+    private int progress;// 0 - 100
+
+    private String productName;
+    private int productLineID;
 
     private TaskStatus taskStatus ;
 
     private LocalDate startDate; // when status become "IN_PROGRESS"
     private LocalDate deliveryDate;
 
-    public Task(int quantityRequired, Person client, Product product, ProductLine productLine,LocalDate deliveryDate) {
+    public Task(int quantityRequired, String clientName, String productName, int productLineID,LocalDate deliveryDate) {
         this.quantityRequired = quantityRequired;
-        this.client = client;
-        this.product = product;
-        this.productLine = productLine;
+        this.clientName = clientName;
+        this.productName = productName;
+        this.productLineID = productLineID;
         this.deliveryDate= deliveryDate;
         this.taskStatus= TaskStatus.PENDING;
         this.progress=0;
@@ -37,12 +38,12 @@ public class Task {
         this.quantityRequired = quantityRequired;
     }
 
-    public Person getClient() {
-        return client;
+    public String getClientName() {
+        return clientName;
     }
 
-    public void setClient(Person client) {
-        this.client = client;
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 
     public int getProgress() {
@@ -53,20 +54,20 @@ public class Task {
         this.progress = progress;
     }
 
-    public Product getProduct() {
-        return product;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public ProductLine getProductLine() {
-        return productLine;
+    public int getProductLineID() {
+        return productLineID;
     }
 
-    public void setProductLine(ProductLine productLine) {
-        this.productLine = productLine;
+    public void setProductLineID(int productLineID) {
+        this.productLineID = productLineID;
     }
 
     public TaskStatus getTaskStatus() {
