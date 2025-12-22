@@ -1,9 +1,12 @@
 package com.inventory.app.model;
 
 import com.inventory.app.model.enums.ProductLineState;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.ArrayDeque;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ProductLine {
 
@@ -12,12 +15,13 @@ public class ProductLine {
     private final int id = idCounter++;
     private String name;
     private ProductLineState state = ProductLineState.ACTIVE;
-    private HashMap<Product, Queue<Task>> tasks = new HashMap<>();   // ( maybe changed later ) Product is a placeholder for key
+    private Map<ProductType, Queue<Task>> tasks;
 
 
-    public ProductLine(String name, Product... products) {
+    public ProductLine(String name, List<ProductType> productTypes) {
         this.name = name;
-        for(Product p : products)
+        this.tasks = new HashMap<>();
+        for(ProductType p : productTypes)
             tasks.put(p, new ArrayDeque<Task>());
     }
 
@@ -30,8 +34,14 @@ public class ProductLine {
     public ProductLineState getState() {
         return state;
     }
-    public HashMap<Product, Queue<Task>> getTasks() {
-        return tasks;
+    public Map<ProductType, List<Task>> getTasks() {
+        Map<ProductType, List<Task>> taskList = new HashMap<>();
+        for(Map.Entry<ProductType, Queue<Task>> e : tasks.entrySet())
+            taskList.put(e.getKey(), new ArrayList<>(e.getValue()));
+        return taskList;
+    }
+    public List<ProductType> getProductTypes() {
+        return new ArrayList<>(tasks.keySet());
     }
 
     public void setName(String name) {
@@ -40,11 +50,30 @@ public class ProductLine {
     public void setState(ProductLineState state) {
         this.state = state;
     }
+    public void setTasks(List<Task> tasks) {                   //tasks have to be in order
+        for(Queue<Task> q : this.tasks.values())
+            q.clear();
+        for(Task t : tasks)
+            addTask(t);
+    }
 
     public void addTask(Task task) {
-        Queue<Task> taskQueue = tasks.get(task.getProduct());
+        Queue<Task> taskQueue = tasks.get(task.getProductType());
         if(taskQueue == null)
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException(this + " received incorrect task of type " + task.getProductType().getName());
+        taskQueue.add(task);
+    }
+
+    public boolean removeTask(ProductType productType) {        //returns true if task exists, false otherwise
+        Queue<Task> taskQueue = tasks.get(productType);
+        if(taskQueue == null)
+            throw new IllegalArgumentException("Tried to remove wrong task type " + productType.getName() + " from " + this);
+        return taskQueue.poll() != null;
+    }
+
+    @Override
+    public String toString() {
+        return "PL#" + id + " " + name;
     }
 
 }
