@@ -1,8 +1,7 @@
-package com.inventory.app.model;
+package com.inventory.app.model.enums;
 
 public enum TaskStatus {
     PENDING,
     IN_PROGRESS,
     COMPLETED,
-    CANCELLED
-}
+    CANCELLED}
