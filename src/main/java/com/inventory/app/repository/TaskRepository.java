@@ -13,7 +13,10 @@ public class TaskRepository {
     private final String TASK_FILE = "src/main/resources/data/tasks.csv";
      public void save (Task task){
 
-         tasks.add(task);
+             tasks.add(task);
+             System.out.println("saved");
+             task.setSaved(true);
+
      }
 
      public ArrayList<Task> getTasks() {
@@ -31,8 +34,9 @@ public class TaskRepository {
     public void saveTasks(){
          try (PrintWriter printWriter = new PrintWriter(new FileWriter(TASK_FILE))) {
              for (Task task : tasks){
+                 System.out.println(task.getTaskID());
                  printWriter.println(
-                         task.getTaskID()+','+
+                         String.valueOf(task.getTaskID())+ ',' +
                          task.getProductName() + ',' +
                          task.getQuantityRequired()+ ',' +
                          task.getProductLineID()+ ','+
@@ -57,19 +61,18 @@ public class TaskRepository {
             while ((Line = br.readLine())!=null){
                 String data[] = Line.split(",");
                 Task t = new Task(
-                        Integer.parseInt(data[0]),
-                        data[1],
-                        data[2],
-                        Integer.parseInt(data[3]),
-                        LocalDate.parse(data[7])
-
-
+                        Integer.parseInt(data[2]),//QTY
+                        data[1], //ProductName
+                        data[4], // clientName
+                        Integer.parseInt(data[3]),// PL-ID
+                        LocalDate.parse(data[7]) // D-date
                 );
-                t.setTaskStatus(TaskStatus.valueOf(data[5]));
-                if (!"null".equals(data[5]))
-                    t.setStartDate(LocalDate.parse(data[6]));
-                tasks.add(t);
 
+                t.setTaskStatus(TaskStatus.valueOf(data[5]));
+                if (!"null".equals(data[6]))
+                    t.setStartDate(LocalDate.parse(data[6]));
+                t.setSaved(false);
+                tasks.add(t);
             }
         } catch (Exception e){
             System.out.println(e);//to logError file
