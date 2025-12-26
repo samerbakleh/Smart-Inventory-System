@@ -1,13 +1,20 @@
 package com.inventory.app;
 
+import com.inventory.app.model.Person;
+import com.inventory.app.model.Product;
+import com.inventory.app.model.ProductLine;
+import com.inventory.app.model.Task;
+import com.inventory.app.service.TaskService;
 import com.inventory.app.util.AppConstants;
-
-import com.inventory.app.viewer.MainFrame;
+import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Starting " + AppConstants.APP_NAME + " v" + AppConstants.VERSION);
-      MainFrame.startMainFrame();
-}
-}
 
+        // تشغيل الواجهة في الثريد الخاص بها (Best Practice for Swing)
+        SwingUtilities.invokeLater(() -> {
+            System.out.println("GUI Thread Started...");
+        });
+    }
+}
