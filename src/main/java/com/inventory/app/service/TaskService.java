@@ -10,7 +10,10 @@ public class TaskService {
     private TaskRepository taskRepository = new TaskRepository();
 
     public void addTask(Task task){
-        taskRepository.save(task);
+            if (!task.isTaken()) {
+                taskRepository.save(task);
+                task.setIsTaken(true);
+            }
     }
     public void startTask(int taskID){
         Task task = taskRepository.findById(taskID);
@@ -36,5 +39,9 @@ public class TaskService {
         }
         task.setProgress(0);
         task.setTaskStatus(TaskStatus.CANCELLED);
+    }
+
+    public TaskRepository getTaskRepository() {
+        return taskRepository;
     }
 }

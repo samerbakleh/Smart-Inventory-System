@@ -20,7 +20,10 @@ public class Task {
     private LocalDate startDate; // when status become "IN_PROGRESS"
     private LocalDate deliveryDate;
 
-    public Task(int quantityRequired, String clientName, String productName, int productLineID,LocalDate deliveryDate) {
+    private boolean isTaken=false;
+    private boolean isSaved=false;
+
+    public Task(int quantityRequired, String productName ,String clientName , int productLineID,LocalDate deliveryDate) {
         this.quantityRequired = quantityRequired;
         this.clientName = clientName;
         this.productName = productName;
@@ -96,5 +99,20 @@ public class Task {
 
     public int getTaskID() {
         return taskID;
+    }
+    public boolean isTaken(){
+        return isTaken;
+    }
+
+    public void setIsTaken(boolean taken) {
+        isTaken = taken;
+    }
+
+    public boolean isSaved() {
+        return isSaved;
+    }
+
+    public void setSaved(boolean saved) {
+        isSaved = saved;
     }
 }
