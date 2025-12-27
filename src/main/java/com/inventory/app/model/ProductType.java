@@ -31,9 +31,9 @@ public class ProductType {
         this.name = name;
     }
     public void setRequiredItems(Map<Item, Double> requiredItems) {
-        for(Map.Entry<Item, Double> e : requiredItems.entrySet())
-            if(e.getValue() <= 0)
-                throw new IllegalArgumentException(e.getKey().getName()
+        for(Map.Entry<Item, Double> entry : requiredItems.entrySet())
+            if(entry.getValue() <= 0)
+                throw new IllegalArgumentException(entry.getKey().getName()
                                                     + " required amount can't be negative or zero in " + name);
         this.requiredItems = requiredItems;
     }

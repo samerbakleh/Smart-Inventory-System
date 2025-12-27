@@ -31,8 +31,8 @@ public class ProductTypeRepository {
         try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE))) {
             for(ProductType pt : productTypes) {
                 bfWriter.write(pt.getName() + ";");
-                for(Map.Entry<Item, Double> e : pt.getRequiredItems().entrySet())
-                    bfWriter.write(e.getKey().getId() + "," + e.getValue() + ",");
+                for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet())
+                    bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
                 bfWriter.newLine();
             }
         }
