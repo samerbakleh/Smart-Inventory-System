@@ -1,23 +1,26 @@
 package com.inventory.app.model;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class ProductType {
 
     private String name;
-    private HashMap<Item, Integer> requiredItems;
+    private Map<Item, Double> requiredItems;
     private ProductLine productLine;
 
-    public ProductType(String name, HashMap<Item, Integer> requiredItems, ProductLine productLine) {
+    public ProductType(String name) {
         this.name = name;
-        this.requiredItems = requiredItems;
+    }
+    public ProductType(String name, Map<Item, Double> requiredItems, ProductLine productLine) {
+        this.name = name;
+        setRequiredItems(requiredItems);
         this.productLine = productLine;
     }
 
     public String getName() {
         return name;
     }
-    public HashMap<Item, Integer> getRequiredItems() {
+    public Map<Item, Double> getRequiredItems() {
         return requiredItems;
     }
     public ProductLine getProductLine() {
@@ -27,7 +30,11 @@ public class ProductType {
     public void setName(String name) {
         this.name = name;
     }
-    public void setRequiredItems(HashMap<Item, Integer> requiredItems) {
+    public void setRequiredItems(Map<Item, Double> requiredItems) {
+        for(Map.Entry<Item, Double> e : requiredItems.entrySet())
+            if(e.getValue() <= 0)
+                throw new IllegalArgumentException(e.getKey().getName()
+                                                    + " required amount can't be negative or zero in " + name);
         this.requiredItems = requiredItems;
     }
     public void setProductLine(ProductLine productLine) {
@@ -35,4 +42,3 @@ public class ProductType {
     }
 
 }
-
