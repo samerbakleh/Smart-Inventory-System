@@ -43,3 +43,4 @@ build/
 *.log
 *.tmp
 error_log.txt
+lib/
