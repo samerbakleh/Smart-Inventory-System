@@ -1,58 +1,42 @@
 package com.inventory.app.model;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.Serializable;
 
-public class Category implements Externalizable {
+public class Category implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private int id;
+    private final int id;
     private String name;
 
-    public Category() {}
-
     public Category(int id, String name) {
+        if (id <= 0) throw new IllegalArgumentException("Category id must be positive");
         this.id = id;
-        this.name = name;
+        setName(name);
     }
 
     public int getId() { return id; }
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
 
-    private static String norm(String s) {
-        return s == null ? "" : s.trim().toLowerCase();
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeInt(id);
-        out.writeUTF(name == null ? "" : name);
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException {
-        this.id = in.readInt();
-        this.name = in.readUTF();
+    public void setName(String name) {
+        if (name == null || name.trim().isEmpty())
+            throw new IllegalArgumentException("Category name cannot be empty");
+        this.name = name.trim();
     }
 
     @Override
     public String toString() { return name; }
 
+    // الهوية بالـ id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Category other)) return false;
-
-        if (this.id > 0 && other.id > 0) return this.id == other.id;
-        
-        return norm(this.name).equals(norm(other.name));
+        if (!(o instanceof Category)) return false;
+        Category other = (Category) o;
+        return this.id == other.id;
     }
 
     @Override
     public int hashCode() {
-        return (id > 0) ? Integer.hashCode(id) : norm(name).hashCode();
+        return Integer.hashCode(id);
     }
 }
