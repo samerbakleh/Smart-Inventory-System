@@ -31,6 +31,7 @@ public class Task {
         this.deliveryDate= deliveryDate;
         this.taskStatus= TaskStatus.PENDING;
         this.progress=0;
+
     }
 
     public int getQuantityRequired() {
