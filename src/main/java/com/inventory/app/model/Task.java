@@ -1,5 +1,7 @@
 package com.inventory.app.model;
 
+import com.inventory.app.model.enums.TaskStatus;
+
 import java.time.LocalDate;
 
 public class Task {
