@@ -9,7 +9,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class TaskService {
-    private final TaskRepository taskRepository = new TaskRepository();
+    private final TaskRepository taskRepository ;
+
+    public TaskService(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
 
     public void addTask(Task task){
             if (!task.isTaken()) {
@@ -121,7 +125,7 @@ public class TaskService {
             throw new IllegalArgumentException("Task not found");
 
         if (task.getTaskStatus() != TaskStatus.PENDING)
-            throw new IllegalStateException("Tou can not edit task after start");
+            throw new IllegalStateException("You can not edit task after start");
 
         task.setProductName(newProductName);
     }

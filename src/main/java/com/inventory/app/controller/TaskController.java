@@ -8,7 +8,11 @@ import java.util.ArrayList;
 
 public class TaskController {
 
-    private final TaskService taskService = new TaskService();
+    private final TaskService taskService ;
+
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
     public void addTask (Task task){
         taskService.addTask(task);

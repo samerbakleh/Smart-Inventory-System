@@ -11,7 +11,7 @@ import java.util.List;
 public class ItemRepository {
 
 
-    public List<Item> loadAll() {
+  /*  public List<Item> loadAll() {
         List<Item> items = new ArrayList<>();
         File file = new File(AppConstants.ITEMS_FILE);
 
@@ -79,5 +79,5 @@ public class ItemRepository {
             System.err.println("Item with ID " + updatedItem.getId() + " not found for update.");
         }
     }
-
+*/
 }

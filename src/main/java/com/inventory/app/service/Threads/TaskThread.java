@@ -18,7 +18,7 @@ public class TaskThread implements Runnable {
             taskService.startTask(task.getTaskID());
 
             for (int i= task.getProgress();i<=100;i++){
-                Thread.sleep(1000);//chose your time
+                Thread.sleep(10*task.getQuantityRequired());//chose your time
                 taskService.updateProgress(task.getTaskID(), i);
             }
         }catch (InterruptedException e){
