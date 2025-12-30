@@ -2,9 +2,10 @@ package com.inventory.app.controller;
 
 import com.inventory.app.service.ProductTypeService;
 
+import java.io.IOException;
+
 public class MainController {
 
-    //private MainFrame mainFrame;
     private ProductTypeService productTypeService;
     /*
     private ItemService itemService;
@@ -13,14 +14,12 @@ public class MainController {
      */
 
     public MainController() {
-        //mainFrame = new MainFrame(this);
-        productTypeService = new ProductTypeService(this);
+        productTypeService = new ProductTypeService();
         //itemService = new ItemService(this);
         // ...
     }
 
-    public void appStarted() {
-        //mainFrame.displayLogin();
+    public void loadFiles() throws IOException {
         var unlinkedProductTypes = productTypeService.loadFromRepository();
         /*
         itemService.loadFromRepository();
@@ -30,19 +29,14 @@ public class MainController {
         productTypeService.linkItemToProductType(unlinkedProductTypes, itemService.getItemRepository());
     }
 
-    public void appExited() {
+    public void saveFiles() throws IOException {
 
         productTypeService.saveToRepository();
         /*
         itemService.saveToRepository();
         productLineService.saveToRepository();
             ...
-        mainFrame.close();
          */
-    }
-
-    public void exceptionHappened(String message) {
-        // mainFrame.displayError(message);
     }
 
 }

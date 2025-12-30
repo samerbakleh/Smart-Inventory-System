@@ -1,6 +1,5 @@
 package com.inventory.app.service;
 
-import com.inventory.app.controller.MainController;
 import com.inventory.app.model.Item;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.repository.ItemRepository;
@@ -12,11 +11,9 @@ import java.util.Map;
 
 public class ProductTypeService {
 
-    private final MainController mainController;
     private ProductTypeRepository productTypeRepository;
 
-    public ProductTypeService(MainController mainController) {
-        this.mainController = mainController;
+    public ProductTypeService() {
         productTypeRepository = new ProductTypeRepository();
     }
 
@@ -28,40 +25,29 @@ public class ProductTypeService {
         this.productTypeRepository = productTypeRepository;
     }
 
-    public void saveToRepository() {
-        try {
-            productTypeRepository.save();
-        } catch(IOException e) {
-            mainController.exceptionHappened(e.getMessage());
-        }
+    public void saveToRepository() throws IOException {
+        productTypeRepository.save();
     }
 
-    public Map<ProductType, Map<Integer, Double>> loadFromRepository() {
-        try {
-            return productTypeRepository.load();
-        } catch(IOException e) {
-            mainController.exceptionHappened(e.getMessage());
-            return null;
-        }
+    public Map<ProductType, Map<Integer, Double>> loadFromRepository() throws IOException {
+        return productTypeRepository.load();
     }
 
     public void linkItemToProductType(Map<ProductType, Map<Integer, Double>> unlinkedProductTypes,
-                                      ItemRepository itemRepository) {
+                                      ItemRepository itemRepository) throws IOException {
         for(Map.Entry<ProductType, Map<Integer, Double>> entry : unlinkedProductTypes.entrySet()) {
             Map<Item, Double> requiredItems = new HashMap<>();
             for(Map.Entry<Integer, Double> reqItem : entry.getValue().entrySet()) {
                 Item item = itemRepository.findById(reqItem.getKey());
-                if(item == null) {
-                    mainController.exceptionHappened("Some of the files content is corrupted");
-                    return;
-                }
+                if(item == null)
+                    throw new IOException("Some of the files content is corrupted");
                 requiredItems.put(item, reqItem.getValue());
             }
             entry.getKey().setRequiredItems(requiredItems);
         }
     }
 
-    public void loadAndLink(ItemRepository itemRepository) {
+    public void loadAndLink(ItemRepository itemRepository) throws IOException {
         linkItemToProductType(loadFromRepository(), itemRepository);
     }
 

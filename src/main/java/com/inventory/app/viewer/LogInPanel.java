@@ -96,8 +96,12 @@ public class LogInPanel extends JPanel {
         logInButton.setPreferredSize(new Dimension(520, 60));
         logInButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                // log in logic
+            public void actionPerformed(ActionEvent event) {
+                /*
+
+                log in logic
+
+                 */
             }
         });
 
