@@ -1,6 +1,6 @@
 package com.inventory.app.util;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class AppConstants {
     // Basic App Info
@@ -14,8 +14,11 @@ public class AppConstants {
     public static final String LOG_FILE = DATA_DIR + "error_log.txt";
     public static final String ITEMS_FILE = DATA_DIR +"items.csv";
     public static final String CSV_DELIMITER = ",";
-    // Colors (For UI consistency)
-    public static final Color PRIMARY_COLOR = new Color(70, 130, 180);
+
+    public static final Color PRIMARY_COLOR = new Color(137, 82, 227);
+    public static final Color SECONDARY_COLOR = new Color(170, 85, 188);
+
+    public static final Font DEFAULT_FONT = new Font("sansserif", Font.PLAIN, 12);
 
 
 
