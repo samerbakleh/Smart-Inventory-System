@@ -4,8 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
+import java.util.ArrayList;
 
 public class MainFrame extends JFrame {
+
+    private List<String> cards = new ArrayList<>();
 
     public MainFrame() {
         super("Production & Inventory Management System");
@@ -30,12 +34,17 @@ public class MainFrame extends JFrame {
         setLayout(new CardLayout());
 
         LogInPanel logInPanel = new LogInPanel(this);
-        add(logInPanel, "Log in");
+        cards.add(logInPanel.getName());
+        add(logInPanel, logInPanel.getName());
 
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
 
         // start program operations: load files, start tasks, ...
+    }
+
+    public List<String> getCards() {
+        return cards;
     }
 
 }

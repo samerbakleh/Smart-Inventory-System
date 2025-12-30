@@ -1,41 +1,25 @@
 package com.inventory.app.viewer.components;
 
-import com.inventory.app.util.AppConstants;
-
 import javax.swing.*;
 import java.awt.*;
 
-public class StyledLabel extends JComponent {
+public class ShadowedLabel extends JComponent {
 
     protected String text;
-    protected Font font = AppConstants.DEFAULT_FONT;
-    protected int offset = 2;
+    protected int offset;
 
-    public StyledLabel(String text) {
+    public ShadowedLabel(String text) {
         this.text = text;
+        this.offset = 2;
     }
-    public StyledLabel(String text, Color color) {
+    public ShadowedLabel(String text, int offset) {
         this.text = text;
-        setForeground(color);
-    }
-    public StyledLabel(String text, Color color, float fontSize) {
-        this.text = text;
-        setForeground(color);
-        this.font = this.font.deriveFont(fontSize);
+        this.offset = offset;
     }
 
     public void setText(String text) {
         this.text = text;
         revalidate();
-        repaint();
-    }
-    public void setFontSize(float fontSize) {
-        this.font = this.font.deriveFont(fontSize);
-        revalidate();
-        repaint();
-    }
-    public void setFontStyle(int style) {
-        this.font = this.font.deriveFont(style);
         repaint();
     }
     public void setOffset(int offset) {
@@ -46,7 +30,7 @@ public class StyledLabel extends JComponent {
 
     @Override
     public Dimension getPreferredSize() {
-        FontMetrics fm = getFontMetrics(font);
+        FontMetrics fm = getFontMetrics(getFont());
         return new Dimension(fm.stringWidth(text) + offset, fm.getHeight() + offset);
     }
 
@@ -54,7 +38,7 @@ public class StyledLabel extends JComponent {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
-        g2d.setFont(font);
+        g2d.setFont(getFont());
 
         FontMetrics fm = g2d.getFontMetrics();
         int textWidth = fm.stringWidth(text);
@@ -62,6 +46,10 @@ public class StyledLabel extends JComponent {
         float x = (getWidth() - textWidth)/2f;
         float y = (getHeight() - textHeight)/2f + fm.getAscent();
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        if(isOpaque()) {
+            g2d.setColor(getBackground());
+            g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+        }
         g2d.setColor(Color.black);
         g2d.drawString(text, x + offset, y + offset);
         g2d.setColor(getForeground());

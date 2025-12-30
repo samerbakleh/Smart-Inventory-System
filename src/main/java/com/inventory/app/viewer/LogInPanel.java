@@ -5,11 +5,13 @@ import com.inventory.app.viewer.components.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 
 public class LogInPanel extends JPanel {
 
-    private MainFrame mainFrame;
+    private final String name = "Log in";
+    private final MainFrame mainFrame;
 
     public LogInPanel(MainFrame mainFrame) {
         super(new GridLayout(1, 2));
@@ -36,12 +38,17 @@ public class LogInPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
+
         JLabel icon = new JLabel(new ImageIcon("src/main/resources/icons/factory.png"));
-        StyledLabel label1 = new StyledLabel("Production System", Color.white, 40);
-        label1.setFontStyle(Font.BOLD);
-        label1.setOffset(4);
-        StyledLabel label2 = new StyledLabel("Manage Production Lines", Color.white, 20);
-        StyledLabel label3 = new StyledLabel("And Inventory", Color.white, 20);
+        ShadowedLabel label1 = new ShadowedLabel("Production System", 3);
+        ShadowedLabel label2 = new ShadowedLabel("Manage Production Lines");
+        ShadowedLabel label3 = new ShadowedLabel("And Inventory");
+        label1.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 40f));
+        label2.setFont(AppConstants.DEFAULT_FONT.deriveFont(20f));
+        label3.setFont(AppConstants.DEFAULT_FONT.deriveFont(20f));
+        label1.setForeground(Color.white);
+        label2.setForeground(Color.white);
+        label3.setForeground(Color.white);
         gbc.insets = new Insets(0, 0, 10, 0);
         leftPanel.add(icon, gbc);
         gbc.insets = new Insets(0, 0, 9, 0);
@@ -61,7 +68,7 @@ public class LogInPanel extends JPanel {
         JLabel welcomeLabel = new JLabel("Welcome Back!");
         JLabel signInLabel = new JLabel("sign in to continue to your account");
         JLabel roleLabel = new JLabel("Select Role");
-        JLabel usernameLabel = new JLabel("User name");
+        JLabel usernameLabel = new JLabel("Username");
         JLabel passwordLabel = new JLabel("Password");
         JLabel errorLabel = new JLabel("");
         signInLabel.setForeground(Color.gray);
@@ -71,7 +78,8 @@ public class LogInPanel extends JPanel {
         roleLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 17f));
         usernameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 17f));
         passwordLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 17f));
-        errorLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 15f));
+        errorLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(15f));
+
         JComboBox<String> roleBox = new JComboBox<>(new String[] {"Manager", "Supervisor"});
         JTextField usernameField = new JTextField(10);
         JPasswordField passwordField = new JPasswordField(10);
@@ -80,17 +88,24 @@ public class LogInPanel extends JPanel {
         roleBox.setPreferredSize(new Dimension(620, 60));
         usernameField.setPreferredSize(new Dimension(620, 60));
         passwordField.setPreferredSize(new Dimension(620, 60));
+
         JButton logInButton = new JButton("Log in");
         logInButton.setBackground(AppConstants.PRIMARY_COLOR);
         logInButton.setForeground(Color.white);
         logInButton.setFont(AppConstants.DEFAULT_FONT.deriveFont(17f));
         logInButton.setPreferredSize(new Dimension(520, 60));
+        logInButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // log in logic
+            }
+        });
 
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(30, 30, 0, 30);
+        gbc.insets = new Insets(20, 30, 0, 30);
         logInBox.add(welcomeLabel, gbc);
         gbc.insets = new Insets(0, 30, 20, 30);
         logInBox.add(signInLabel, gbc);
@@ -108,7 +123,7 @@ public class LogInPanel extends JPanel {
         logInBox.add(passwordField, gbc);
         gbc.insets = new Insets(0, 30, 10, 30);
         logInBox.add(errorLabel, gbc);
-        gbc.insets = new Insets(0, 30, 0, 30);
+        gbc.insets = new Insets(0, 30, 10, 30);
         logInBox.add(logInButton, gbc);
 
         gbc.anchor = GridBagConstraints.CENTER;
@@ -118,6 +133,10 @@ public class LogInPanel extends JPanel {
         gbc.insets = new Insets(100, 150, 100, 150);
         rightPanel.add(logInBox, gbc);
         add(rightPanel);
+    }
+
+    public String getName() {
+        return name;
     }
 
 }
