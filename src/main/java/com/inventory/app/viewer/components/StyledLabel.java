@@ -8,31 +8,25 @@ import java.awt.*;
 public class StyledLabel extends JComponent {
 
     protected String text;
-    protected Color color;
     protected Font font = AppConstants.DEFAULT_FONT;
     protected int offset = 2;
 
     public StyledLabel(String text) {
         this.text = text;
-        this.color = Color.white;
     }
     public StyledLabel(String text, Color color) {
         this.text = text;
-        this.color = color;
+        setForeground(color);
     }
     public StyledLabel(String text, Color color, float fontSize) {
         this.text = text;
-        this.color = color;
+        setForeground(color);
         this.font = this.font.deriveFont(fontSize);
     }
 
     public void setText(String text) {
         this.text = text;
         revalidate();
-        repaint();
-    }
-    public void setColor(Color color) {
-        this.color = color;
         repaint();
     }
     public void setFontSize(float fontSize) {
@@ -70,7 +64,7 @@ public class StyledLabel extends JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2d.setColor(Color.black);
         g2d.drawString(text, x + offset, y + offset);
-        g2d.setColor(color);
+        g2d.setColor(getForeground());
         g2d.drawString(text, x, y);
     }
 
