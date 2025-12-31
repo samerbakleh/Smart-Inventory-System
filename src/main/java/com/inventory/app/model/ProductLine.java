@@ -1,7 +1,6 @@
 package com.inventory.app.model;
 
 import com.inventory.app.model.enums.ProductLineStatus;
-import com.inventory.app.repository.ProductLineRepository;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -81,16 +80,16 @@ public class ProductLine {
     public void addTask(Task task) {
         Queue<Task> taskQueue = tasks.get(task.getProductType());
         if(taskQueue == null)
-            throw new IllegalArgumentException(this + " received incorrect task of type " +
-                                               task.getProductType().getName());
+            throw new IllegalArgumentException(this + " received incorrect task of type "
+                                             + task.getProductType().getName());
         taskQueue.add(task);
     }
 
     public boolean removeTask(ProductType productType) {        //returns true if task exists, false otherwise
         Queue<Task> taskQueue = tasks.get(productType);
         if(taskQueue == null)
-            throw new IllegalArgumentException("Tried to remove wrong task type " + productType.getName() +
-                                               " from " + this);
+            throw new IllegalArgumentException("Tried to remove wrong task type " + productType.getName()
+                                             + " from " + this);
         return taskQueue.poll() != null;
     }
 
