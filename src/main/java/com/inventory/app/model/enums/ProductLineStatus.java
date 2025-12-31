@@ -1,6 +1,6 @@
 package com.inventory.app.model.enums;
 
-public enum ProductLineState {
+public enum ProductLineStatus {
     ACTIVE,
     STOPPED,
     MAINTENANCE

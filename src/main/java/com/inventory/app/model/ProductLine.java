@@ -16,7 +16,7 @@ public class ProductLine {
 
     private final int id;
     private String name;
-    private ProductLineStatus status = ProductLineStatus.ACTIVE;
+    private ProductLineStatus status;
     private Map<ProductType, Queue<Task>> tasks;
 
 
@@ -29,6 +29,7 @@ public class ProductLine {
     public ProductLine(String name, List<ProductType> productTypes) {
         this.id = idCounter++;
         this.name = name;
+        this.status = ProductLineStatus.ACTIVE;
         this.tasks = new HashMap<>();
         for(ProductType p : productTypes)
             tasks.put(p, new ArrayDeque<>());

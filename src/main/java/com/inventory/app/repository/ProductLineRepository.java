@@ -52,20 +52,39 @@ public class ProductLineRepository {
             if (mainParts.length < 4 || !mainParts[1].matches("[a-zA-Z0-9-]+"))
                 throw new IOException(AppConstants.PRODUCT_LINES_FILE + " content is corrupted");
             try {
-                int id = Integer.parseInt(mainParts[0]);
+                int productLineId = Integer.parseInt(mainParts[0]);
                 ProductLineStatus status = ProductLineStatus.valueOf(mainParts[2]);
-                pl = new ProductLine(id, mainParts[1], status);
+                pl = new ProductLine(productLineId, mainParts[1], status);
             } catch(IllegalArgumentException e) {
-                throw new IOException(AppConstants.PRODUCT_LINES_FILE + " content is corrupted");
+                throw new IOException(AppConstants.PRODUCT_LINES_FILE + " content is corrupted", e);
             }
-            Map<String, Integer> taskMap = new HashMap<>();
-            String[] taskMapParts = mainParts[3].split("[|]");
-            if(!taskMapParts[0].matches("[a-zA-Z0-9-. ]+"))
-                throw new IOException(AppConstants.PRODUCT_LINES_FILE + " content is corrupted ");
-            for(String taskMapWord : taskMapParts) {
-
+            Map<String, List<Integer>> tasksMapById = new HashMap<>();
+            String[] tasksMapParts = mainParts[3].split("[|]");
+            for(String tasksWord : tasksMapParts) {
+                List<Integer> tasksById = new ArrayList<>();
+                String[] tasksParts = tasksWord.split(",");
+                if(tasksParts.length == 0 || !tasksParts[0].matches("[a-zA-Z0-9-. ]+"))
+                    throw new IOException(AppConstants.PRODUCT_LINES_FILE + " content is corrupted ");
+                for(int i = 1; i < tasksParts.length; i++) {
+                    try {
+                        Integer taskId = Integer.valueOf(tasksParts[i]);
+                        tasksById.add(taskId);
+                    } catch(NumberFormatException e) {
+                        throw new IOException(AppConstants.PRODUCT_LINES_FILE + " content is corrupted", e);
+                    }
+                }
+                tasksMapById.put(tasksParts[0], tasksById);
             }
+            unlinkedProductLines.put(pl, tasksMapById);
         }
+        return unlinkedProductLines;
+    }
+
+    public ProductLine findById(int id) {
+        for(ProductLine pl : productLines)
+            if(pl.getId() == id)
+                return pl;
+        return null;
     }
 
 }
