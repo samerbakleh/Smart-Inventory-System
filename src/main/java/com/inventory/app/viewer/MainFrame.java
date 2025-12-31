@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class MainFrame extends JFrame {
 
@@ -31,16 +32,34 @@ public class MainFrame extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
-                try {
-                    mainController.saveFiles();
-                } catch(IOException e) {
-                    /*
+                SwingWorker<Object, Object> saveFilesWorker = new SwingWorker<>() {
+                    @Override
+                    protected Object doInBackground() throws IOException {
+                        mainController.saveFiles();
+                        return null;
+                    }
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                            System.exit(0);
+                        } catch(ExecutionException e) {
+                            Throwable throwable = e.getCause();
+                            /*
 
-                    show error message
+                            show throwable error message
 
-                     */
-                }
-                System.exit(0);
+                             */
+                        } catch(InterruptedException e) {
+                            /*
+
+                            show error message
+
+                             */
+                        }
+                    }
+                };
+                saveFilesWorker.execute();
             }
         });
         setLayout(new CardLayout());
@@ -53,15 +72,33 @@ public class MainFrame extends JFrame {
         setExtendedState(MAXIMIZED_BOTH);
 
         // start program operations: load files, start tasks, ...
-        try {
-            mainController.saveFiles();
-        } catch(IOException e) {
-            /*
+        SwingWorker<Object, Object> loadFilesWorker = new SwingWorker<>() {
+            @Override
+            protected Object doInBackground() throws IOException {
+                mainController.loadFiles();
+                return null;
+            }
+            @Override
+            protected void done() {
+                try {
+                    get();
+                } catch(ExecutionException e) {
+                    Throwable throwable = e.getCause();
+                            /*
 
-            show error message
+                            show throwable error message
 
-             */
-        }
+                             */
+                } catch(InterruptedException e) {
+                            /*
+
+                            show error message
+
+                             */
+                }
+            }
+        };
+        loadFilesWorker.execute();
     }
 
     public List<String> getCards() {
