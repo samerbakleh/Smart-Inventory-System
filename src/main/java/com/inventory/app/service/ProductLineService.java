@@ -64,4 +64,9 @@ public class ProductLineService {
         }
     }
 
+    public void loadAndLink(TaskRepository taskRepository,
+                            ProductTypeRepository productTypeRepository) throws IOException {
+        linkToProductLine(loadFromRepository(), taskRepository, productTypeRepository);
+    }
+
 }
