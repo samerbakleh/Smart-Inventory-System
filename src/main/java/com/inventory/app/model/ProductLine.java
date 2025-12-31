@@ -1,6 +1,8 @@
 package com.inventory.app.model;
 
-import com.inventory.app.model.enums.ProductLineState;
+import com.inventory.app.model.enums.ProductLineStatus;
+import com.inventory.app.repository.ProductLineRepository;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Queue;
@@ -12,27 +14,34 @@ public class ProductLine {
 
     private static int idCounter = 0;
 
-    private final int id = idCounter++;
+    private final int id;
     private String name;
-    private ProductLineState state = ProductLineState.ACTIVE;
+    private ProductLineStatus status = ProductLineStatus.ACTIVE;
     private Map<ProductType, Queue<Task>> tasks;
 
 
+    public ProductLine(int id, String name, ProductLineStatus status) {
+        this.id = id;
+        idCounter = id + 1;
+        this.name = name;
+        this.status = status;
+    }
     public ProductLine(String name, List<ProductType> productTypes) {
+        this.id = idCounter++;
         this.name = name;
         this.tasks = new HashMap<>();
         for(ProductType p : productTypes)
-            tasks.put(p, new ArrayDeque<Task>());
+            tasks.put(p, new ArrayDeque<>());
     }
 
-    public int getID() {
+    public int getId() {
         return id;
     }
     public String getName() {
         return name;
     }
-    public ProductLineState getState() {
-        return state;
+    public ProductLineStatus getStatus() {
+        return status;
     }
     public Map<ProductType, List<Task>> getTasks() {
         Map<ProductType, List<Task>> taskList = new HashMap<>();
@@ -47,8 +56,8 @@ public class ProductLine {
     public void setName(String name) {
         this.name = name;
     }
-    public void setState(ProductLineState state) {
-        this.state = state;
+    public void setStatus(ProductLineStatus status) {
+        this.status = status;
     }
     public void setTasks(List<Task> tasks) {                   //tasks have to be in order
         for(Queue<Task> q : this.tasks.values())
