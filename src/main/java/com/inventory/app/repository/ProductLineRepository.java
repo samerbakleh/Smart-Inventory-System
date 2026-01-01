@@ -27,6 +27,7 @@ public class ProductLineRepository {
     public void add(ProductLine pl) {
         productLines.add(pl);
     }
+
                                 //id;name;status;productTypeName,productsubType1,productsubType2...;taskId1,taskId2,...
     public void save() throws IOException {
         try (BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_LINES_FILE))) {
@@ -44,6 +45,9 @@ public class ProductLineRepository {
         }
     }
 
+                                                    // returns a map with product lines as keys and the corresponding
+                                                    // values are a list of product type names (name is the first element
+                                                    // and the rest are subtypes) and a list of task IDs as a string
     public Map<ProductLine, List<String>[]> load() throws IOException {
         productLines.clear();
         Map<ProductLine, List<String>[]> unlinkedProductLines = new HashMap<>();
@@ -51,6 +55,8 @@ public class ProductLineRepository {
         final String ERROR_MESSAGE = AppConstants.PRODUCT_LINES_FILE + " content is corrupted";
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_LINES_FILE))) {
             for (String line : bfReader.readAllLines()) {
+                if(line.isEmpty())
+                    continue;
                 ProductLine pl;
                 String[] mainParts = line.split(";");
                 if (mainParts.length < 5 || !mainParts[1].matches("[a-zA-Z0-9-]+"))
