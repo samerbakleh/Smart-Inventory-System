@@ -35,7 +35,7 @@ public class ProductLineRepository {
                 bfWriter.write(pl.getId() + ";" + pl.getName() + ";" + pl.getStatus() + ";"
                              + pl.getProductTypes().getFirst().getName());
                 for (ProductType pt : pl.getTasks().keySet())
-                    bfWriter.write("," + pt.getSubType());
+                    bfWriter.write("," + pt.getSubtype());
                 bfWriter.write(';');
                 for(List<Task> value : pl.getTasks().values())
                     for(Task t : value)

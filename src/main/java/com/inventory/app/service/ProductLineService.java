@@ -6,7 +6,6 @@ import com.inventory.app.model.Task;
 import com.inventory.app.repository.ProductLineRepository;
 import com.inventory.app.repository.ProductTypeRepository;
 import com.inventory.app.repository.TaskRepository;
-import com.inventory.app.util.AppConstants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,6 +66,18 @@ public class ProductLineService {
     public void loadAndLink(TaskRepository taskRepository,
                             ProductTypeRepository productTypeRepository) throws IOException {
         linkToProductLine(loadFromRepository(), taskRepository, productTypeRepository);
+    }
+
+    public List<ProductLine> getLoadedProductLines() {
+        return productLineRepository.getProductLines();
+    }
+
+    public boolean isProductLineNameValid(String name) {
+        return name.matches("[a-zA-Z0-9- ]");
+    }
+
+    public void addNewProductLine(String name, List<ProductType> productTypes) {
+        productLineRepository.add(new ProductLine(name, productTypes));
     }
 
 }
