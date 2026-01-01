@@ -13,7 +13,9 @@ import java.util.concurrent.ExecutionException;
 public class MainFrame extends JFrame {
 
     private MainController mainController;
-    private List<String> cards = new ArrayList<>();
+    private LogInPanel logInPanel;
+    private ProductLineManagerPanel productLineManagerPanel;
+    private List<String> cardsName = new ArrayList<>();
 
     public MainFrame() {
         super("Production & Inventory Management System");
@@ -64,9 +66,13 @@ public class MainFrame extends JFrame {
         });
         setLayout(new CardLayout());
 
-        LogInPanel logInPanel = new LogInPanel(this);
-        cards.add(logInPanel.getName());
+        logInPanel = new LogInPanel(this);
+        cardsName.add(logInPanel.getName());
         add(logInPanel, logInPanel.getName());
+
+        productLineManagerPanel = new ProductLineManagerPanel(/*this*/);
+        cardsName.add(productLineManagerPanel.getName());
+        add(productLineManagerPanel, productLineManagerPanel.getName());
 
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
@@ -101,8 +107,14 @@ public class MainFrame extends JFrame {
         loadFilesWorker.execute();
     }
 
-    public List<String> getCards() {
-        return cards;
+    public List<String> getCardsName() {
+        return cardsName;
+    }
+    public String getLogInCardName() {
+        return logInPanel.getName();
+    }
+    public String getManagerCardName() {
+        return productLineManagerPanel.getName();
     }
 
 }

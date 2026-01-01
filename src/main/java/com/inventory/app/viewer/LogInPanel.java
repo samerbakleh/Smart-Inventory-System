@@ -1,5 +1,7 @@
 package com.inventory.app.viewer;
 
+import com.inventory.app.controller.AuthenticationController;
+import com.inventory.app.model.enums.Role;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.*;
 
@@ -10,12 +12,14 @@ import java.awt.geom.Ellipse2D;
 
 public class LogInPanel extends JPanel {
 
-    private final String name = "Log in";
     private final MainFrame mainFrame;
+    private AuthenticationController authenticationController;
 
     public LogInPanel(MainFrame mainFrame) {
         super(new GridLayout(1, 2));
+        setName("Log in panel");
         this.mainFrame = mainFrame;
+        this.authenticationController = new AuthenticationController();
         setBackground(new Color(245, 245, 245));
 
         GradientPanel leftPanel = new GradientPanel(AppConstants.PRIMARY_COLOR, AppConstants.SECONDARY_COLOR) {
@@ -70,9 +74,9 @@ public class LogInPanel extends JPanel {
         JLabel roleLabel = new JLabel("Select Role");
         JLabel usernameLabel = new JLabel("Username");
         JLabel passwordLabel = new JLabel("Password");
-        JLabel errorLabel = new JLabel("");
+        JLabel errorLabel = new JLabel("Invalid log in attempt");
         signInLabel.setForeground(Color.gray);
-        errorLabel.setForeground(Color.red);
+        errorLabel.setForeground(Color.white);
         welcomeLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 35f));
         signInLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.ITALIC, 15f));
         roleLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 17f));
@@ -97,11 +101,29 @@ public class LogInPanel extends JPanel {
         logInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                /*
+                String role = (String) roleBox.getSelectedItem();
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+                if(authenticationController.loginController(username, password, role)) {
+                    /*
 
-                log in logic
+                    maybe add loading
 
-                 */
+                     */
+                    errorLabel.setForeground(Color.white);
+                    CardLayout mainLayout = (CardLayout) mainFrame.getLayout();
+                    if(role.toUpperCase().equals(Role.MANAGER.toString())) {
+                        mainLayout.show(mainFrame, mainFrame.getManagerCardName());
+                    } else {
+                        /*
+
+                        switch to the supervisor panel
+
+                         */
+                    }
+                } else {
+                    errorLabel.setForeground(Color.red);
+                }
             }
         });
 
@@ -137,10 +159,6 @@ public class LogInPanel extends JPanel {
         gbc.insets = new Insets(100, 150, 100, 150);
         rightPanel.add(logInBox, gbc);
         add(rightPanel);
-    }
-
-    public String getName() {
-        return name;
     }
 
 }
