@@ -7,16 +7,17 @@ import java.util.Map;
 public class ProductType {
 
     private String name;
-    private String subType;
+    private String subtype;
     private Map<Item, Double> requiredItems;
     private List<ProductLine> productLines;
 
-    public ProductType(String name, String subType) {
+    public ProductType(String name, String subtype) {
         this.name = name;
-        this.subType = subType;
+        this.subtype = subtype;
     }
-    public ProductType(String name, String subType, Map<Item, Double> requiredItems, List<ProductLine> productLines) {
+    public ProductType(String name, String subtype, Map<Item, Double> requiredItems, List<ProductLine> productLines) {
         this.name = name;
+        this.subtype = subtype;
         setRequiredItems(requiredItems);
         this.productLines = productLines;
     }
@@ -24,8 +25,8 @@ public class ProductType {
     public String getName() {
         return name;
     }
-    public String getSubType() {
-        return subType;
+    public String getSubtype() {
+        return subtype;
     }
     public Map<Item, Double> getRequiredItems() {
         return requiredItems;
@@ -37,8 +38,8 @@ public class ProductType {
     public void setName(String name) {
         this.name = name;
     }
-    public void setSubType(String subType) {
-        this.subType = subType;
+    public void setSubtype(String subtype) {
+        this.subtype = subtype;
     }
     public void setRequiredItems(Map<Item, Double> requiredItems) {
         for(Map.Entry<Item, Double> entry : requiredItems.entrySet())
@@ -58,7 +59,7 @@ public class ProductType {
 
     @Override
     public String toString() {
-        return name + " " + subType;
+        return name + " " + subtype;
     }
 
 }
