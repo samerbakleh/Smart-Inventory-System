@@ -1,31 +1,120 @@
 package com.inventory.app.viewer;
+
+import com.inventory.app.controller.MainController;
+
 import javax.swing.*;
-import javax.swing.*;
-import com.inventory.app.viewer.LogInPanel;
 import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class MainFrame extends JFrame {
 
+    private MainController mainController;
+    private LogInPanel logInPanel;
+    private ProductLineManagerPanel productLineManagerPanel;
+    private List<String> cardsName = new ArrayList<>();
+
     public MainFrame() {
-        setTitle("Production & Inventory Management System");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setMinimumSize(new Dimension(900, 600));
-
-        add(new LogInPanel(), BorderLayout.CENTER);
-        setLocationRelativeTo(null);
-    }
-    public static void startMainFrame()
-    {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                // محاولة تفعيل الستايل الخاص بالنظام
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
+        super("Production & Inventory Management System");
+        mainController = new MainController();
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if (info.getName().equals("Nimbus")) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
             }
-            new MainFrame().setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                SwingWorker<Object, Object> saveFilesWorker = new SwingWorker<>() {
+                    @Override
+                    protected Object doInBackground() throws IOException {
+                        mainController.saveFiles();
+                        return null;
+                    }
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                            System.exit(0);
+                        } catch(ExecutionException e) {
+                            Throwable throwable = e.getCause();
+                            /*
+
+                            show throwable error message
+
+                             */
+                        } catch(InterruptedException e) {
+                            /*
+
+                            show error message
+
+                             */
+                        }
+                    }
+                };
+                saveFilesWorker.execute();
+            }
         });
+        setLayout(new CardLayout());
+
+        logInPanel = new LogInPanel(this);
+        cardsName.add(logInPanel.getName());
+        add(logInPanel, logInPanel.getName());
+
+        productLineManagerPanel = new ProductLineManagerPanel(/*this*/);
+        cardsName.add(productLineManagerPanel.getName());
+        add(productLineManagerPanel, productLineManagerPanel.getName());
+
+        setVisible(true);
+        setExtendedState(MAXIMIZED_BOTH);
+
+        // start program operations: load files, start tasks, ...
+        SwingWorker<Object, Object> loadFilesWorker = new SwingWorker<>() {
+            @Override
+            protected Object doInBackground() throws IOException {
+                mainController.loadFiles();
+                return null;
+            }
+            @Override
+            protected void done() {
+                try {
+                    get();
+                } catch(ExecutionException e) {
+                    Throwable throwable = e.getCause();
+                            /*
+
+                            show throwable error message
+
+                             */
+                } catch(InterruptedException e) {
+                            /*
+
+                            show error message
+
+                             */
+                }
+            }
+        };
+        loadFilesWorker.execute();
     }
+
+    public List<String> getCardsName() {
+        return cardsName;
+    }
+    public String getLogInCardName() {
+        return logInPanel.getName();
+    }
+    public String getManagerCardName() {
+        return productLineManagerPanel.getName();
+    }
+
 }

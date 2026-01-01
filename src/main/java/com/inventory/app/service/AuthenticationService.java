@@ -4,13 +4,18 @@ import com.inventory.app.model.User;
 
 import com.inventory.app.repository.UserRepository;
 
+import com.inventory.app.controller.LoginRequest;
+
+import com.inventory.app.util.Global;
+
 public class AuthenticationService {
-    public static LoginResult login(User user1) {
-        User user = UserRepository.findByUsername(user1.getUserName());
-        if (user != null && user.getPassword().equals(user1.getPassword()) && user.getRole() == user1.getRole()) {
-            return new LoginResult(true, "", user);
+    public static boolean login(LoginRequest request) {
+        User user = UserRepository.findByUsername(request.getUsername());
+        if (user != null && user.getPassword().equals(request.getPassword()) && user.getRole() == request.getRole()) {
+            Global.currentUser = user;
+            return true;
         }
-        return new LoginResult(false, "", null);
+        return false;
     }
 }
 

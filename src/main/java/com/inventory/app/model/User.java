@@ -3,7 +3,7 @@ import com.inventory.app.model.enums.Role;
 public class User extends Person {
     private String userName;
     private String password;
-    Role role ;
+    private Role role ;
     public User(String firstName , String lastName , String email,String phone,String userName, String password , Role role) {
         super(firstName,lastName,email,phone);
         this.userName = userName;
