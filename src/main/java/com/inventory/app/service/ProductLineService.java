@@ -80,4 +80,9 @@ public class ProductLineService {
         productLineRepository.add(new ProductLine(name, productTypes));
     }
 
+    public void addNewProductLine(String name, int id) {
+        ProductLine pl = productLineRepository.findById(id);
+        addNewProductLine(name, pl.getProductTypes());
+    }
+
 }

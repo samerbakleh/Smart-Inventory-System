@@ -22,10 +22,12 @@ public class ProductLineController {
         return productLineService.isProductLineNameValid(name);
     }
 
-    public void addProductLinePressed(String productLineName, List<ProductType> productTypes) {
+    public void addProductLine(String productLineName, List<ProductType> productTypes) {
         productLineService.addNewProductLine(productLineName, productTypes);
     }
 
-
+    public void addProductLine(String productLineName, int productLineId) {
+        productLineService.addNewProductLine(productLineName, productLineId);
+    }
 
 }

@@ -12,16 +12,19 @@ import java.awt.geom.Ellipse2D;
 
 public class LogInPanel extends JPanel {
 
-    private final MainFrame mainFrame;
+    private final MainFrame container;
     private AuthenticationController authenticationController;
 
-    public LogInPanel(MainFrame mainFrame) {
+    public LogInPanel(MainFrame container) {
         super(new GridLayout(1, 2));
-        setName("Log in panel");
-        this.mainFrame = mainFrame;
+        this.container = container;
         this.authenticationController = new AuthenticationController();
+        setName("Log in panel");
         setBackground(new Color(245, 245, 245));
+        addComponents();
+    }
 
+    public void addComponents() {
         GradientPanel leftPanel = new GradientPanel(AppConstants.PRIMARY_COLOR, AppConstants.SECONDARY_COLOR) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -111,9 +114,9 @@ public class LogInPanel extends JPanel {
 
                      */
                     errorLabel.setForeground(Color.white);
-                    CardLayout mainLayout = (CardLayout) mainFrame.getLayout();
+                    CardLayout containerLayout = (CardLayout) container.getLayout();
                     if(role.toUpperCase().equals(Role.MANAGER.toString())) {
-                        mainLayout.show(mainFrame, mainFrame.getManagerCardName());
+                        containerLayout.show(container, container.getManagerCardName());
                     } else {
                         /*
 

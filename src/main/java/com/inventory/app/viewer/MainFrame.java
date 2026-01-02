@@ -70,7 +70,7 @@ public class MainFrame extends JFrame {
         cardsName.add(logInPanel.getName());
         add(logInPanel, logInPanel.getName());
 
-        productLineManagerPanel = new ProductLineManagerPanel(/*this*/);
+        productLineManagerPanel = new ProductLineManagerPanel(this);
         cardsName.add(productLineManagerPanel.getName());
         add(productLineManagerPanel, productLineManagerPanel.getName());
 
