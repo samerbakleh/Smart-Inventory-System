@@ -1,7 +1,6 @@
 package com.inventory.app.viewer;
 
 import com.inventory.app.controller.AuthenticationController;
-import com.inventory.app.service.LoginResult;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -316,10 +315,11 @@ public class LogInPanel extends JPanel {
         String username = userField.getText();
         String password = new String(passField.getPassword());
 
-        LoginResult result= AuthenticationController.loginController(username,password,role);
+        boolean result= AuthenticationController.loginController(username,password,role);
 
-        errorLabel.setVisible(!result.isSuccess());
-        if (result.isSuccess()) {
+        errorLabel.setVisible(!result);
+
+        if (result) {
             JOptionPane.showMessageDialog(this, "Welcome " + role + "! Next Window Will Be here...");
         }
     }
