@@ -114,9 +114,8 @@ public class LogInPanel extends JPanel {
 
                      */
                     errorLabel.setForeground(Color.white);
-                    CardLayout containerLayout = (CardLayout) container.getLayout();
                     if(role.toUpperCase().equals(Role.MANAGER.toString())) {
-                        containerLayout.show(container, container.getManagerCardName());
+                        container.switchCard(container.getManagerCardName());
                     } else {
                         /*
 

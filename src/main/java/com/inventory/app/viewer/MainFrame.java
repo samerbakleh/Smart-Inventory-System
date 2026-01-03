@@ -6,8 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class MainFrame extends JFrame {
@@ -15,7 +13,6 @@ public class MainFrame extends JFrame {
     private MainController mainController;
     private LogInPanel logInPanel;
     private ProductLineManagerPanel productLineManagerPanel;
-    private List<String> cardsName = new ArrayList<>();
 
     public MainFrame() {
         super("Production & Inventory Management System");
@@ -65,15 +62,7 @@ public class MainFrame extends JFrame {
             }
         });
         setLayout(new CardLayout());
-
-        logInPanel = new LogInPanel(this);
-        cardsName.add(logInPanel.getName());
-        add(logInPanel, logInPanel.getName());
-
-        productLineManagerPanel = new ProductLineManagerPanel(this);
-        cardsName.add(productLineManagerPanel.getName());
-        add(productLineManagerPanel, productLineManagerPanel.getName());
-
+        addComponents();
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
 
@@ -107,14 +96,24 @@ public class MainFrame extends JFrame {
         loadFilesWorker.execute();
     }
 
-    public List<String> getCardsName() {
-        return cardsName;
-    }
     public String getLogInCardName() {
         return logInPanel.getName();
     }
     public String getManagerCardName() {
         return productLineManagerPanel.getName();
+    }
+
+    public void addComponents() {
+        logInPanel = new LogInPanel(this);
+        add(logInPanel, logInPanel.getName());
+
+        productLineManagerPanel = new ProductLineManagerPanel(this);
+        add(productLineManagerPanel, productLineManagerPanel.getName());
+    }
+
+    public void switchCard(String cardName) {
+        CardLayout layout = (CardLayout) getContentPane().getLayout();
+        layout.show(getContentPane(), cardName);
     }
 
 }
