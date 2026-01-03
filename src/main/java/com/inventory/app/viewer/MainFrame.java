@@ -103,7 +103,7 @@ public class MainFrame extends JFrame {
         return productLineManagerPanel.getName();
     }
 
-    public void addComponents() {
+    private void addComponents() {
         logInPanel = new LogInPanel(this);
         add(logInPanel, logInPanel.getName());
 

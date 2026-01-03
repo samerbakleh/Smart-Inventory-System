@@ -24,7 +24,7 @@ public class LogInPanel extends JPanel {
         addComponents();
     }
 
-    public void addComponents() {
+    private void addComponents() {
         GradientPanel leftPanel = new GradientPanel(AppConstants.PRIMARY_COLOR, AppConstants.SECONDARY_COLOR) {
             @Override
             protected void paintComponent(Graphics g) {
