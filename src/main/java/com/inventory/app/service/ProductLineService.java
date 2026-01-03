@@ -45,8 +45,9 @@ public class ProductLineService {
             List<ProductType> productTypes = new ArrayList<>();
             for(int i = 1; i < productTypeNames.size(); i++) {
                 ProductType pt = productTypeRepository.findByFullName(name, productTypeNames.get(i));
-                if(pt == null)
+                if(pt == null) {
                     throw new IOException("Some files content is corrupted");
+                }
                 productTypes.add(pt);
                 pt.addProductLine(pl);
             }
@@ -55,8 +56,9 @@ public class ProductLineService {
             List<Task> tasks = new ArrayList<>();
             for(String idString : taskIds) {
                 Task t = taskRepository.findById(Integer.parseInt(idString));
-                if(t == null)
+                if(t == null) {
                     throw new IOException("Some files content is corrupted");
+                }
                 tasks.add(t);
             }
             pl.setTasks(tasks);

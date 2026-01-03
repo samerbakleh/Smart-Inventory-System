@@ -20,8 +20,9 @@ public class ProductLine {
 
 
     public ProductLine(int id, String name, ProductLineStatus status) {
-        if(id < 0)
+        if(id < 0) {
             throw new IllegalArgumentException("Production Line ID can't be negative");
+        }
         this.id = id;
         idCounter = id + 1;
         this.name = name;
@@ -60,36 +61,42 @@ public class ProductLine {
         this.status = status;
     }
     public void setTasks(List<Task> tasks) {                   //tasks have to be in order
-        for(Queue<Task> q : this.tasks.values())
+        for(Queue<Task> q : this.tasks.values()) {
             q.clear();
-        for(Task t : tasks)
+        }
+        for(Task t : tasks) {
             addTask(t);
+        }
     }
     public void setProductTypes(List<ProductType> productTypes) {
         tasks = new HashMap<>();
         if(!productTypes.isEmpty()) {
             String name = productTypes.getFirst().getName();
-            for(ProductType pt : productTypes)
-                if (pt.getName().equals(name))
+            for(ProductType pt : productTypes) {
+                if (pt.getName().equals(name)) {
                     tasks.put(pt, new ArrayDeque<>());
-                else
+                } else {
                     throw new IllegalArgumentException("Can't add products of different names to production line");
+                }
+            }
         }
     }
 
     public void addTask(Task task) {
         Queue<Task> taskQueue = tasks.get(task.getProductType());
-        if(taskQueue == null)
+        if(taskQueue == null) {
             throw new IllegalArgumentException(this + " received incorrect task of type "
                                              + task.getProductType().getName());
+        }
         taskQueue.add(task);
     }
 
     public boolean removeTask(ProductType productType) {        //returns true if task exists, false otherwise
         Queue<Task> taskQueue = tasks.get(productType);
-        if(taskQueue == null)
+        if(taskQueue == null) {
             throw new IllegalArgumentException("Tried to remove wrong task type " + productType.getName()
                                              + " from " + this);
+        }
         return taskQueue.poll() != null;
     }
 

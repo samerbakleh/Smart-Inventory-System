@@ -42,18 +42,21 @@ public class ProductType {
         this.subtype = subtype;
     }
     public void setRequiredItems(Map<Item, Double> requiredItems) {
-        for(Map.Entry<Item, Double> entry : requiredItems.entrySet())
-            if(entry.getValue() <= 0)
+        for(Map.Entry<Item, Double> entry : requiredItems.entrySet()) {
+            if (entry.getValue() <= 0) {
                 throw new IllegalArgumentException(entry.getKey().getName()
-                                                    + " required amount can't be negative or zero in " + this);
+                                                 + " required amount can't be negative or zero in " + this);
+            }
+        }
         this.requiredItems = requiredItems;
     }
     public void setProductLine(List<ProductLine> productLines) {
         this.productLines = productLines;
     }
     public void addProductLine(ProductLine pl) {
-        if(productLines == null)
+        if(productLines == null) {
             productLines = new ArrayList<>();
+        }
         productLines.add(pl);
     }
 

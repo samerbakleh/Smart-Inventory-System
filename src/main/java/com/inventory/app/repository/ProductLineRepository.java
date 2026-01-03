@@ -34,12 +34,15 @@ public class ProductLineRepository {
             for (ProductLine pl : productLines) {
                 bfWriter.write(pl.getId() + ";" + pl.getName() + ";" + pl.getStatus() + ";"
                              + pl.getProductTypes().getFirst().getName());
-                for (ProductType pt : pl.getTasks().keySet())
+                for (ProductType pt : pl.getTasks().keySet()) {
                     bfWriter.write("," + pt.getSubtype());
+                }
                 bfWriter.write(';');
-                for(List<Task> value : pl.getTasks().values())
-                    for(Task t : value)
+                for(List<Task> value : pl.getTasks().values()) {
+                    for (Task t : value) {
                         bfWriter.write(t.getId() + ",");
+                    }
+                }
                 bfWriter.newLine();
             }
         }
@@ -55,32 +58,40 @@ public class ProductLineRepository {
         final String ERROR_MESSAGE = AppConstants.PRODUCT_LINES_FILE + " content is corrupted";
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_LINES_FILE))) {
             for (String line : bfReader.readAllLines()) {
-                if(line.isEmpty())
+                if(line.isEmpty()) {
                     continue;
+                }
                 ProductLine pl;
                 String[] mainParts = line.split(";");
-                if (mainParts.length < 5 || !mainParts[1].matches("[a-zA-Z0-9-]+"))
+                if (mainParts.length < 4 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
                     throw new IOException(ERROR_MESSAGE);
+                }
                 try {
                     int productLineId = Integer.parseInt(mainParts[0]);
                     ProductLineStatus status = ProductLineStatus.valueOf(mainParts[2]);
-                    if (productLineId <= previousId)
+                    if (productLineId <= previousId) {
                         throw new IOException(ERROR_MESSAGE);
+                    }
                     previousId = productLineId;
                     pl = new ProductLine(productLineId, mainParts[1], status);
                 } catch (IllegalArgumentException e) {
                     throw new IOException(ERROR_MESSAGE, e);
                 }
                 List<String> productTypeNames = List.of(mainParts[3].split(","));
-                if(productTypeNames.size() < 2 || !productTypeNames.getFirst().matches("[a-zA-Z0-9- ]+"))
+                if(productTypeNames.size() < 2 || !productTypeNames.getFirst().matches("[a-zA-Z0-9- ]+")) {
                     throw new IOException(ERROR_MESSAGE);
-                for(String name : productTypeNames)
-                    if(!name.matches("[a-zA-Z0-9-. ]+"))
+                }
+                for(String name : productTypeNames) {
+                    if (!name.matches("[a-zA-Z0-9-. ]+")) {
                         throw new IOException(ERROR_MESSAGE);
+                    }
+                }
                 List<String> taskIds = List.of(mainParts[4].split(","));
-                for(String idString : taskIds)
-                    if(!idString.matches("[0-9]+"))
+                for(String idString : taskIds) {
+                    if (!idString.matches("[0-9]+")) {
                         throw new IOException(ERROR_MESSAGE);
+                    }
+                }
                 List<String>[] result = new List[2];
                 result[0] = productTypeNames;
                 result[1] = taskIds;
@@ -91,9 +102,11 @@ public class ProductLineRepository {
     }
 
     public ProductLine findById(int id) {
-        for(ProductLine pl : productLines)
-            if(pl.getId() == id)
+        for(ProductLine pl : productLines) {
+            if (pl.getId() == id) {
                 return pl;
+            }
+        }
         return null;
     }
 

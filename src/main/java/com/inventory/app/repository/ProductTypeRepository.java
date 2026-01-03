@@ -32,8 +32,9 @@ public class ProductTypeRepository {
         BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE));
         for(ProductType pt : productTypes) {
             bfWriter.write(pt.getName() + ";" + pt.getSubtype() + ";");
-            for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet())
+            for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet()) {
                 bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
+            }
             bfWriter.newLine();
         }
     }
@@ -45,11 +46,14 @@ public class ProductTypeRepository {
         Map<ProductType, Map<Integer, Double>> unlinkedProductTypes = new HashMap<>();
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_TYPES_FILE))) {
             for(String line : bfReader.readAllLines()) {
-                if(line.isEmpty())
+                if(line.isEmpty()) {
                     continue;
+                }
                 String[] mainParts = line.split(";");
-                if(mainParts.length < 3 || !mainParts[0].matches("[a-zA-Z0-9-]+") || !mainParts[1].matches("[a-zA-Z0-9.-]+"))
+                if(mainParts.length < 3 || !mainParts[0].matches("[a-zA-Z0-9-]+")
+                                        || !mainParts[1].matches("[a-zA-Z0-9.-]+")) {
                     throw new IOException(AppConstants.PRODUCT_TYPES_FILE + " content is corrupted");
+                }
                 ProductType pt = new ProductType(mainParts[0], mainParts[1]);
                 productTypes.add(pt);
                 Map<Integer, Double> requiredItemsById = new HashMap<>();
@@ -71,17 +75,21 @@ public class ProductTypeRepository {
 
     public List<ProductType> findByName(String name) {
         List<ProductType> result = new ArrayList<>();
-        for(ProductType pt : productTypes)
-            if(pt.getName().equals(name))
+        for(ProductType pt : productTypes) {
+            if (pt.getName().equals(name)) {
                 result.add(pt);
+            }
+        }
         return result;
     }
 
     public ProductType findByFullName(String name, String subType) {
         String fullName = name + " " + subType;
-        for(ProductType pt : productTypes)
-            if(pt.toString().equals(fullName))
+        for(ProductType pt : productTypes) {
+            if (pt.toString().equals(fullName)) {
                 return pt;
+            }
+        }
         return null;
     }
 
