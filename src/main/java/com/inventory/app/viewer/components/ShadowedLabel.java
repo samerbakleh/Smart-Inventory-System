@@ -7,6 +7,8 @@ public class ShadowedLabel extends JComponent {
 
     protected String text;
     protected int offset;
+    protected int verticalAlignment = JLabel.CENTER;
+    protected int horizontalAlignment = JLabel.CENTER;
 
     public ShadowedLabel(String text) {
         this.text = text;
@@ -27,6 +29,14 @@ public class ShadowedLabel extends JComponent {
         revalidate();
         repaint();
     }
+    public void setVerticalAlignment(int verticalAlignment) {
+        this.verticalAlignment = verticalAlignment;
+        repaint();
+    }
+    public void setHorizontalAlignment(int horizontalAlignment) {
+        this.horizontalAlignment = horizontalAlignment;
+        repaint();
+    }
 
     @Override
     public Dimension getPreferredSize() {
@@ -41,14 +51,24 @@ public class ShadowedLabel extends JComponent {
         g2d.setFont(getFont());
 
         FontMetrics fm = g2d.getFontMetrics();
+        int labelWidth = getWidth();
+        int labelHeight = getHeight();
         int textWidth = fm.stringWidth(text);
         int textHeight = fm.getHeight();
-        float x = (getWidth() - textWidth)/2f;
-        float y = (getHeight() - textHeight)/2f + fm.getAscent();
+        float x = switch (horizontalAlignment) {
+            case JLabel.CENTER -> (labelWidth - textWidth) / 2f;
+            case JLabel.RIGHT -> labelWidth - textWidth;
+            default -> 0;
+        };
+        float y = switch (verticalAlignment) {
+            case JLabel.CENTER -> (labelHeight - textHeight) / 2f + fm.getAscent();
+            case JLabel.TOP -> fm.getAscent();
+            default -> labelHeight - fm.getDescent();
+        };
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         if(isOpaque()) {
             g2d.setColor(getBackground());
-            g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+            g2d.fillRect(0, 0, labelWidth - 1, labelHeight - 1);
         }
         g2d.setColor(Color.black);
         g2d.drawString(text, x + offset, y + offset);
