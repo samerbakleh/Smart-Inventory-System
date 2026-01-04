@@ -12,7 +12,7 @@ public class MainFrame extends JFrame {
 
     private JPanel cardPanel;
     private LogInPanel logInPanel;
-    private ProductLineManagerPanel productLineManagerPanel;
+    private ManagerPanel managerPanel;
     private MainController mainController;
 
     public MainFrame() {
@@ -96,26 +96,27 @@ public class MainFrame extends JFrame {
         loadFilesWorker.execute();
     }
 
-    public String getLogInCardName() {
-        return logInPanel.getName();
-    }
-    public String getManagerCardName() {
-        return productLineManagerPanel.getName();
-    }
-
     private void addComponents() {
         cardPanel = new JPanel(new CardLayout());
 
         logInPanel = new LogInPanel(this);
         cardPanel.add(logInPanel, logInPanel.getName());
 
-        productLineManagerPanel = new ProductLineManagerPanel(this);
-        cardPanel.add(productLineManagerPanel, productLineManagerPanel.getName());
+        managerPanel = new ManagerPanel(this);
+        cardPanel.add(managerPanel, managerPanel.getName());
+
+        add(cardPanel);
     }
 
     public void switchCard(String cardName) {
         CardLayout layout = (CardLayout) cardPanel.getLayout();
         layout.show(cardPanel, cardName);
+    }
+    public void switchToLogInPanel() {
+        switchCard(logInPanel.getName());
+    }
+    public void switchToManagerPanel() {
+        switchCard(managerPanel.getName());
     }
 
 }

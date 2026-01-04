@@ -11,18 +11,18 @@ import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.ListSelectionModel;
 import java.awt.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.util.List;
 
-public class ProductLineManagerPanel extends JPanel{
+public class ManagerPanel extends JPanel{
 
     private final MainFrame container;
     private AddProductLineDialog addProductLineDialog;
     private ProductLineController productLineController;
 
-    public ProductLineManagerPanel(MainFrame container) {
+    public ManagerPanel(MainFrame container) {
         super(new GridBagLayout());
         this.container = container;
         this.addProductLineDialog = new AddProductLineDialog();
