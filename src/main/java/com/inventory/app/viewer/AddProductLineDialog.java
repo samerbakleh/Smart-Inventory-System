@@ -1,8 +1,10 @@
 package com.inventory.app.viewer;
 import com.inventory.app.util.AppConstants;
+import com.inventory.app.viewer.components.RemovableLabelPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 public class AddProductLineDialog extends JDialog {
 
@@ -15,8 +17,8 @@ public class AddProductLineDialog extends JDialog {
     }
 
     public void resetDisplay() {
-        setLocationRelativeTo(null);
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -35,8 +37,20 @@ public class AddProductLineDialog extends JDialog {
         subtypeLabel.setHorizontalAlignment(JLabel.LEFT);
         JTextField subtypeField = new JTextField(10);
         JButton submitButton = new JButton("Submit");
+        RemovableLabelPanel subtypePanel = new RemovableLabelPanel();
         submitButton.setBackground(AppConstants.SECONDARY_COLOR);
         submitButton.setForeground(Color.white);
+        submitButton.addActionListener((ActionEvent e) -> {
+            String input = subtypeField.getText();
+            if(!input.isBlank()) {
+                subtypePanel.addLabel(input);
+                subtypeField.setText("");
+                this.pack();
+            }
+        });
+        subtypePanel.setBackground(Color.white);
+        subtypePanel.setLabelColor(Color.white);
+        subtypePanel.setFont(AppConstants.DEFAULT_FONT.deriveFont(13f));
 
         JButton addButton = new JButton("Add");
         addButton.setBackground(AppConstants.SECONDARY_COLOR);
@@ -52,13 +66,17 @@ public class AddProductLineDialog extends JDialog {
         gbc.insets = new Insets(5, 5, 5, 0);
         add(subtypeLabel, gbc);
         gbc.gridx = 1;
-        gbc.insets = new Insets(0, 5, 0, 0);
+        gbc.insets = new Insets(0, 5, 5, 0);
         add(subtypeField, gbc);
         gbc.gridx = 2;
-        gbc.insets = new Insets(0, 5, 0, 5);
+        gbc.insets = new Insets(0, 5, 5, 5);
         add(submitButton, gbc);
         gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.VERTICAL;
         gbc.gridx = 0;
+        gbc.insets = new Insets(0, 0, 5, 0);
+        add(subtypePanel, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(0, 15, 5, 15);
         add(addButton, gbc);
     }
