@@ -10,9 +10,10 @@ import java.util.concurrent.ExecutionException;
 
 public class MainFrame extends JFrame {
 
-    private MainController mainController;
+    private JPanel cardPanel;
     private LogInPanel logInPanel;
     private ProductLineManagerPanel productLineManagerPanel;
+    private MainController mainController;
 
     public MainFrame() {
         super("Production & Inventory Management System");
@@ -61,7 +62,6 @@ public class MainFrame extends JFrame {
                 saveFilesWorker.execute();
             }
         });
-        setLayout(new CardLayout());
         addComponents();
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
@@ -104,16 +104,18 @@ public class MainFrame extends JFrame {
     }
 
     private void addComponents() {
+        cardPanel = new JPanel(new CardLayout());
+
         logInPanel = new LogInPanel(this);
-        add(logInPanel, logInPanel.getName());
+        cardPanel.add(logInPanel, logInPanel.getName());
 
         productLineManagerPanel = new ProductLineManagerPanel(this);
-        add(productLineManagerPanel, productLineManagerPanel.getName());
+        cardPanel.add(productLineManagerPanel, productLineManagerPanel.getName());
     }
 
     public void switchCard(String cardName) {
-        CardLayout layout = (CardLayout) getContentPane().getLayout();
-        layout.show(getContentPane(), cardName);
+        CardLayout layout = (CardLayout) cardPanel.getLayout();
+        layout.show(cardPanel, cardName);
     }
 
 }
