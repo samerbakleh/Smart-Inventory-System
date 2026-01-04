@@ -48,8 +48,6 @@ public class ShadowedLabel extends JComponent {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
-        g2d.setFont(getFont());
-
         FontMetrics fm = g2d.getFontMetrics();
         int labelWidth = getWidth();
         int labelHeight = getHeight();
