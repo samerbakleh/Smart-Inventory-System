@@ -17,6 +17,7 @@ public class ProductLine {
     private String name;
     private ProductLineStatus status;
     private Map<ProductType, Queue<Task>> tasks;
+    private Map<ProductType, Boolean> sublineWorkingStatus;
 
 
     public ProductLine(int id, String name, ProductLineStatus status) {
@@ -53,6 +54,9 @@ public class ProductLine {
     public List<ProductType> getProductTypes() {
         return new ArrayList<>(tasks.keySet());
     }
+    public Map<ProductType, Boolean> getSubLineWorkingStatus() {
+        return sublineWorkingStatus;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -70,16 +74,24 @@ public class ProductLine {
     }
     public void setProductTypes(List<ProductType> productTypes) {
         tasks = new HashMap<>();
+        sublineWorkingStatus = new HashMap<>();
         if(!productTypes.isEmpty()) {
             String name = productTypes.getFirst().getName();
             for(ProductType pt : productTypes) {
                 if (pt.getName().equals(name)) {
                     tasks.put(pt, new ArrayDeque<>());
+                    sublineWorkingStatus.put(pt, false);
                 } else {
-                    throw new IllegalArgumentException("Can't add products of different names to production line");
+                    throw new IllegalArgumentException("Can't add products of different names to one production line");
                 }
             }
         }
+    }
+    public void setSublineWorkingStatus(ProductType pt, boolean isWorking) {
+        if(sublineWorkingStatus.get(pt) == null) {
+            throw new IllegalArgumentException("Can't change the status of non-existent subline " + pt + " in " + this);
+        }
+        sublineWorkingStatus.put(pt, isWorking);
     }
 
     public void addTask(Task task) {
@@ -91,13 +103,14 @@ public class ProductLine {
         taskQueue.add(task);
     }
 
-    public boolean removeTask(ProductType productType) {        //returns true if task exists, false otherwise
-        Queue<Task> taskQueue = tasks.get(productType);
+                                                //returns true if task exists, false otherwise
+    public boolean removeTask(Task task) {
+        Queue<Task> taskQueue = tasks.get(task.getProductType());
         if(taskQueue == null) {
-            throw new IllegalArgumentException("Tried to remove wrong task type " + productType.getName()
+            throw new IllegalArgumentException("Tried to remove wrong task of type " + task.getProductType()
                                              + " from " + this);
         }
-        return taskQueue.poll() != null;
+        return taskQueue.remove(task);
     }
 
     @Override
