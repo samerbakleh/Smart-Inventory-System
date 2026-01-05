@@ -59,8 +59,8 @@ public class RemovableLabelPanel extends JPanel {
             var label = this;
             addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(MouseEvent e) {
-                    if(clickableArea.contains(e.getX(), e.getY())) {
+                public void mouseClicked(MouseEvent event) {
+                    if(clickableArea.contains(event.getX(), event.getY())) {
                         containerPanel.removeLabel(label);
                     }
                 }

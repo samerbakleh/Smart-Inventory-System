@@ -1,4 +1,5 @@
 package com.inventory.app.viewer;
+import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.RemovableLabelPanel;
 
@@ -8,7 +9,10 @@ import java.awt.event.ActionEvent;
 
 public class AddProductLineDialog extends JDialog {
 
-    public AddProductLineDialog() {
+    private ProductLineController productLineController;
+
+    public AddProductLineDialog(ProductLineController productLineController) {
+        this.productLineController = productLineController;
         setLayout(new GridBagLayout());
         getContentPane().setBackground(Color.white);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -29,9 +33,13 @@ public class AddProductLineDialog extends JDialog {
         gbc.gridwidth = 3;
 
         JTextField nameField = new JTextField(30);
+        JLabel invalidNameLabel = new JLabel("Production Line name must only contain letters, numbers, and - symbol");
         JTextField productNameField = new JTextField(30);
+        JLabel invalidProductNameLabel = new JLabel("Product name must only contain letters, numbers, and - symbol");
         nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
         productNameField.setBorder(BorderFactory.createTitledBorder("Product Name"));
+        invalidNameLabel.setForeground(Color.white);
+        invalidProductNameLabel.setForeground(Color.white);
 
         JLabel subtypeLabel = new JLabel("Add subtypes to the product");
         subtypeLabel.setHorizontalAlignment(JLabel.LEFT);
@@ -40,7 +48,7 @@ public class AddProductLineDialog extends JDialog {
         RemovableLabelPanel subtypePanel = new RemovableLabelPanel();
         submitButton.setBackground(AppConstants.SECONDARY_COLOR);
         submitButton.setForeground(Color.white);
-        submitButton.addActionListener((ActionEvent e) -> {
+        submitButton.addActionListener((ActionEvent event) -> {
             String input = subtypeField.getText();
             if(!input.isBlank()) {
                 subtypePanel.addLabel(input);
@@ -55,6 +63,26 @@ public class AddProductLineDialog extends JDialog {
         JButton addButton = new JButton("Add");
         addButton.setBackground(AppConstants.SECONDARY_COLOR);
         addButton.setForeground(Color.white);
+        addButton.addActionListener((ActionEvent event) -> {
+            String productLineName = nameField.getText();
+            if(productLineController.validateProductLineName(productLineName)) {
+                invalidNameLabel.setForeground(Color.white);
+                nameField.setText("");
+                /*
+
+                add product line
+
+                 */
+                this.dispose();
+            } else {
+                invalidNameLabel.setForeground(Color.red);
+            }
+            /*
+
+            check for product types to add with product line
+
+             */
+        });
 
 
         gbc.anchor = GridBagConstraints.WEST;
