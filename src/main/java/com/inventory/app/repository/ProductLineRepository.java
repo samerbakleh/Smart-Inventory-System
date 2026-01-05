@@ -11,10 +11,10 @@ import java.io.FileReader;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class ProductLineRepository {
 
@@ -28,7 +28,7 @@ public class ProductLineRepository {
         productLines.add(pl);
     }
 
-                                //id;name;status;productTypeName,productsubType1,productsubType2...;taskID1,taskID2,...
+                                //id;name;status;productTypeName,productSubtype1,productSubtype2...;taskID1,taskID2,...
     public void save() throws IOException {
         try (BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_LINES_FILE))) {
             for (ProductLine pl : productLines) {

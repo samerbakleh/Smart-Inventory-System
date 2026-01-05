@@ -17,7 +17,8 @@ public class ProductLine {
     private String name;
     private ProductLineStatus status;
     private Map<ProductType, Queue<Task>> tasks;
-    private Map<ProductType, Boolean> sublineWorkingStatus;
+    private Map<ProductType, Boolean> sublineWorkingStatus;     // true for each product type that the subline producing
+                                                                // it is working, false otherwise
 
 
     public ProductLine(int id, String name, ProductLineStatus status) {
@@ -46,16 +47,22 @@ public class ProductLine {
         return status;
     }
     public Map<ProductType, List<Task>> getTasks() {
-        Map<ProductType, List<Task>> taskList = new HashMap<>();
+        Map<ProductType, List<Task>> taskListMap = new HashMap<>();
         for(Map.Entry<ProductType, Queue<Task>> e : tasks.entrySet())
-            taskList.put(e.getKey(), new ArrayList<>(e.getValue()));
-        return taskList;
+            taskListMap.put(e.getKey(), new ArrayList<>(e.getValue()));
+        return taskListMap;
+    }
+    public Queue<Task> getTasks(ProductType pt) {
+        return tasks.get(pt);
     }
     public List<ProductType> getProductTypes() {
         return new ArrayList<>(tasks.keySet());
     }
-    public Map<ProductType, Boolean> getSubLineWorkingStatus() {
+    public Map<ProductType, Boolean> getSublineWorkingStatus() {
         return sublineWorkingStatus;
+    }
+    public boolean getSublineWorkingStatus(ProductType pt) {
+        return sublineWorkingStatus.get(pt);
     }
 
     public void setName(String name) {
@@ -92,6 +99,10 @@ public class ProductLine {
             throw new IllegalArgumentException("Can't change the status of non-existent subline " + pt + " in " + this);
         }
         sublineWorkingStatus.put(pt, isWorking);
+    }
+
+    public boolean isActive() {
+        return status.equals(ProductLineStatus.ACTIVE);
     }
 
     public void addTask(Task task) {
