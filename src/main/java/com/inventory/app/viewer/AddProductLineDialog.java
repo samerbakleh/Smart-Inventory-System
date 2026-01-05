@@ -33,13 +33,15 @@ public class AddProductLineDialog extends JDialog {
         gbc.gridwidth = 3;
 
         JTextField nameField = new JTextField(30);
-        JLabel invalidNameLabel = new JLabel("Production Line name must only contain letters, numbers, and - symbol");
+        JLabel invalidNameLabel = new JLabel("name must only contain letters, numbers, and -");
         JTextField productNameField = new JTextField(30);
-        JLabel invalidProductNameLabel = new JLabel("Product name must only contain letters, numbers, and - symbol");
+        JLabel invalidProductNameLabel = new JLabel("name must only contain letters, numbers, and -");
         nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
         productNameField.setBorder(BorderFactory.createTitledBorder("Product Name"));
         invalidNameLabel.setForeground(Color.white);
         invalidProductNameLabel.setForeground(Color.white);
+        invalidNameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(11f));
+        invalidProductNameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(11f));
 
         JLabel subtypeLabel = new JLabel("Add subtypes to the product");
         subtypeLabel.setHorizontalAlignment(JLabel.LEFT);
@@ -87,7 +89,12 @@ public class AddProductLineDialog extends JDialog {
 
         gbc.anchor = GridBagConstraints.WEST;
         add(nameField, gbc);
+        gbc.insets = new Insets(0, 5, 0, 0);
+        add(invalidNameLabel, gbc);
+        gbc.insets = new Insets(0, 0, 0, 0);
         add(productNameField, gbc);
+        gbc.insets = new Insets(0, 5, 0, 0);
+        add(invalidProductNameLabel, gbc);
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.BOTH;

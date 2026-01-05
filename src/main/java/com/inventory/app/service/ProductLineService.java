@@ -75,7 +75,7 @@ public class ProductLineService {
     }
 
     public boolean isProductLineNameValid(String name) {
-        return name.matches("[a-zA-Z0-9- ]");
+        return name.matches("[a-zA-Z0-9- ]+");
     }
 
     public void addNewProductLine(String name, List<ProductType> productTypes) {

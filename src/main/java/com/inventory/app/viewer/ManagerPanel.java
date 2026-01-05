@@ -25,8 +25,8 @@ public class ManagerPanel extends JPanel{
     public ManagerPanel(MainFrame container) {
         super(new GridBagLayout());
         this.container = container;
-        this.addProductLineDialog = new AddProductLineDialog(productLineController);
         this.productLineController = new ProductLineController();
+        this.addProductLineDialog = new AddProductLineDialog(this.productLineController);
         setName("Manager panel");
         setBackground(Color.white);
         addComponents();
@@ -104,7 +104,7 @@ public class ManagerPanel extends JPanel{
             for(List<Task> tasks : pl.getTasks().values()) {
                 numOfTasks += tasks.size();
             }
-            result[i] = new Object[]{pl.getId(), pl.getName(), status, numOfTasks, null};
+            result[i] = new Object[]{pl.getID(), pl.getName(), status, numOfTasks, null};
         }
         return result;
     }
