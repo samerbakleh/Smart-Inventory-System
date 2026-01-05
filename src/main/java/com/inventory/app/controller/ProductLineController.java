@@ -26,8 +26,8 @@ public class ProductLineController {
         productLineService.addNewProductLine(productLineName, productTypes);
     }
 
-    public void addProductLine(String productLineName, int productLineId) {
-        productLineService.addNewProductLine(productLineName, productLineId);
+    public void addProductLine(String productLineName, int productLineID) {
+        productLineService.addNewProductLine(productLineName, productLineID);
     }
 
 }

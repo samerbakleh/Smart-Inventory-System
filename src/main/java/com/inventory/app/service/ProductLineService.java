@@ -52,10 +52,10 @@ public class ProductLineService {
                 pt.addProductLine(pl);
             }
             pl.setProductTypes(productTypes);
-            List<String> taskIds = entry.getValue()[1];
+            List<String> taskIDs = entry.getValue()[1];
             List<Task> tasks = new ArrayList<>();
-            for(String idString : taskIds) {
-                Task t = taskRepository.findById(Integer.parseInt(idString));
+            for(String idString : taskIDs) {
+                Task t = taskRepository.findByID(Integer.parseInt(idString));
                 if(t == null) {
                     throw new IOException("Some files content is corrupted");
                 }
@@ -83,7 +83,7 @@ public class ProductLineService {
     }
 
     public void addNewProductLine(String name, int id) {
-        ProductLine pl = productLineRepository.findById(id);
+        ProductLine pl = productLineRepository.findByID(id);
         addNewProductLine(name, pl.getProductTypes());
     }
 

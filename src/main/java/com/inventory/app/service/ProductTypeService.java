@@ -38,7 +38,7 @@ public class ProductTypeService {
         for(Map.Entry<ProductType, Map<Integer, Double>> entry : unlinkedProductTypes.entrySet()) {
             Map<Item, Double> requiredItems = new HashMap<>();
             for(Map.Entry<Integer, Double> reqItem : entry.getValue().entrySet()) {
-                Item item = itemRepository.findById(reqItem.getKey());
+                Item item = itemRepository.findByID(reqItem.getKey());
                 if(item == null) {
                     throw new IOException("Some of the files content is corrupted");
                 }

@@ -35,7 +35,7 @@ public class ProductLine {
         setProductTypes(productTypes);
     }
 
-    public int getId() {
+    public int getID() {
         return id;
     }
     public String getName() {

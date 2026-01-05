@@ -27,20 +27,20 @@ public class ProductTypeRepository {
         productTypes.add(pt);
     }
 
-                                             // name;subType;itemId1,quantity1,itemId2,quantity2,...
+                                             // name;subType;itemID1,quantity1,itemID2,quantity2,...
     public void save() throws IOException {
         BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE));
         for(ProductType pt : productTypes) {
             bfWriter.write(pt.getName() + ";" + pt.getSubtype() + ";");
             for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet()) {
-                bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
+                bfWriter.write(entry.getKey().getID() + "," + entry.getValue() + ",");
             }
             bfWriter.newLine();
         }
     }
 
                                                 // returns a map with product types as keys and the corresponding values
-                                                // are required items by id to link with the product type
+                                                // are required items by ID to link with the product type
     public Map<ProductType, Map<Integer, Double>> load() throws IOException {
         productTypes = new ArrayList<>();
         Map<ProductType, Map<Integer, Double>> unlinkedProductTypes = new HashMap<>();
@@ -56,18 +56,18 @@ public class ProductTypeRepository {
                 }
                 ProductType pt = new ProductType(mainParts[0], mainParts[1]);
                 productTypes.add(pt);
-                Map<Integer, Double> requiredItemsById = new HashMap<>();
+                Map<Integer, Double> requiredItemsByID = new HashMap<>();
                 String[] requiredItemsParts = mainParts[1].split(",");
                 for(int i = 0; i < requiredItemsParts.length; i += 2) {
                     try {
                         Integer id = Integer.valueOf(requiredItemsParts[i]);
                         Double quantity = Double.valueOf(requiredItemsParts[i + 1]);
-                        requiredItemsById.put(id, quantity);
+                        requiredItemsByID.put(id, quantity);
                     } catch(NumberFormatException | IndexOutOfBoundsException e) {
                         throw new IOException(AppConstants.PRODUCT_TYPES_FILE + " content is corrupted", e);
                     }
                 }
-                unlinkedProductTypes.put(pt, requiredItemsById);
+                unlinkedProductTypes.put(pt, requiredItemsByID);
             }
         }
         return unlinkedProductTypes;
