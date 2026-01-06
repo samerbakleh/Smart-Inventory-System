@@ -1,6 +1,7 @@
 package com.inventory.app.controller;
 
 import com.inventory.app.model.Task;
+import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.service.TaskService;
 
 import java.time.LocalDate;
@@ -30,7 +31,7 @@ public class TaskController {
     }
 
     public ArrayList<Task> getAllTasks(){
-        return taskService.getAllTasks();
+        System.out.println("Controller: getAllTasks()");return taskService.getAllTasks();
     }
 
     public Task getTaskById(int taskId){
@@ -45,5 +46,7 @@ public class TaskController {
         taskService.updateQuantity(taskId, newQuantity);
     }
 
+    public ArrayList<Task> getTasksByStatus(TaskStatus status){    System.out.println("Controller: filter by " + status);
+        return taskService.getTaskRepository().getTasksByStatus(status);}
 
 }

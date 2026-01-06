@@ -34,7 +34,7 @@ public class TaskRepository {
     public void saveTasks(){
          try (PrintWriter printWriter = new PrintWriter(new FileWriter(TASK_FILE))) {
              for (Task task : tasks){
-                 System.out.println(task.getTaskID());
+                // System.out.println(task.getTaskID());
                  printWriter.println(
                          String.valueOf(task.getTaskID())+ ',' +
                          task.getProductName() + ',' +
@@ -43,12 +43,11 @@ public class TaskRepository {
                          task.getClientName()+ ',' +
                          task.getTaskStatus()+ ',' +
                          task.getStartDate()+ ',' +
-                         task.getDeliveryDate()
+                         task.getDeliveryDate()+ ','+
+                         task.getProgress()
                  );
 
              }
-             if (!tasks.isEmpty())
-                this.tasks.clear();
          }catch (IOException e){
              System.out.println(e);// insert e in logError function
          }
@@ -67,10 +66,11 @@ public class TaskRepository {
                         Integer.parseInt(data[3]),// PL-ID
                         LocalDate.parse(data[7]) // D-date
                 );
-
                 t.setTaskStatus(TaskStatus.valueOf(data[5]));
                 if (!"null".equals(data[6]))
                     t.setStartDate(LocalDate.parse(data[6]));
+                int p = Integer.parseInt(data[8]);
+                t.setProgress(p);
                 t.setSaved(false);
                 tasks.add(t);
             }
@@ -80,4 +80,13 @@ public class TaskRepository {
 
     }
 
+    public ArrayList<Task> getTasksByStatus(TaskStatus status) {
+         ArrayList<Task>tasks1=new ArrayList<>() ;
+         for (Task t:tasks)
+         {
+             if (t.getTaskStatus()==status)
+                 tasks1.add(t);
+         }
+         return tasks1;
+    }
 }

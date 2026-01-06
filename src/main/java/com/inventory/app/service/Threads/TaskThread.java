@@ -20,6 +20,7 @@ public class TaskThread implements Runnable {
             for (int i= task.getProgress();i<=100;i++){
                 Thread.sleep(10*task.getQuantityRequired());//chose your time
                 taskService.updateProgress(task.getTaskID(), i);
+                taskService.getTaskRepository().saveTasks();
             }
         }catch (InterruptedException e){
             taskService.cancelTask(task.getTaskID());

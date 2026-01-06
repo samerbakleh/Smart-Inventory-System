@@ -29,7 +29,7 @@ public class Task {
         this.productName = productName;
         this.productLineID = productLineID;
         this.deliveryDate= deliveryDate;
-        this.taskStatus= TaskStatus.PENDING;
+        this.taskStatus = TaskStatus.PENDING;
         this.progress=0;
 
     }
@@ -77,6 +77,7 @@ public class Task {
     public TaskStatus getTaskStatus() {
         return taskStatus;
     }
+
 
     public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;

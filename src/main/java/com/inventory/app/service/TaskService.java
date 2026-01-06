@@ -26,7 +26,7 @@ public class TaskService {
         if (task == null ){
             throw new IllegalArgumentException("Task not found ");
         }
-        if (task.getTaskStatus() != TaskStatus.PENDING)
+        if (task.getTaskStatus() == TaskStatus.CANCELLED)
             throw new IllegalStateException("Task cannot be started");
 
         task.setTaskStatus(TaskStatus.IN_PROGRESS);
@@ -70,7 +70,9 @@ public class TaskService {
 
         if (progress == 100){
             completeTask(taskId);
+            //here we should add the qty of the task to product's qty
         }
+
     }
 
     public TaskRepository getTaskRepository(){
@@ -103,7 +105,7 @@ public class TaskService {
             throw new IllegalArgumentException("Task not found");
 
         if (task.getTaskStatus() != TaskStatus.PENDING)
-            throw new IllegalStateException("Tou can not edit task after start");
+            throw new IllegalStateException("You can not edit task after start");
 
         task.setDeliveryDate(newDate);
     }
@@ -114,7 +116,7 @@ public class TaskService {
             throw new IllegalArgumentException("Task not found");
 
         if (task.getTaskStatus() != TaskStatus.PENDING)
-            throw new IllegalStateException("Tou can not edit task after start");
+            throw new IllegalStateException("You can not edit task after start");
 
         task.setClientName(newClientName);
     }
@@ -130,11 +132,14 @@ public class TaskService {
         task.setProductName(newProductName);
     }
     public void executeTask(Task task){
-        if (task.getTaskStatus() != TaskStatus.PENDING) {
+        if (task.getTaskStatus() == TaskStatus.CANCELLED) {
             throw new IllegalStateException("Task can not be started");
         }
         Thread thread = new Thread(new TaskThread(task, this));
         thread.start();
+    }
+    public ArrayList<Task> getTasksByStatus(TaskStatus status){
+        return taskRepository.getTasksByStatus(status);
     }
 
 }
