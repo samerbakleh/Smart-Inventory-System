@@ -18,16 +18,6 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         super("Production & Inventory Management System");
         mainController = new MainController();
-        try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if (info.getName().equals("Nimbus")) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
