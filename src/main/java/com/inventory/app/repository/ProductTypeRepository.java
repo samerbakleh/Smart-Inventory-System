@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class ProductTypeRepository {
 
-    private List<ProductType> productTypes;
+    private static List<ProductType> productTypes;
 
     public List<ProductType> getProductTypes() {
         return productTypes;

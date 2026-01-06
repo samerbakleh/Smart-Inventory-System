@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class ProductLineRepository {
 
-    private List<ProductLine> productLines = new ArrayList<>();
+    private static List<ProductLine> productLines = new ArrayList<>();
 
     public List<ProductLine> getProductLines() {
         return productLines;
