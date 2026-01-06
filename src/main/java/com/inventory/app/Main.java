@@ -76,10 +76,10 @@ public class Main {
         taskRepository.loadTasks();
         TaskController taskController = new TaskController(taskService);
 
-      //  taskController.addTask(new Task(100,"KHUBEZ","zaher",12,LocalDate.now().plusDays(2)));
-       // taskController.addTask(new Task(500,"MUJADARA","ahmad",15,LocalDate.now().plusDays(6)));
-        //taskController.addTask(new Task(10,"SHISH-BARAK","samer",13,LocalDate.now().plusDays(5)));
-       // taskRepository.save(taskController.getTaskById(10000));
+        // taskController.addTask(new Task(100,"KHUBEZ","zaher",12,LocalDate.now().plusDays(2)));
+        // taskController.addTask(new Task(500,"MUJADARA","ahmad",15,LocalDate.now().plusDays(6)));
+        // taskController.addTask(new Task(10,"SHISH-BARAK","samer",13,LocalDate.now().plusDays(5)));
+        // taskRepository.save(taskController.getTaskById(10000));
         SwingUtilities.invokeLater(() -> {
             TaskViewerFrame frame = new TaskViewerFrame(taskController);
             frame.setVisible(true);
