@@ -15,17 +15,14 @@ import java.util.Map;
 public class ProductLineService {
 
     private ProductLineRepository productLineRepository;
+    private TaskRepository taskRepository;
+    private ProductTypeRepository productTypeRepository;
 
-    public ProductLineService() {
-        productLineRepository = new ProductLineRepository();
-    }
-
-    public ProductLineRepository getProductLineRepository() {
-        return productLineRepository;
-    }
-
-    public void setProductLineRepository(ProductLineRepository productLineRepository) {
+    public ProductLineService(ProductLineRepository productLineRepository, TaskRepository taskRepository,
+                              ProductTypeRepository productTypeRepository) {
         this.productLineRepository = productLineRepository;
+        this.taskRepository = taskRepository;
+        this.productTypeRepository = productTypeRepository;
     }
 
     public void saveToRepository() throws IOException {
@@ -36,8 +33,7 @@ public class ProductLineService {
         return productLineRepository.load();
     }
 
-    public void linkToProductLine(Map<ProductLine, List<String>[]> unlinkedProductLines, TaskRepository taskRepository,
-                                       ProductTypeRepository productTypeRepository) throws IOException {
+    public void linkToProductLine(Map<ProductLine, List<String>[]> unlinkedProductLines) throws IOException {
         for(Map.Entry<ProductLine, List<String>[]> entry : unlinkedProductLines.entrySet()) {
             ProductLine pl = entry.getKey();
             List<String> productTypeNames = entry.getValue()[0];
@@ -65,9 +61,8 @@ public class ProductLineService {
         }
     }
 
-    public void loadAndLink(TaskRepository taskRepository,
-                            ProductTypeRepository productTypeRepository) throws IOException {
-        linkToProductLine(loadFromRepository(), taskRepository, productTypeRepository);
+    public void loadAndLink() throws IOException {
+        linkToProductLine(loadFromRepository());
     }
 
     public List<ProductLine> getLoadedProductLines() {

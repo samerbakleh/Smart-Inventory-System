@@ -10,8 +10,8 @@ public class ProductLineController {
 
     private ProductLineService productLineService;
 
-    public ProductLineController() {
-        productLineService = new ProductLineService();
+    public ProductLineController(ProductLineService productLineService) {
+        this.productLineService = productLineService;
     }
 
     public List<ProductLine> fetchProductLines() {

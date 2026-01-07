@@ -19,18 +19,21 @@ import java.util.List;
 
 public class ManagerPanel extends JPanel{
 
-    private final MainFrame container;
+    private MainFrame container;
     private AddProductLineDialog addProductLineDialog;
     private ProductLineController productLineController;
 
-    public ManagerPanel(MainFrame container) {
+    public ManagerPanel(AddProductLineDialog addProductLineDialog, ProductLineController productLineController) {
         super(new GridBagLayout());
-        this.container = container;
-        this.productLineController = new ProductLineController();
-        this.addProductLineDialog = new AddProductLineDialog(this.productLineController);
+        this.addProductLineDialog = addProductLineDialog;
+        this.productLineController = productLineController;
         setName("Manager panel");
         setBackground(Color.white);
         addComponents();
+    }
+
+    public void setContainer(MainFrame container) {
+        this.container = container;
     }
 
     private void addComponents() {

@@ -15,9 +15,11 @@ public class MainFrame extends JFrame {
     private ManagerPanel managerPanel;
     private MainController mainController;
 
-    public MainFrame() {
+    public MainFrame(LogInPanel logInPanel, ManagerPanel managerPanel, MainController mainController) {
         super("Production & Inventory Management System");
-        mainController = new MainController();
+        this.logInPanel = logInPanel;
+        this.managerPanel = managerPanel;
+        this.mainController = mainController;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -89,10 +91,10 @@ public class MainFrame extends JFrame {
     private void addComponents() {
         cardPanel = new JPanel(new CardLayout());
 
-        logInPanel = new LogInPanel(this);
+        logInPanel.setContainer(this);
         cardPanel.add(logInPanel, logInPanel.getName());
 
-        managerPanel = new ManagerPanel(this);
+        managerPanel.setContainer(this);
         cardPanel.add(managerPanel, managerPanel.getName());
 
         add(cardPanel);

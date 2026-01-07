@@ -12,16 +12,19 @@ import java.awt.geom.Ellipse2D;
 
 public class LogInPanel extends JPanel {
 
-    private final MainFrame container;
+    private MainFrame container;
     private AuthenticationController authenticationController;
 
-    public LogInPanel(MainFrame container) {
+    public LogInPanel(AuthenticationController authenticationController) {
         super(new GridLayout(1, 2));
-        this.container = container;
-        this.authenticationController = new AuthenticationController();
+        this.authenticationController = authenticationController;
         setName("Log in panel");
         setBackground(new Color(245, 245, 245));
         addComponents();
+    }
+
+    public void setContainer(MainFrame container) {
+        this.container = container;
     }
 
     private void addComponents() {
