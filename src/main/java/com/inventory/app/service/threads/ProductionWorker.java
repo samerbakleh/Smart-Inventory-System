@@ -1,9 +1,11 @@
 package com.inventory.app.service.threads;
 
+import com.inventory.app.model.Item;
 import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.model.exceptions.ReachedMinLimitException;
 import com.inventory.app.service.InventoryService;
 import com.inventory.app.service.ProductService;
 
@@ -42,10 +44,15 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
         while(!tasksQueue.isEmpty() && productLine.isActive()) {
             Task task = tasksQueue.peek();
             task.setTaskStatus(TaskStatus.IN_PROGRESS);
+            double time = 0;
+            for(Double amount : productType.getRequiredItems().values()) {
+                time += amount;
+            }
+            time *= 5000.0/productLine.getName().length();
             while(task.getProgress() != 100 && !task.getTaskStatus().equals(TaskStatus.CANCELLED)) {
                 inventoryService.consume(productType.getRequiredItems());
                 try {
-                    Thread.sleep(1000/*time has yet to be determined for each product type*/);
+                    Thread.sleep((int) time);
                 } catch(InterruptedException e) {
                     /*
 

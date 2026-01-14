@@ -18,12 +18,12 @@ public class ProductLineController {
         return productLineService.getLoadedProductLines();
     }
 
-    public boolean validateProductLineName(String name) {
-        return productLineService.isProductLineNameValid(name);
-    }
-
-    public void addProductLine(String productLineName, List<ProductType> productTypes) {
-        productLineService.addNewProductLine(productLineName, productTypes);
+    public boolean addProductLine(String productLineName, List<ProductType> productTypes) {
+        if(productLineService.validateProductLineName(productLineName)) {
+            productLineService.addNewProductLine(productLineName, productTypes);
+            return true;
+        }
+        return false;
     }
 
     public void addProductLine(String productLineName, int productLineID) {

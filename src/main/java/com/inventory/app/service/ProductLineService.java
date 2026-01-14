@@ -69,7 +69,7 @@ public class ProductLineService {
         return productLineRepository.getProductLines();
     }
 
-    public boolean isProductLineNameValid(String name) {
+    public boolean validateProductLineName(String name) {
         return name.matches("[a-zA-Z0-9- ]+");
     }
 

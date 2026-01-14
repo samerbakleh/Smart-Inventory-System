@@ -67,14 +67,9 @@ public class AddProductLineDialog extends JDialog {
         addButton.setForeground(Color.white);
         addButton.addActionListener((ActionEvent event) -> {
             String productLineName = nameField.getText();
-            if(productLineController.validateProductLineName(productLineName)) {
+            if(productLineController.addProductLine(productLineName, /*productTypes*/null)) {
                 invalidNameLabel.setForeground(Color.white);
                 nameField.setText("");
-                /*
-
-                add product line
-
-                 */
                 this.dispose();
             } else {
                 invalidNameLabel.setForeground(Color.red);
