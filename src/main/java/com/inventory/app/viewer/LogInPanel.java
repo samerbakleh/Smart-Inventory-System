@@ -15,6 +15,11 @@ public class LogInPanel extends JPanel {
     private MainFrame container;
     private AuthenticationController authenticationController;
 
+    private JComboBox<String> roleBox;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JLabel errorLabel;
+
     public LogInPanel(AuthenticationController authenticationController) {
         super(new GridLayout(1, 2));
         this.authenticationController = authenticationController;
@@ -69,7 +74,6 @@ public class LogInPanel extends JPanel {
         add(leftPanel);
 
 
-
         JPanel rightPanel = new JPanel(new GridBagLayout());
         rightPanel.setOpaque(false);
         RoundedPanel logInBox = new RoundedPanel(20);
@@ -80,7 +84,7 @@ public class LogInPanel extends JPanel {
         JLabel roleLabel = new JLabel("Select Role");
         JLabel usernameLabel = new JLabel("Username");
         JLabel passwordLabel = new JLabel("Password");
-        JLabel errorLabel = new JLabel("Invalid log in attempt");
+        errorLabel = new JLabel("Invalid log in attempt");
         signInLabel.setForeground(Color.gray);
         errorLabel.setForeground(Color.white);
         welcomeLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 35f));
@@ -90,9 +94,9 @@ public class LogInPanel extends JPanel {
         passwordLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 17f));
         errorLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(15f));
 
-        JComboBox<String> roleBox = new JComboBox<>(new String[] {"Manager", "Supervisor"});
-        JTextField usernameField = new JTextField(10);
-        JPasswordField passwordField = new JPasswordField(10);
+        roleBox = new JComboBox<>(new String[] {"Manager", "Supervisor"});
+        usernameField = new JTextField(10);
+        passwordField = new JPasswordField(10);
         usernameField.setFont(AppConstants.DEFAULT_FONT.deriveFont(15f));
         passwordField.setFont(AppConstants.DEFAULT_FONT.deriveFont(15f));
         roleBox.setPreferredSize(new Dimension(620, 60));
@@ -104,32 +108,8 @@ public class LogInPanel extends JPanel {
         logInButton.setForeground(Color.white);
         logInButton.setFont(AppConstants.DEFAULT_FONT.deriveFont(17f));
         logInButton.setPreferredSize(new Dimension(520, 60));
-        logInButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                String role = (String) roleBox.getSelectedItem();
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
-                if(authenticationController.loginController(username, password, role)) {
-                    /*
-
-                    maybe add loading
-
-                     */
-                    errorLabel.setForeground(Color.white);
-                    if(role.toUpperCase().equals(Role.MANAGER.toString())) {
-                        container.switchToManagerPanel();
-                    } else {
-                        /*
-
-                        switch to the supervisor panel
-
-                         */
-                    }
-                } else {
-                    errorLabel.setForeground(Color.red);
-                }
-            }
+        logInButton.addActionListener((ActionEvent event) -> {
+            showLogInResult();
         });
 
         gbc.anchor = GridBagConstraints.WEST;
@@ -164,6 +144,31 @@ public class LogInPanel extends JPanel {
         gbc.insets = new Insets(100, 150, 100, 150);
         rightPanel.add(logInBox, gbc);
         add(rightPanel);
+    }
+
+    private void showLogInResult() {
+        String role = (String) roleBox.getSelectedItem();
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+        if(authenticationController.loginController(username, password, role)) {
+                /*
+
+                maybe add loading
+
+                 */
+            errorLabel.setForeground(Color.white);
+            if(role.toUpperCase().equals(Role.MANAGER.toString())) {
+                container.switchToManagerPanel();
+            } else {
+                    /*
+
+                    switch to the supervisor panel
+
+                     */
+            }
+        } else {
+            errorLabel.setForeground(Color.red);
+        }
     }
 
 }

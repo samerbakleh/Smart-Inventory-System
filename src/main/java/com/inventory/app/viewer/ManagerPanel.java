@@ -57,12 +57,7 @@ public class ManagerPanel extends JPanel{
         addProductLineButton.setFont(AppConstants.DEFAULT_FONT.deriveFont(17f));
         addProductLineButton.setForeground(Color.white);
         addProductLineButton.setBackground(AppConstants.PRIMARY_COLOR);
-        addProductLineButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addProductLineDialog.resetDisplay();
-            }
-        });
+        addProductLineButton.addActionListener((ActionEvent event) -> addProductLineDialog.resetDisplay());
 
         String[] statuses = {"active", "maintenance", "stopped"};
         String[] columnName = {"ID", "Name", "Status", "Tasks", "Progress %"};
