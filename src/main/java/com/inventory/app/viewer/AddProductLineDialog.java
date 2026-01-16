@@ -11,6 +11,11 @@ public class AddProductLineDialog extends JDialog {
 
     private ProductLineController productLineController;
 
+    private JTextField nameField;
+    private JLabel invalidNameLabel;
+    private JTextField subtypeField;
+    private RemovableLabelPanel subtypePanel;
+
     public AddProductLineDialog(ProductLineController productLineController) {
         this.productLineController = productLineController;
         setLayout(new GridBagLayout());
@@ -32,8 +37,8 @@ public class AddProductLineDialog extends JDialog {
         gbc.gridy = GridBagConstraints.RELATIVE;
         gbc.gridwidth = 3;
 
-        JTextField nameField = new JTextField(30);
-        JLabel invalidNameLabel = new JLabel("name must only contain letters, numbers, and -");
+        nameField = new JTextField(30);
+        invalidNameLabel = new JLabel("name must only contain letters, numbers, and -");
         JTextField productNameField = new JTextField(30);
         JLabel invalidProductNameLabel = new JLabel("name must only contain letters, numbers, and -");
         nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
@@ -45,18 +50,13 @@ public class AddProductLineDialog extends JDialog {
 
         JLabel subtypeLabel = new JLabel("Add subtypes to the product");
         subtypeLabel.setHorizontalAlignment(JLabel.LEFT);
-        JTextField subtypeField = new JTextField(10);
+        subtypeField = new JTextField(10);
         JButton submitButton = new JButton("Submit");
-        RemovableLabelPanel subtypePanel = new RemovableLabelPanel();
+        subtypePanel = new RemovableLabelPanel();
         submitButton.setBackground(AppConstants.SECONDARY_COLOR);
         submitButton.setForeground(Color.white);
         submitButton.addActionListener((ActionEvent event) -> {
-            String input = subtypeField.getText();
-            if(!input.isBlank()) {
-                subtypePanel.addLabel(input);
-                subtypeField.setText("");
-                this.pack();
-            }
+            submitSubtype();
         });
         subtypePanel.setBackground(Color.white);
         subtypePanel.setLabelColor(Color.white);
@@ -66,19 +66,7 @@ public class AddProductLineDialog extends JDialog {
         addButton.setBackground(AppConstants.SECONDARY_COLOR);
         addButton.setForeground(Color.white);
         addButton.addActionListener((ActionEvent event) -> {
-            String productLineName = nameField.getText();
-            if(productLineController.addProductLine(productLineName, /*productTypes*/null)) {
-                invalidNameLabel.setForeground(Color.white);
-                nameField.setText("");
-                this.dispose();
-            } else {
-                invalidNameLabel.setForeground(Color.red);
-            }
-            /*
-
-            check for product types to add with product line
-
-             */
+            disposeSuccessfully();
         });
 
 
@@ -109,6 +97,31 @@ public class AddProductLineDialog extends JDialog {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(0, 15, 5, 15);
         add(addButton, gbc);
+    }
+
+    private void submitSubtype() {
+        String input = subtypeField.getText();
+        if(!input.isBlank()/*&& check subtype name*/) {
+            subtypePanel.addLabel(input);
+            subtypeField.setText("");
+            this.pack();
+        }
+    }
+
+    private void disposeSuccessfully() {
+        String productLineName = nameField.getText();
+        if(productLineController.addProductLine(productLineName, /*productTypes*/null)) {
+            invalidNameLabel.setForeground(Color.white);
+            nameField.setText("");
+            this.dispose();
+        } else {
+            invalidNameLabel.setForeground(Color.red);
+        }
+            /*
+
+            check for product types to add with product line
+
+             */
     }
 
 }

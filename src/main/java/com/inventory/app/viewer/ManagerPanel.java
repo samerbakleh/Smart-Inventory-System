@@ -5,7 +5,6 @@ import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.util.AppConstants;
-import com.inventory.app.viewer.components.ColoredProgressBar;
 import com.inventory.app.viewer.components.GradientPanel;
 import com.inventory.app.viewer.components.ShadowedLabel;
 
@@ -106,7 +105,7 @@ public class ManagerPanel extends JPanel{
                 Component comp;
                 Color c = table.getBackground();
                 if (value instanceof Double progress) {
-                    ColoredProgressBar progressBar = new ColoredProgressBar(0, 100, AppConstants.PRIMARY_COLOR);
+                    JProgressBar progressBar = new JProgressBar(0, 100);
                     progressBar.setValue(progress.intValue());
                     progressBar.setStringPainted(true);
                     progressBar.setOpaque(true);
