@@ -13,7 +13,6 @@ import javax.swing.table.*;
 import javax.swing.ListSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import java.util.List;
 
@@ -59,28 +58,30 @@ public class ManagerPanel extends JPanel{
         addProductLineButton.setBackground(AppConstants.PRIMARY_COLOR);
         addProductLineButton.addActionListener((ActionEvent event) -> addProductLineDialog.resetDisplay());
 
-        String[] statuses = {"active", "maintenance", "stopped"};
         String[] columnName = {"ID", "Name", "Status", "Tasks", "Progress %"};
         Object[][] data = loadProductLinesToTable();
         DefaultTableModel model = new DefaultTableModel(data, columnName) {
-            private final int statusColIndex;
+            private int statusColIndex;
+            private int progressColIndex;
             {
-                int i;
-                for(i = 0; i < columnName.length; i++) {
+                for(int i = 0; i < columnName.length; i++) {
                     if(columnName[i].equals("Status")) {
-                        break;
+                        statusColIndex = i;
+                    } else if(columnName[i].equals("Progress %")) {
+                        progressColIndex = i;
                     }
                 }
-                statusColIndex = i;
             }
             @Override
             public boolean isCellEditable(int row, int col) {
-                return col == statusColIndex;
+                return false;
             }
             @Override
             public Class<?> getColumnClass(int colIndex) {
                 if(colIndex == statusColIndex) {
                     return ProductLineStatus.class;
+                } else if(colIndex == progressColIndex) {
+                    return Double.class;
                 }
                 return super.getColumnClass(colIndex);
             }
@@ -92,45 +93,57 @@ public class ManagerPanel extends JPanel{
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setRowHeight(23);
-        table.setDefaultEditor(ProductLineStatus.class, new DefaultCellEditor(new JComboBox<>(statuses)));
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
+        DefaultTableCellRenderer textRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                            boolean hasFocus, int row, int col) {
-                Component comp;
-                Color c = table.getBackground();
-                if (value instanceof Double progress) {
-                    JProgressBar progressBar = new JProgressBar(0, 100);
-                    progressBar.setValue(progress.intValue());
-                    progressBar.setStringPainted(true);
-                    progressBar.setOpaque(true);
-                    comp = progressBar;
-                } else {
-                    JLabel label = (JLabel)
-                            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-                    label.setHorizontalAlignment(JLabel.CENTER);
-                    if (value instanceof ProductLineStatus status) {
-                        label.setText(label.getText().toLowerCase());
-                        c = switch (status) {
-                            case ProductLineStatus.ACTIVE -> new Color(0, 255, 140, 100);
-                            case ProductLineStatus.MAINTENANCE -> new Color(255, 255, 140, 100);
-                            case ProductLineStatus.STOPPED -> new Color(255, 0, 140, 100);
-                        };
-                        if (row % 2 == 1) {
-                            c = new Color(c.getRed() * 9/10, c.getGreen() * 9/10, c.getBlue() * 9/10, c.getAlpha());
-                        }
-                    }
-                    comp = label;
-                }
-                comp.setBackground(isSelected ? table.getSelectionBackground() : c);
-                return comp;
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                label.setHorizontalAlignment(JLabel.CENTER);
+                return label;
             }
         };
+        DefaultTableCellRenderer statusRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                           boolean hasFocus, int row, int col) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                label.setHorizontalAlignment(JLabel.CENTER);
+                label.setText(label.getText().toLowerCase());
+                if(isSelected) {
+                    label.setBackground(table.getSelectionBackground());
+                } else {
+                    Color c = switch((ProductLineStatus) value) {
+                        case ProductLineStatus.ACTIVE -> new Color(0, 255, 140, 100);
+                        case ProductLineStatus.MAINTENANCE -> new Color(255, 255, 140, 100);
+                        case ProductLineStatus.STOPPED -> new Color(255, 0, 140, 100);
+                    };
+                    if (row % 2 == 1) {
+                        c = new Color(c.getRed() * 9 / 10, c.getGreen() * 9 / 10, c.getBlue() * 9 / 10, c.getAlpha());
+                    }
+                    label.setBackground(c);
+                }
+                return label;
+            }
+        };
+        DefaultTableCellRenderer progressRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                           boolean hasFocus, int row, int col) {
+                JProgressBar progressBar = new JProgressBar(0, 100);
+                progressBar.setValue(((Double) value).intValue());
+                progressBar.setStringPainted(true);
+                progressBar.setOpaque(true);
+                progressBar.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+                return progressBar;
+            }
+        };
+        table.setDefaultRenderer(ProductLineStatus.class, statusRenderer);
+        table.setDefaultRenderer(Double.class, progressRenderer);
+        table.setDefaultRenderer(Object.class, textRenderer);
         double[] relativeColumnWidth = {0.05, 0.25, 0.15, 0.05, 0.4};
         for(int i = 0; i < table.getColumnCount(); i++) {
             TableColumn column = table.getColumnModel().getColumn(i);
             column.setPreferredWidth((int) (1000 * relativeColumnWidth[i]));
-            column.setCellRenderer(cellRenderer);
         }
 
         gbc.weightx = 1.0;
