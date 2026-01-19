@@ -10,7 +10,6 @@ import com.inventory.app.viewer.components.ShadowedLabel;
 
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.ListSelectionModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -20,21 +19,16 @@ import java.util.List;
 
 public class ManagerPanel extends JPanel{
 
-    private MainFrame container;
-    private AddProductLineDialog addProductLineDialog;
     private ProductLineController productLineController;
+    private AddProductLineDialog addProductLineDialog;
 
-    public ManagerPanel(AddProductLineDialog addProductLineDialog, ProductLineController productLineController) {
+    public ManagerPanel(ProductLineController productLineController) {
         super(new GridBagLayout());
-        this.addProductLineDialog = addProductLineDialog;
         this.productLineController = productLineController;
+        this.addProductLineDialog = new AddProductLineDialog(productLineController);
         setName("Manager panel");
         setBackground(Color.white);
         addComponents();
-    }
-
-    public void setContainer(MainFrame container) {
-        this.container = container;
     }
 
     private void addComponents() {

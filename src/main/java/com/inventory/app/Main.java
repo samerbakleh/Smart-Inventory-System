@@ -10,10 +10,7 @@ import com.inventory.app.repository.TaskRepository;
 import com.inventory.app.service.ProductLineService;
 import com.inventory.app.service.ProductTypeService;
 import com.inventory.app.util.AppConstants;
-import com.inventory.app.viewer.AddProductLineDialog;
-import com.inventory.app.viewer.LogInPanel;
 import com.inventory.app.viewer.MainFrame;
-import com.inventory.app.viewer.ManagerPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,11 +48,7 @@ public class Main {
                     e.printStackTrace();
                 }
 
-                AddProductLineDialog addProductLineDialog = new AddProductLineDialog(productLineController);
-                LogInPanel logInPanel = new LogInPanel(authenticationController);
-                ManagerPanel managerPanel = new ManagerPanel(addProductLineDialog, productLineController);
-
-                MainFrame mainFrame = new MainFrame(logInPanel, managerPanel, mainController);
+                MainFrame mainFrame = new MainFrame(mainController, authenticationController, productLineController);
             }
         });
 

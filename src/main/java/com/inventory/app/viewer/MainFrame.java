@@ -1,6 +1,8 @@
 package com.inventory.app.viewer;
 
+import com.inventory.app.controller.AuthenticationController;
 import com.inventory.app.controller.MainController;
+import com.inventory.app.controller.ProductLineController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,16 +12,17 @@ import java.util.concurrent.ExecutionException;
 
 public class MainFrame extends JFrame {
 
+    private MainController mainController;
     private JPanel cardPanel;
     private LogInPanel logInPanel;
     private ManagerPanel managerPanel;
-    private MainController mainController;
 
-    public MainFrame(LogInPanel logInPanel, ManagerPanel managerPanel, MainController mainController) {
+    public MainFrame(MainController mainController, AuthenticationController authenticationController,
+                     ProductLineController productLineController) {
         super("Production & Inventory Management System");
-        this.logInPanel = logInPanel;
-        this.managerPanel = managerPanel;
         this.mainController = mainController;
+        this.logInPanel = new LogInPanel(authenticationController);
+        this.managerPanel = new ManagerPanel(productLineController);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -94,7 +97,6 @@ public class MainFrame extends JFrame {
         logInPanel.setContainer(this);
         cardPanel.add(logInPanel, logInPanel.getName());
 
-        managerPanel.setContainer(this);
         cardPanel.add(managerPanel, managerPanel.getName());
 
         add(cardPanel);
