@@ -6,7 +6,7 @@ import com.inventory.app.service.ProductLineService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class ProductLineController {
 
@@ -20,7 +20,7 @@ public class ProductLineController {
         List<ProductLine> productLines = productLineService.getLoadedProductLines();
         float[] percentages = productLineService.calculateProductionPercentage();
         int n = productLines.size();
-        Map<ProductLine, Float> result = new HashMap<>();
+        Map<ProductLine, Float> result = new LinkedHashMap<>();
         for(int i = 0; i < n; i++) {
             result.put(productLines.get(i), percentages[i]);
         }
@@ -33,10 +33,6 @@ public class ProductLineController {
             return true;
         }
         return false;
-    }
-
-    public void addProductLine(String productLineName, int productLineID) {
-        productLineService.addNewProductLine(productLineName, productLineID);
     }
 
 }

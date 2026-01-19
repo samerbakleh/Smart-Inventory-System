@@ -87,7 +87,7 @@ public class ProductLineService {
         }
         if(allProduction != 0) {
             for(int i = 0; i < n; i++) {
-                result[i] = (float) productLines.get(i).getTotalProduction() / allProduction;
+                result[i] =  100f * productLines.get(i).getTotalProduction() / allProduction;
             }
         }
         return result;
