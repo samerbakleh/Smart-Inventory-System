@@ -5,6 +5,8 @@ import com.inventory.app.model.ProductType;
 import com.inventory.app.service.ProductLineService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class ProductLineController {
 
@@ -14,8 +16,15 @@ public class ProductLineController {
         this.productLineService = productLineService;
     }
 
-    public List<ProductLine> fetchProductLines() {
-        return productLineService.getLoadedProductLines();
+    public Map<ProductLine, Float> fetchProductLines() {
+        List<ProductLine> productLines = productLineService.getLoadedProductLines();
+        float[] percentages = productLineService.calculateProductionPercentage();
+        int n = productLines.size();
+        Map<ProductLine, Float> result = new HashMap<>();
+        for(int i = 0; i < n; i++) {
+            result.put(productLines.get(i), percentages[i]);
+        }
+        return result;
     }
 
     public boolean addProductLine(String productLineName, List<ProductType> productTypes) {

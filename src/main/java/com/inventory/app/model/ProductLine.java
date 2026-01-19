@@ -17,11 +17,19 @@ public class ProductLine {
     private String name;
     private ProductLineStatus status;
     private Map<ProductType, Queue<Task>> tasks;
+    private int totalProduction;
     private Map<ProductType, Boolean> sublineWorkingStatus;     // true for each product type that the subline producing
                                                                 // it is working, false otherwise
 
 
-    public ProductLine(int id, String name, ProductLineStatus status) {
+    public ProductLine(String name, List<ProductType> productTypes) {
+        this.id = idCounter++;
+        this.name = name;
+        this.status = ProductLineStatus.ACTIVE;
+        setProductTypes(productTypes);
+        this.totalProduction = 0;
+    }
+    public ProductLine(int id, String name, ProductLineStatus status, int totalProduction) {
         if(id < 0) {
             throw new IllegalArgumentException("Production Line ID can't be negative");
         }
@@ -29,12 +37,7 @@ public class ProductLine {
         idCounter = id + 1;
         this.name = name;
         this.status = status;
-    }
-    public ProductLine(String name, List<ProductType> productTypes) {
-        this.id = idCounter++;
-        this.name = name;
-        this.status = ProductLineStatus.ACTIVE;
-        setProductTypes(productTypes);
+        this.totalProduction = totalProduction;
     }
 
     public int getID() {
@@ -60,6 +63,9 @@ public class ProductLine {
     }
     public Map<ProductType, Boolean> getSublineWorkingStatus() {
         return sublineWorkingStatus;
+    }
+    public int getTotalProduction() {
+        return totalProduction;
     }
     public boolean getSublineWorkingStatus(ProductType pt) {
         return sublineWorkingStatus.get(pt);
@@ -99,6 +105,10 @@ public class ProductLine {
             throw new IllegalArgumentException("Can't change the status of non-existent subline " + pt + " in " + this);
         }
         sublineWorkingStatus.put(pt, isWorking);
+    }
+
+    public void incrementTotalProduction() {
+        totalProduction++;
     }
 
     public boolean isActive() {

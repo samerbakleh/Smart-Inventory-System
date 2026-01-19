@@ -28,21 +28,22 @@ public class ProductLineRepository {
         productLines.add(pl);
     }
 
-                                //id;name;status;productTypeName,productSubtype1,productSubtype2...;taskID1,taskID2,...
+                               //id;name;status;productTypeName,subtype1,subtype2...;taskID1,taskID2,...;totalProduction
     public void save() throws IOException {
-        try (BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_LINES_FILE))) {
-            for (ProductLine pl : productLines) {
+        try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_LINES_FILE))) {
+            for(ProductLine pl : productLines) {
                 bfWriter.write(pl.getID() + ";" + pl.getName() + ";" + pl.getStatus() + ";"
                              + pl.getProductTypes().getFirst().getName());
-                for (ProductType pt : pl.getTasks().keySet()) {
+                for(ProductType pt : pl.getTasks().keySet()) {
                     bfWriter.write("," + pt.getSubtype());
                 }
                 bfWriter.write(';');
                 for(List<Task> value : pl.getTasks().values()) {
-                    for (Task t : value) {
+                    for(Task t : value) {
                         bfWriter.write(t.getID() + ",");
                     }
                 }
+                bfWriter.write(";" + pl.getTotalProduction());
                 bfWriter.newLine();
             }
         }
@@ -57,23 +58,24 @@ public class ProductLineRepository {
         int previousID = -1;
         final String ERROR_MESSAGE = AppConstants.PRODUCT_LINES_FILE + " content is corrupted";
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_LINES_FILE))) {
-            for (String line : bfReader.readAllLines()) {
+            for(String line : bfReader.readAllLines()) {
                 if(line.isEmpty()) {
                     continue;
                 }
                 ProductLine pl;
                 String[] mainParts = line.split(";");
-                if (mainParts.length < 4 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
+                if(mainParts.length < 6 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
                     throw new IOException(ERROR_MESSAGE);
                 }
                 try {
                     int productLineID = Integer.parseInt(mainParts[0]);
                     ProductLineStatus status = ProductLineStatus.valueOf(mainParts[2]);
+                    int totalProduction = Integer.parseInt(mainParts[5]);
                     if (productLineID <= previousID) {
                         throw new IOException(ERROR_MESSAGE);
                     }
                     previousID = productLineID;
-                    pl = new ProductLine(productLineID, mainParts[1], status);
+                    pl = new ProductLine(productLineID, mainParts[1], status, totalProduction);
                 } catch (IllegalArgumentException e) {
                     throw new IOException(ERROR_MESSAGE, e);
                 }

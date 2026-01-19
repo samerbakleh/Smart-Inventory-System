@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Map;
 
 public class ManagerPanel extends JPanel{
 
@@ -67,7 +68,7 @@ public class ManagerPanel extends JPanel{
                 if(colIndex == STATUS_COL_INDEX) {
                     return ProductLineStatus.class;
                 } else if(colIndex == PROGRESS_COL_INDEX) {
-                    return Double.class;
+                    return Float.class;
                 }
                 return super.getColumnClass(colIndex);
             }
@@ -105,15 +106,17 @@ public class ManagerPanel extends JPanel{
     }
 
     private Object[][] loadProductLinesToTable() {
-        List<ProductLine> productLineList = productLineController.fetchProductLines();
-        Object[][] result = new Object[productLineList.size()][5];
-        for(int i = 0; i < productLineList.size(); i++) {
-            ProductLine pl = productLineList.get(i);
+        Map<ProductLine, Float> productLines = productLineController.fetchProductLines();
+        Object[][] result = new Object[productLines.size()][5];
+        int i = 0;
+        for(Map.Entry<ProductLine, Float> entry : productLines.entrySet()) {
+            ProductLine pl = entry.getKey();
             int numOfTasks = 0;
             for(List<Task> tasks : pl.getTasks().values()) {
                 numOfTasks += tasks.size();
             }
-            result[i] = new Object[]{pl.getID(), pl.getName(), pl.getStatus(), numOfTasks, Math.random()*100};
+            result[i] = new Object[]{pl.getID(), pl.getName(), pl.getStatus(), numOfTasks, entry.getValue()};
+            i++;
         }
         return result;
     }
@@ -174,7 +177,7 @@ public class ManagerPanel extends JPanel{
                 public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                                boolean hasFocus, int row, int col) {
                     JProgressBar progressBar = new JProgressBar(0, 100);
-                    progressBar.setValue(((Double) value).intValue());
+                    progressBar.setValue(((Float) value).intValue());
                     progressBar.setStringPainted(true);
                     progressBar.setOpaque(true);
                     progressBar.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
@@ -182,7 +185,7 @@ public class ManagerPanel extends JPanel{
                 }
             };
             setDefaultRenderer(ProductLineStatus.class, statusRenderer);
-            setDefaultRenderer(Double.class, progressRenderer);
+            setDefaultRenderer(Float.class, progressRenderer);
             setDefaultRenderer(Object.class, textRenderer);
         }
 
