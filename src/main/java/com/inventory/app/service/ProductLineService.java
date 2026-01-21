@@ -93,4 +93,30 @@ public class ProductLineService {
         return result;
     }
 
+    public ProductLine getLeastBusyProductLine(ProductType pt) {
+        List<ProductLine> productLines = pt.getProductLines();
+        int minWork = Integer.MAX_VALUE;
+        ProductLine leastBusyProductLine = null;
+        for(ProductLine pl : productLines) {
+            int work = 0;
+            for(Task t : pl.getTasks(pt)) {
+                work += t.getQuantityRequired();
+            }
+            if(work < minWork) {
+                minWork = work;
+                leastBusyProductLine = pl;
+            }
+        }
+        return leastBusyProductLine;
+    }
+
+    public int getLeastBusyProductLineID(ProductType pt) {
+        return getLeastBusyProductLine(pt).getID();
+    }
+
+    public int getLeastBusyProductLineID(String productTypeName) {
+        ProductType pt = productTypeRepository.findByFullName(productTypeName);
+        return getLeastBusyProductLineID(pt);
+    }
+
 }

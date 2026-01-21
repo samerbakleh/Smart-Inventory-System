@@ -83,14 +83,18 @@ public class ProductTypeRepository {
         return result;
     }
 
-    public ProductType findByFullName(String name, String subType) {
-        String fullName = name + " " + subType;
+    public ProductType findByFullName(String fullName) {
         for(ProductType pt : productTypes) {
             if (pt.toString().equals(fullName)) {
                 return pt;
             }
         }
         return null;
+    }
+
+    public ProductType findByFullName(String name, String subType) {
+        String fullName = name + " " + subType;
+        return findByFullName(fullName);
     }
 
 }
