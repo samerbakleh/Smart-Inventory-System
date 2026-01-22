@@ -1,6 +1,5 @@
 package com.inventory.app.service.threads;
 
-import com.inventory.app.model.Item;
 import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
@@ -61,6 +60,7 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
                      */
                 }
                 productService.addNewProduct(productType, productLine);
+                productLine.incrementTotalProduction();
                 /*
 
                 update task progress & maybe status

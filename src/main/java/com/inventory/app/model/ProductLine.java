@@ -17,6 +17,8 @@ public class ProductLine {
     private String name;
     private ProductLineStatus status;
     private Map<ProductType, Queue<Task>> tasks;
+    private int rating;
+    private String note;
     private int totalProduction;
     private Map<ProductType, Boolean> sublineWorkingStatus;     // true for each product type that the subline producing
                                                                 // it is working, false otherwise
@@ -27,9 +29,11 @@ public class ProductLine {
         this.name = name;
         this.status = ProductLineStatus.ACTIVE;
         setProductTypes(productTypes);
+        this.rating = 0;
+        this.note = "";
         this.totalProduction = 0;
     }
-    public ProductLine(int id, String name, ProductLineStatus status, int totalProduction) {
+    public ProductLine(int id, String name, ProductLineStatus status, int rating, String note, int totalProduction) {
         if(id < 0) {
             throw new IllegalArgumentException("Production Line ID can't be negative");
         }
@@ -37,6 +41,8 @@ public class ProductLine {
         idCounter = id + 1;
         this.name = name;
         this.status = status;
+        this.rating = rating;
+        this.note = note;
         this.totalProduction = totalProduction;
     }
 
@@ -60,6 +66,12 @@ public class ProductLine {
     }
     public List<ProductType> getProductTypes() {
         return new ArrayList<>(tasks.keySet());
+    }
+    public int getRating() {
+        return rating;
+    }
+    public String getNote() {
+        return note;
     }
     public Map<ProductType, Boolean> getSublineWorkingStatus() {
         return sublineWorkingStatus;
@@ -99,6 +111,12 @@ public class ProductLine {
                 }
             }
         }
+    }
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+    public void setNote(String note) {
+        this.note = note;
     }
     public void setSublineWorkingStatus(ProductType pt, boolean isWorking) {
         if(sublineWorkingStatus.get(pt) == null) {
