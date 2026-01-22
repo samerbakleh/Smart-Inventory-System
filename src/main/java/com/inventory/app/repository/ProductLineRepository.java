@@ -28,7 +28,7 @@ public class ProductLineRepository {
         productLines.add(pl);
     }
 
-                               //id;name;status;productTypeName,subtype1,subtype2...;taskID1,taskID2,...;totalProduction
+                   //id;name;status;productTypeName,subtype1,subtype2...;taskID1,taskID2,...;rating;totalProduction;note
     public void save() throws IOException {
         try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_LINES_FILE))) {
             for(ProductLine pl : productLines) {
@@ -43,7 +43,7 @@ public class ProductLineRepository {
                         bfWriter.write(t.getID() + ",");
                     }
                 }
-                bfWriter.write(";" + pl.getTotalProduction());
+                bfWriter.write(";" + pl.getRating() + ";" + pl.getTotalProduction() + ";" + pl.getNote());
                 bfWriter.newLine();
             }
         }
@@ -64,19 +64,24 @@ public class ProductLineRepository {
                 }
                 ProductLine pl;
                 String[] mainParts = line.split(";");
-                if(mainParts.length < 6 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
+                if(mainParts.length < 8 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
                     throw new IOException(ERROR_MESSAGE);
                 }
                 try {
-                    int productLineID = Integer.parseInt(mainParts[0]);
-                    ProductLineStatus status = ProductLineStatus.valueOf(mainParts[2]);
-                    int totalProduction = Integer.parseInt(mainParts[5]);
-                    if (productLineID <= previousID) {
+                    int id = Integer.parseInt(mainParts[0]);
+                    if (id <= previousID) {
                         throw new IOException(ERROR_MESSAGE);
                     }
-                    previousID = productLineID;
-                    pl = new ProductLine(productLineID, mainParts[1], status, totalProduction);
-                } catch (IllegalArgumentException e) {
+                    previousID = id;
+                    ProductLineStatus status = ProductLineStatus.valueOf(mainParts[2]);
+                    int rating = Integer.parseInt(mainParts[5]);
+                    int totalProduction = Integer.parseInt(mainParts[6]);
+                    String note = mainParts[7];
+                    for(int i = 8; i < mainParts.length; i++) {
+                        note += ";" + mainParts[i];
+                    }
+                    pl = new ProductLine(id, mainParts[1], status, rating, note, totalProduction);
+                } catch(IllegalArgumentException e) {
                     throw new IOException(ERROR_MESSAGE, e);
                 }
                 List<String> productTypeNames = List.of(mainParts[3].split(","));
