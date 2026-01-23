@@ -1,4 +1,4 @@
 package com.inventory.app.repository;
 
-public class    TaskRepository {
+public class TaskRepository {
 }
