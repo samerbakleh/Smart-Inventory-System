@@ -11,7 +11,6 @@ public class Task {
     private int quantityRequired ;
     private String clientName;
     private int progress;// 0 - 100
-
     private String productName;
     private int productLineID;
 
@@ -117,4 +116,9 @@ public class Task {
     public void setSaved(boolean saved) {
         isSaved = saved;
     }
+    public int getProducedAmount()
+    {
+        return quantityRequired * progress /100;
+    }
+
 }
