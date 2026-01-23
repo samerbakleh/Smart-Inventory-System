@@ -13,7 +13,7 @@ public class ProductLineInfoDialog extends JDialog {
     private ProductLineController productLineController;
     private ProductLine productLine;
 
-    private JTextArea noteArea;
+    private JTextField noteField;
 
     public ProductLineInfoDialog(ProductLineController productLineController) {
         this.productLineController = productLineController;
@@ -22,19 +22,24 @@ public class ProductLineInfoDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent event) {
-
+                productLineController.changeProductLineNote(productLine, noteField.getText());
             }
         });
         addComponents();
     }
 
-    public void display(ProductLine productLine) {
-        this.productLine = productLine;
+    public void display(int id) {
+        productLine = productLineController.getProductLineByID(id);
+        setTitle(productLine.toString());
+        noteField.setText(productLine.getNote());
 
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     private void addComponents() {
-        noteArea = new JTextArea(3, 10);
+        noteField = new JTextField(40);
         JRadioButton activateButton = new JRadioButton("activate");
         JRadioButton stopButton = new JRadioButton("stop");
         JRadioButton maintainButton = new JRadioButton("maintain");
@@ -46,16 +51,16 @@ public class ProductLineInfoDialog extends JDialog {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.gridwidth = 3;
 
-        add(noteArea, gbc);
         gbc.gridwidth = 1;
-        gbc.gridx = 0;
         add(activateButton, gbc);
         gbc.gridx = 1;
         add(stopButton, gbc);
         gbc.gridx = 2;
         add(maintainButton, gbc);
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        add(noteField, gbc);
     }
 
 }

@@ -22,11 +22,13 @@ public class ManagerPanel extends JPanel{
 
     private ProductLineController productLineController;
     private AddProductLineDialog addProductLineDialog;
+    private ProductLineInfoDialog productLineInfoDialog;
 
     public ManagerPanel(ProductLineController productLineController) {
         super(new GridBagLayout());
         this.productLineController = productLineController;
         this.addProductLineDialog = new AddProductLineDialog(productLineController);
+        this.productLineInfoDialog = new ProductLineInfoDialog(productLineController);
         setName("Manager panel");
         setBackground(Color.white);
         addComponents();
@@ -73,7 +75,7 @@ public class ManagerPanel extends JPanel{
                 return super.getColumnClass(colIndex);
             }
         };
-        ProductLineTable table = new ProductLineTable(model);
+        ProductLineTable table = new ProductLineTable(model, productLineInfoDialog);
         JScrollPane tableContainer = new JScrollPane(table);
         table.getTableHeader().setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
@@ -123,18 +125,18 @@ public class ManagerPanel extends JPanel{
 
     private static class ProductLineTable extends JTable {
 
-        public ProductLineTable(TableModel model) {
+        private ProductLineInfoDialog productLineInfoDialog;
+
+        public ProductLineTable(TableModel model, ProductLineInfoDialog productLineInfoDialog) {
             super(model);
+            this.productLineInfoDialog = productLineInfoDialog;
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             setColumnRenderer();
             addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(MouseEvent e) {
-                    /*
-
-                    show info dialog for the selected production line
-
-                     */
+                public void mouseClicked(MouseEvent event) {
+                    int id = (Integer) getModel().getValueAt(getSelectedRow(), 0);
+                    productLineInfoDialog.display(id);
                 }
             });
         }

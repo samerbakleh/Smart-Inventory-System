@@ -28,8 +28,8 @@ public class ProductLineController {
         return result;
     }
 
-    public ProductLine getProductLineByID(String id) {
-        return productLineService.getLoadedProductLines(Integer.parseInt(id));
+    public ProductLine getProductLineByID(int id) {
+        return productLineService.getLoadedProductLines(id);
     }
 
     public boolean addProductLine(String productLineName, List<ProductType> productTypes) {
