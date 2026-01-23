@@ -1,25 +1,33 @@
 package com.inventory.app.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
 public class Product {
     private static final AtomicInteger idCounter = new AtomicInteger(1);
     private final int id;
-    private final ProductType productType;
+    private ProductType productType ;
 
-    public Product(ProductType productType) {
-        this.id = idCounter.getAndIncrement();
-        this.productType = productType;
+    // this constructor used when load data from file
+    public Product(int id , ProductType productType)
+    {
+        this.id=id;
+        this.productType=productType;
     }
 
-    public ProductType getProductType() {
-        return productType;
+
+    //this constructor used when creating new product
+    public Product(ProductType productType)
+    {
+        this.id=idCounter.getAndIncrement();
+        this.productType=productType;
     }
 
     public int getId() {
         return id;
     }
 
+    public ProductType getProductType() {
+        return productType;
+    }
 }
 
 

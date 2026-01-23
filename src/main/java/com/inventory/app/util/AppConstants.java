@@ -14,6 +14,8 @@ public class AppConstants {
     public static final String LOG_FILE = DATA_DIR + "error_log.txt";
     public static final String ITEMS_FILE = DATA_DIR +"items.csv";
     public static final String CSV_DELIMITER = ",";
+    public static final String PRODUCT_FILE = DATA_DIR +"products.csv";
+    public static final String PRODUCT_TYPES_FILE = DATA_DIR + "product_types.txt";
     // Colors (For UI consistency)
     public static final Color PRIMARY_COLOR = new Color(70, 130, 180);
 

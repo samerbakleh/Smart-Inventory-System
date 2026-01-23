@@ -3,74 +3,87 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.Product;
 import com.inventory.app.util.AppConstants;
-import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.ProductType;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProductRepository {
-    private static List<Product> products;
+    private static Map<Integer,Product> products;
 
-
-    public List<Product> getProducts() {
-        return products;
-    }
 
     public void add(Product product) {
-        products.add(product);
+        products.put(product.getId(),product);
     }
 
     public void save() {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_FILE))) {
-            bw.write("productID,productTypeName,Subtype,productLines");
+            bw.write("ID,ProductTypeID");
             bw.newLine();
-            for (Product product : products) {
-                bw.write(getCsvLine(product));
+            for (Map.Entry<Integer,Product> entry : products.entrySet()) {
+                bw.write(getCsvLine(entry.getValue()));
                 bw.newLine();
             }
         } catch (IOException e) {
-
         }
     }
 
     public void load() {
-        products = new ArrayList<>();
+        products = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(AppConstants.PRODUCT_FILE))) {
             String line = br.readLine();
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                products.add(getProductObjectFromLine(line));
+                try {
+                    Product p = getProductObjectFromLine(line);
+                    products.put(p.getId(),p);
+                }    catch(IllegalArgumentException e)
+                {
+                    System.out.println(e.getMessage());
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+    private Product getProductObjectFromLine(String line) {
+        String[] tokens = line.split(AppConstants.CSV_DELIMITER);
+        int id = Integer.parseInt(tokens[0]);
+        int productTypeId = Integer.parseInt(tokens[1]);
 
-private Product getProductObjectFromLine(String line)
-{
-    String[] tokens = line.split(",");
-    ProductType productType = new ProductTypeRepository().findByFullName(tokens[1],tokens[2]);
-    return new Product(Integer.parseInt(tokens[0]),productType);
-}
+        ProductType productType = new ProductTypeRepository().findById(productTypeId);
+
+        if (productType == null) {
+            throw new IllegalArgumentException(
+                    "ProductType not found for id: " + productTypeId
+            );
+        }
+
+        return new Product(id, productType);
+    }
+
 
     private String getCsvLine(Product product) {
-        StringBuilder line = new StringBuilder(product.getId() + AppConstants.CSV_DELIMITER + product.getProductType().getName()
-                + AppConstants.CSV_DELIMITER + product.getProductType().getSubtype() + AppConstants.CSV_DELIMITER);
-        for (ProductLine pl : product.getProductType().getProductLines()) {
-            line.append(pl.getID()).append(";");
-        }
-        String s=line.toString();
-        return s.substring(0, s.length() - 1);
+        StringBuilder line = new StringBuilder(product.getId() + AppConstants.CSV_DELIMITER + product.getProductType().getId());
+        return line.toString();
     }
 
 public void deleteByID(int id)
 {
-    for(Product product :products)
-    {
-        if(product.getId()==id)
-            products.remove(product);
-    }
+            products.remove(id);
 }
+
+public Product findById(int id)
+{
+  return products.get(id);
+}
+public boolean isExist(int id)
+{
+    if(findById(id)!=null)
+        return true;
+
+    return false;
+}
+
+
 }
