@@ -3,6 +3,7 @@ package com.inventory.app.service;
 import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
+import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.repository.ProductLineRepository;
 import com.inventory.app.repository.ProductTypeRepository;
 import com.inventory.app.repository.TaskRepository;
@@ -69,6 +70,10 @@ public class ProductLineService {
         return productLineRepository.getProductLines();
     }
 
+    public ProductLine getLoadedProductLines(int id) {
+        return productLineRepository.findByID(id);
+    }
+
     public boolean validateProductLineName(String name) {
         return name.matches("[a-zA-Z0-9- ]+");
     }
@@ -117,6 +122,18 @@ public class ProductLineService {
     public int getLeastBusyProductLineID(String productTypeName) {
         ProductType pt = productTypeRepository.findByFullName(productTypeName);
         return getLeastBusyProductLineID(pt);
+    }
+
+    public void changeProductLineStatus(ProductLine pl, ProductLineStatus plStatus) {
+        pl.setStatus(plStatus);
+    }
+
+    public void changeProductLineRating(ProductLine pl, int rating) {
+        pl.setRating(rating);
+    }
+
+    public void changeProductLineNote(ProductLine pl, String note) {
+        pl.setNote(note);
     }
 
 }
