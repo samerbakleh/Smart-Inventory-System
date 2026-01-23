@@ -1,5 +1,7 @@
 package com.inventory.app.service;
 import com.inventory.app.model.Product;
+import com.inventory.app.model.ProductLine;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.repository.ProductRepository;
 public class ProductService {
     private ProductRepository productRepository = new ProductRepository();
@@ -12,8 +14,9 @@ public class ProductService {
     }
 
 
-    public boolean add(Product product)
+    public boolean add(ProductType productType , int  productLineId)
     {
+        Product product = new Product (productType , productLineId);
         if(productRepository.isExist(product.getId()))
             return false;
         productRepository.add(product);

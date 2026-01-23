@@ -5,20 +5,23 @@ public class Product {
     private static final AtomicInteger idCounter = new AtomicInteger(1);
     private final int id;
     private ProductType productType ;
-
+    private int  productLineId;
     // this constructor used when load data from file
-    public Product(int id , ProductType productType)
+    public Product(int id , ProductType productType , int productLineId)
     {
         this.id=id;
         this.productType=productType;
+        this.productLineId = productLineId;
     }
 
 
+
     //this constructor used when creating new product
-    public Product(ProductType productType)
+    public Product(ProductType productType , int ProductLineId )
     {
         this.id=idCounter.getAndIncrement();
         this.productType=productType;
+        this.productLineId= productLineId;
     }
 
     public int getId() {
@@ -27,6 +30,10 @@ public class Product {
 
     public ProductType getProductType() {
         return productType;
+    }
+
+    public int getProductLineId() {
+        return productLineId;
     }
 }
 
