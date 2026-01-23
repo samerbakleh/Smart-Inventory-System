@@ -33,7 +33,7 @@ public class ProductTypeRepository {
         for(ProductType pt : productTypes) {
             bfWriter.write(pt.getName() + ";" + pt.getSubtype() + ";");
             for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet()) {
-                bfWriter.write(entry.getKey().getID() + "," + entry.getValue() + ",");
+                bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
             }
             bfWriter.newLine();
         }

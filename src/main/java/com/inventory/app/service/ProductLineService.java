@@ -52,7 +52,7 @@ public class ProductLineService {
             List<String> taskIDs = entry.getValue()[1];
             List<Task> tasks = new ArrayList<>();
             for(String idString : taskIDs) {
-                Task t = taskRepository.findByID(Integer.parseInt(idString));
+                Task t = taskRepository.findById(Integer.parseInt(idString));
                 if(t == null) {
                     throw new IOException("Some files content is corrupted");
                 }

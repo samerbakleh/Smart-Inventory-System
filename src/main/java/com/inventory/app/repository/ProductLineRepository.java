@@ -40,7 +40,7 @@ public class ProductLineRepository {
                 bfWriter.write(';');
                 for(List<Task> value : pl.getTasks().values()) {
                     for(Task t : value) {
-                        bfWriter.write(t.getID() + ",");
+                        bfWriter.write(t.getTaskID() + ",");
                     }
                 }
                 bfWriter.write(";" + pl.getRating() + ";" + pl.getTotalProduction() + ";" + pl.getNote());
