@@ -6,8 +6,6 @@ import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.service.ProductLineService;
 
 import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 public class ProductLineController {
 
@@ -17,19 +15,12 @@ public class ProductLineController {
         this.productLineService = productLineService;
     }
 
-    public Map<ProductLine, Float> fetchProductLines() {
-        List<ProductLine> productLines = productLineService.getLoadedProductLines();
-        float[] percentages = productLineService.calculateProductionPercentage();
-        int n = productLines.size();
-        Map<ProductLine, Float> result = new LinkedHashMap<>();
-        for(int i = 0; i < n; i++) {
-            result.put(productLines.get(i), percentages[i]);
-        }
-        return result;
+    public List<ProductLine> fetchProductLineMainData() {
+        return productLineService.getLoadedProductLines();
     }
 
-    public ProductLine getProductLineByID(int id) {
-        return productLineService.getLoadedProductLines(id);
+    public List<Float> getProductLineProductionPercentage() {
+        return productLineService.calculateProductionPercentage();
     }
 
     public boolean addProductLine(String productLineName, List<ProductType> productTypes) {

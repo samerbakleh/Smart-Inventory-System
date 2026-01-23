@@ -16,7 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.Map;
 
 public class ManagerPanel extends JPanel{
 
@@ -111,17 +110,16 @@ public class ManagerPanel extends JPanel{
     }
 
     private Object[][] loadProductLinesToTable() {
-        Map<ProductLine, Float> productLines = productLineController.fetchProductLines();
+        List<ProductLine> productLines = productLineController.fetchProductLineMainData();
+        List<Float> percentages = productLineController.getProductLineProductionPercentage();
         Object[][] result = new Object[productLines.size()][5];
-        int i = 0;
-        for(Map.Entry<ProductLine, Float> entry : productLines.entrySet()) {
-            ProductLine pl = entry.getKey();
+        for(int i = 0; i < productLines.size(); i++) {
+            ProductLine pl = productLines.get(i);
             int numOfTasks = 0;
             for(List<Task> tasks : pl.getTasks().values()) {
                 numOfTasks += tasks.size();
             }
-            result[i] = new Object[]{pl, pl.getName(), pl.getStatus(), numOfTasks, entry.getValue()};
-            i++;
+            result[i] = new Object[]{pl, pl.getName(), pl.getStatus(), numOfTasks, percentages.get(i)};
         }
         return result;
     }

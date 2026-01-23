@@ -82,17 +82,17 @@ public class ProductLineService {
         productLineRepository.add(new ProductLine(name, productTypes));
     }
 
-    public float[] calculateProductionPercentage() {
+    public List<Float> calculateProductionPercentage() {
         List<ProductLine> productLines = productLineRepository.getProductLines();
         int n = productLines.size();
-        float[] result = new float[n];
+        List<Float> result = new ArrayList<>();
         int allProduction = 0;
         for(ProductLine pl : productLines) {
             allProduction += pl.getTotalProduction();
         }
         if(allProduction != 0) {
             for(int i = 0; i < n; i++) {
-                result[i] =  100f * productLines.get(i).getTotalProduction() / allProduction;
+                result.set(i, 100f * productLines.get(i).getTotalProduction() / allProduction);
             }
         }
         return result;
