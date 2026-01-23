@@ -2,10 +2,12 @@ package com.inventory.app.viewer;
 
 import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.model.ProductLine;
+import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.StarRating;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -21,13 +23,6 @@ public class ProductLineInfoDialog extends JDialog {
         this.productLineController = productLineController;
         setLayout(new GridBagLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent event) {
-                productLineController.changeProductLineNote(productLine, noteField.getText());
-                productLineController.changeProductLineRating(productLine, starRating.getRating());
-            }
-        });
         addComponents();
     }
 
@@ -52,6 +47,14 @@ public class ProductLineInfoDialog extends JDialog {
         statusGroup.add(stopButton);
         statusGroup.add(maintainButton);
         starRating = new StarRating(17);
+        JButton okButton = new JButton("OK");
+        okButton.setBackground(AppConstants.SECONDARY_COLOR);
+        okButton.setForeground(Color.white);
+        okButton.addActionListener((ActionEvent event) -> {
+            productLineController.changeProductLineNote(productLine, noteField.getText());
+            productLineController.changeProductLineRating(productLine, starRating.getRating());
+            dispose();
+        });
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -67,6 +70,7 @@ public class ProductLineInfoDialog extends JDialog {
         gbc.gridwidth = 3;
         add(noteField, gbc);
         add(starRating, gbc);
+        add(okButton, gbc);
     }
 
 }
