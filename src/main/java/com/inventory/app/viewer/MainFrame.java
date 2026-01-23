@@ -35,6 +35,9 @@ public class MainFrame extends JFrame implements AppNavigator {
         applyThemeToFrame();
     }
 
+    public static void startMainFrame() {
+    }
+
     private void buildTopBar() {
         topBar.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
         topBar.setOpaque(true);
