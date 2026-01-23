@@ -23,7 +23,7 @@ public class MainFrame extends JFrame {
         this.mainController = mainController;
         this.logInPanel = new LogInPanel(authenticationController);
         this.managerPanel = new ManagerPanel(productLineController);
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
