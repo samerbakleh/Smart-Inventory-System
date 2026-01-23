@@ -1,4 +1,4 @@
-package com.inventory.app.viewer.inventory;
+package com.inventory.app.viewer;
 
 import com.inventory.app.controller.ItemController;
 import com.inventory.app.viewer.AppNavigator;
@@ -35,7 +35,7 @@ public class InventoryManagementPanel extends JPanel {
         add(top, BorderLayout.NORTH);
 
         // Cards
-        //body.add(new ItemsPanel(itemController), "items");
+        body.add(new ItemsPanel(itemController), "items");
         body.add(new JLabel("Products panel will be added later..."), "products");
 
         add(body, BorderLayout.CENTER);

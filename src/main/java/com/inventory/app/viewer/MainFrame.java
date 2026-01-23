@@ -14,11 +14,10 @@ public class MainFrame extends JFrame implements AppNavigator {
     // Top bar components
     private final JPanel topBar = new JPanel(new BorderLayout(12, 0));
     private final JLabel titleLabel = new JLabel("Smart Inventory System");
-    private final JLabel subTitleLabel = new JLabel("Supervisor Panel");
+    private final JLabel subTitleLabel = new JLabel("");
 
     private final ThemeToggleButton themeToggle = new ThemeToggleButton();
     private Timer themeAnim;
-
 
     public MainFrame() {
         super("Smart Inventory System");
@@ -38,6 +37,7 @@ public class MainFrame extends JFrame implements AppNavigator {
 
     private void buildTopBar() {
         topBar.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
+        topBar.setOpaque(true);
 
         // Left (title/subtitle)
         JPanel left = new JPanel();
@@ -52,9 +52,8 @@ public class MainFrame extends JFrame implements AppNavigator {
         left.add(subTitleLabel);
 
         // Right (theme toggle)
-        themeToggle.setPreferredSize(new Dimension(120, 34));
+        themeToggle.setPreferredSize(new Dimension(64, 34));
         themeToggle.addPropertyChangeListener("toggle", evt -> animateThemeFlip());
-
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         right.setOpaque(false);
@@ -64,11 +63,17 @@ public class MainFrame extends JFrame implements AppNavigator {
         topBar.add(right, BorderLayout.EAST);
     }
 
+    /** Register panels (cards) */
     public void registerView(String key, JPanel panel) {
+        if (key == null || key.isBlank()) throw new IllegalArgumentException("key is empty");
+        if (panel == null) throw new IllegalArgumentException("panel is null");
+
         registered.put(key, panel);
         cards.add(panel, key);
 
-        ThemeManager.get().applyToContainer(panel);    }
+        // Apply theme to the view
+        ThemeManager.get().applyToContainer(panel);
+    }
 
     /** Switch visible panel */
     @Override
@@ -86,21 +91,22 @@ public class MainFrame extends JFrame implements AppNavigator {
     }
 
     private void applyThemeToFrame() {
-        // Apply global theme
+        // Apply global theme to frame
         ThemeManager.get().applyToFrame(this);
 
-        // Re-style top bar so it stays distinct (not same as background)
+        // Keep top bar distinct
         ThemeManager.Theme t = ThemeManager.get().theme();
 
         topBar.setBackground(t.surface2);
         titleLabel.setForeground(t.text);
         subTitleLabel.setForeground(t.textDim);
 
-        themeToggle.setSelectedAnimated(ThemeManager.get().theme().mode == ThemeManager.Mode.DARK);
-
+        // sync toggle position
+        themeToggle.setSelectedAnimated(t.mode == ThemeManager.Mode.DARK);
 
         repaint();
     }
+
     private void animateThemeFlip() {
         ThemeManager tm = ThemeManager.get();
 
@@ -111,7 +117,7 @@ public class MainFrame extends JFrame implements AppNavigator {
 
         ThemeManager.Theme end = tm.themeOf(targetMode);
 
-        // animate toggle icon immediately (sun<->moon)
+        // animate toggle immediately
         themeToggle.setSelectedAnimated(targetMode == ThemeManager.Mode.DARK);
 
         if (themeAnim != null && themeAnim.isRunning()) themeAnim.stop();
@@ -126,24 +132,19 @@ public class MainFrame extends JFrame implements AppNavigator {
 
             ThemeManager.Theme mid = tm.lerp(start, end, k);
 
-            // apply mid theme WITHOUT updateComponentTreeUI (avoid heavy flicker)
+            // apply mid theme WITHOUT heavy UI update (avoid flicker)
             tm.applyToAllWindows(mid, false);
 
-
-            // style top bar a bit (optional but nicer)
             topBar.setBackground(mid.surface2);
             titleLabel.setForeground(mid.text);
             subTitleLabel.setForeground(mid.textDim);
 
             if (t >= 1f) {
                 themeAnim.stop();
-                // commit final theme mode (saved)
-                tm.setMode(targetMode);
-                tm.applyToAllWindows(tm.theme(), true);
-
+                tm.setMode(targetMode);          // commit
+                tm.applyToAllWindows(tm.theme(), true); // final refresh
             }
         });
         themeAnim.start();
     }
-
 }

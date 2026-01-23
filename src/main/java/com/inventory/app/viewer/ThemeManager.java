@@ -143,8 +143,15 @@ public final class ThemeManager {
         } else if (c instanceof JLabel l) {
             l.setForeground(t.text);
         } else if (c instanceof JButton b) {
-            styleButton(b, t);
-        } else if (c instanceof JToggleButton tb) {
+            if (!(b instanceof AnimatedColorButton)) {
+                styleButton(b, t);
+            } else {
+                // لا تلمسه — هو بيرسم حاله
+                b.setForeground(t.text);
+            }
+        }
+
+     else if (c instanceof JToggleButton tb) {
             styleToggle(tb, t);
         } else if (c instanceof JTextField tf) {
             tf.setBackground(t.surface);

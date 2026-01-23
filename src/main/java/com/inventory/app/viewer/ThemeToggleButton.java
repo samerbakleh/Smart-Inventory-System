@@ -71,7 +71,7 @@ public class ThemeToggleButton extends JComponent {
         int h = getHeight();
 
         // Track colors (lerp)
-        Color trackLight = new Color(230, 235, 243);
+        Color trackLight = new Color(36, 54, 82);
         Color trackDark  = new Color(35, 45, 70);
 
         Color track = lerp(trackLight, trackDark, progress);

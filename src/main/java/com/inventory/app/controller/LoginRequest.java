@@ -1,5 +1,4 @@
 package com.inventory.app.controller;
-
 import com.inventory.app.model.enums.Role;
 
 public class LoginRequest {
