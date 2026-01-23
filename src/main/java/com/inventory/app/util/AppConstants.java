@@ -13,6 +13,7 @@ public class AppConstants {
     public static final String USERS_FILE = DATA_DIR + "users.txt";
     public static final String LOG_FILE = DATA_DIR + "error_log.txt";
     public static final String TASK_FILE = "task.txt";
+    public static final String PRODUCT_TYPES_FILE = DATA_DIR + "product_types.txt";
 
     // Colors (For UI consistency)
     public static final Color PRIMARY_COLOR = new Color(70, 130, 180); // Steel Blue

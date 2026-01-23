@@ -1,6 +1,7 @@
 package com.inventory.app.model;
 
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.repository.ProductTypeRepository;
 
 import java.time.LocalDate;
 
@@ -21,7 +22,8 @@ public class Task {
 
     private boolean isTaken=false;
     private boolean isSaved=false;
-
+    private ProductType productType;
+    ProductTypeRepository productTypeRepository;
     public Task(int quantityRequired, String productName ,String clientName , int productLineID,LocalDate deliveryDate) {
         this.quantityRequired = quantityRequired;
         this.clientName = clientName;
@@ -30,6 +32,7 @@ public class Task {
         this.deliveryDate= deliveryDate;
         this.taskStatus = TaskStatus.PENDING;
         this.progress=0;
+        this.productType= productTypeRepository.findByFullName(productName);
 
     }
 
@@ -119,6 +122,10 @@ public class Task {
     public int getProducedAmount()
     {
         return quantityRequired * progress /100;
+    }
+    public ProductType getProductType ()
+    {
+        return productType;
     }
 
 }
