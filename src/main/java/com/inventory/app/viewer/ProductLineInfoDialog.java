@@ -8,8 +8,6 @@ import com.inventory.app.viewer.components.StarRating;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class ProductLineInfoDialog extends JDialog {
 
@@ -26,8 +24,8 @@ public class ProductLineInfoDialog extends JDialog {
         addComponents();
     }
 
-    public void display(int id) {
-        productLine = productLineController.getProductLineByID(id);
+    public void display(ProductLine pl) {
+        productLine = pl;
         setTitle(productLine.toString());
         noteField.setText(productLine.getNote());
         starRating.setRating(productLine.getRating());

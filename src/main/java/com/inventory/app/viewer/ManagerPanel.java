@@ -65,9 +65,12 @@ public class ManagerPanel extends JPanel{
             }
             @Override
             public Class<?> getColumnClass(int colIndex) {
+                final int ID_COL_INDEX = 0;
                 final int STATUS_COL_INDEX = 2;
                 final int PROGRESS_COL_INDEX = 4;
-                if(colIndex == STATUS_COL_INDEX) {
+                if(colIndex == ID_COL_INDEX) {
+                    return ProductLine.class;
+                } else if(colIndex == STATUS_COL_INDEX) {
                     return ProductLineStatus.class;
                 } else if(colIndex == PROGRESS_COL_INDEX) {
                     return Float.class;
@@ -75,7 +78,7 @@ public class ManagerPanel extends JPanel{
                 return super.getColumnClass(colIndex);
             }
         };
-        ProductLineTable table = new ProductLineTable(model, productLineInfoDialog);
+        ProductLineTable table = new ProductLineTable(model);
         JScrollPane tableContainer = new JScrollPane(table);
         table.getTableHeader().setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
@@ -117,37 +120,43 @@ public class ManagerPanel extends JPanel{
             for(List<Task> tasks : pl.getTasks().values()) {
                 numOfTasks += tasks.size();
             }
-            result[i] = new Object[]{pl.getID(), pl.getName(), pl.getStatus(), numOfTasks, entry.getValue()};
+            result[i] = new Object[]{pl, pl.getName(), pl.getStatus(), numOfTasks, entry.getValue()};
             i++;
         }
         return result;
     }
 
-    private static class ProductLineTable extends JTable {
-
-        private ProductLineInfoDialog productLineInfoDialog;
-
-        public ProductLineTable(TableModel model, ProductLineInfoDialog productLineInfoDialog) {
+    private class ProductLineTable extends JTable {
+        public ProductLineTable(TableModel model) {
             super(model);
-            this.productLineInfoDialog = productLineInfoDialog;
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             setColumnRenderer();
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent event) {
-                    int id = (Integer) getModel().getValueAt(getSelectedRow(), 0);
-                    productLineInfoDialog.display(id);
+                    ProductLine pl = (ProductLine) getModel().getValueAt(getSelectedRow(), 0);
+                    productLineInfoDialog.display(pl);
                 }
             });
         }
 
         private void setColumnRenderer() {
+            DefaultTableCellRenderer productLineRenderer = new DefaultTableCellRenderer() {
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                               boolean hasFocus, int row, int col) {
+                    JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+                    label.setHorizontalAlignment(CENTER);
+                    label.setText(((ProductLine) value).getID() + "");
+                    return label;
+                }
+            };
             DefaultTableCellRenderer textRenderer = new DefaultTableCellRenderer() {
                 @Override
                 public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                                boolean hasFocus, int row, int col) {
                     JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-                    label.setHorizontalAlignment(JLabel.CENTER);
+                    label.setHorizontalAlignment(CENTER);
                     return label;
                 }
             };
@@ -156,7 +165,7 @@ public class ManagerPanel extends JPanel{
                 public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                                boolean hasFocus, int row, int col) {
                     JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-                    label.setHorizontalAlignment(JLabel.CENTER);
+                    label.setHorizontalAlignment(CENTER);
                     label.setText(label.getText().toLowerCase());
                     if(isSelected) {
                         label.setBackground(table.getSelectionBackground());
@@ -186,6 +195,7 @@ public class ManagerPanel extends JPanel{
                     return progressBar;
                 }
             };
+            setDefaultRenderer(ProductLine.class, productLineRenderer);
             setDefaultRenderer(ProductLineStatus.class, statusRenderer);
             setDefaultRenderer(Float.class, progressRenderer);
             setDefaultRenderer(Object.class, textRenderer);
