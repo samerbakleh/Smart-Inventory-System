@@ -6,19 +6,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProductType {
-    private static final AtomicInteger idCounter = new AtomicInteger(1);
     private String name;
     private String subtype;
-    private  final int id ;
     private Map<Item, Double> requiredItems;
     private List<ProductLine> productLines;
     public ProductType(String name, String subtype) {
-    this.id=idCounter.getAndIncrement();
         this.name = name;
         this.subtype = subtype;
     }
     public ProductType(String name, String subtype, Map<Item, Double> requiredItems, List<ProductLine> productLines) {
-       this.id=idCounter.getAndIncrement();
         this.name = name;
         this.subtype = subtype;
         setRequiredItems(requiredItems);
@@ -65,7 +61,4 @@ public class ProductType {
         return name + " " + subtype;
     }
 
-    public int getId() {
-        return id;
-    }
 }

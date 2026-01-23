@@ -85,12 +85,5 @@ public class ProductTypeRepository {
         return null;
     }
 
-    public ProductType findById(int id)
-    {
-        for(ProductType pt:productTypes)
-        if(pt.getId()==id)
-            return pt;
-        return null;
-    }
 
 }

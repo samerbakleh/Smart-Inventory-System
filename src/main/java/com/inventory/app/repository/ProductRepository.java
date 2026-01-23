@@ -20,7 +20,7 @@ public class ProductRepository {
     public void save() {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_FILE))) {
-            bw.write("ID,ProductTypeID,ProductLineID");
+            bw.write("ID,ProductTypeName,SubType,ProductLineID");
             bw.newLine();
             for (Map.Entry<Integer, Product> entry : products.entrySet()) {
                 bw.write(getCsvLine(entry.getValue()));
@@ -50,13 +50,14 @@ public class ProductRepository {
     private Product getProductObjectFromLine(String line) {
         String[] tokens = line.split(AppConstants.CSV_DELIMITER);
         int id = Integer.parseInt(tokens[0]);
-        int productTypeId = Integer.parseInt(tokens[1]);
-        int productLineId = Integer.parseInt(tokens[2]);
-        ProductType productType = new ProductTypeRepository().findById(productTypeId);
+        String productTypeName = tokens[1];
+        String subtype = tokens[2];
+        int productLineId = Integer.parseInt(tokens[3]);
+        ProductType productType = new ProductTypeRepository().findByFullName(productTypeName,subtype);
 
         if (productType == null) {
             throw new IllegalArgumentException(
-                    "ProductType not found for id: " + productTypeId
+                    "ProductType not found for  : " + productTypeName+subtype
             );
         }
 
@@ -65,7 +66,7 @@ public class ProductRepository {
 
 
     private String getCsvLine(Product product) {
-        StringBuilder line = new StringBuilder(product.getId() + AppConstants.CSV_DELIMITER + product.getProductType().getId() + AppConstants.CSV_DELIMITER + product.getProductLineId());
+        StringBuilder line = new StringBuilder(product.getId() + AppConstants.CSV_DELIMITER + product.getProductType().getName()+AppConstants.CSV_DELIMITER+product.getProductType().getSubtype() + AppConstants.CSV_DELIMITER + product.getProductLineId());
         return line.toString();
     }
 
