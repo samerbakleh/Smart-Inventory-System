@@ -2,6 +2,7 @@ package com.inventory.app.viewer;
 
 import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.model.ProductLine;
+import com.inventory.app.viewer.components.StarRating;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ public class ProductLineInfoDialog extends JDialog {
     private ProductLine productLine;
 
     private JTextField noteField;
+    private StarRating starRating;
 
     public ProductLineInfoDialog(ProductLineController productLineController) {
         this.productLineController = productLineController;
@@ -23,6 +25,7 @@ public class ProductLineInfoDialog extends JDialog {
             @Override
             public void windowClosed(WindowEvent event) {
                 productLineController.changeProductLineNote(productLine, noteField.getText());
+                productLineController.changeProductLineRating(productLine, starRating.getRating());
             }
         });
         addComponents();
@@ -32,6 +35,7 @@ public class ProductLineInfoDialog extends JDialog {
         productLine = productLineController.getProductLineByID(id);
         setTitle(productLine.toString());
         noteField.setText(productLine.getNote());
+        starRating.setRating(productLine.getRating());
 
         pack();
         setLocationRelativeTo(null);
@@ -47,6 +51,7 @@ public class ProductLineInfoDialog extends JDialog {
         statusGroup.add(activateButton);
         statusGroup.add(stopButton);
         statusGroup.add(maintainButton);
+        starRating = new StarRating(17);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -61,6 +66,7 @@ public class ProductLineInfoDialog extends JDialog {
         gbc.gridx = 0;
         gbc.gridwidth = 3;
         add(noteField, gbc);
+        add(starRating, gbc);
     }
 
 }

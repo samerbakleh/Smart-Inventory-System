@@ -52,8 +52,8 @@ public class ProductLineController {
         }
     }
 
-    public void changeProductLineRating(ProductLine pl, String rating) {
-        productLineService.changeProductLineRating(pl, Integer.parseInt(rating));
+    public void changeProductLineRating(ProductLine pl, int rating) {
+        productLineService.changeProductLineRating(pl, rating);
     }
 
     public void changeProductLineNote(ProductLine pl, String note) {
