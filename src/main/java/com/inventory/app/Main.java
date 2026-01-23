@@ -10,6 +10,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Starting " + AppConstants.APP_NAME + " v" + AppConstants.VERSION);
         UserRepository.loadUsersFromFile();
+        while(true)
         MainFrame.startMainFrame();
     }
 }
