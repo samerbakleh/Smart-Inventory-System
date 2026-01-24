@@ -1,80 +1,105 @@
 package com.inventory.app.model;
 
+import com.inventory.app.model.enums.Unit;
+
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Locale;
 
 public class Item implements Serializable {
-    private static final AtomicInteger idCounter = new AtomicInteger(1);
+    private static final long serialVersionUID = 1L;
+
+    private static int idCounter = 1;
+
+    private static synchronized int nextId() {
+        return idCounter++;
+    }
+
+    private static synchronized void syncCounter(int loadedId) {
+        if (loadedId >= idCounter) idCounter = loadedId + 1;
+    }
 
     private final int id;
 
     private String name;
     private double price;
-    private int quantity;
-    private int minLimit;
+    private double quantity;
+    private double minLimit;
+    private Unit unit;
     private Category category;
 
-    public Item(String name, double price, int quantity, int minLimit, Category category) {
-        this.id = idCounter.getAndIncrement();
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.minLimit = minLimit;
-        this.category = category;
+    public Item(String name, double price, double quantity, double minLimit, Category category) {
+        this(nextId(), name, price, quantity, minLimit, Unit.PCS, category);
     }
-
-    public Item(int id, String name, double price, int quantity, int minLimit, Category category) {
+    public Item(String name, double price, double quantity, double minLimit, Unit unit, Category category) {
+        this(nextId(), name, price, quantity, minLimit, unit, category);
+    }
+    public Item(int id, String name, double price, double quantity, double minLimit, Unit unit, Category category) {
+        if (id <= 0) throw new IllegalArgumentException("Item id must be positive");
         this.id = id;
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.minLimit = minLimit;
-        this.category = category;
 
-        if (id >= idCounter.get()) {
-            idCounter.set(id + 1);
-        }
+        setName(name);
+        setPrice(price);
+        setQuantity(quantity);
+        setMinLimit(minLimit);
+        setUnit(unit);
+        setCategory(category);
+
+        syncCounter(id);
     }
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
     public void setName(String name) {
-        this.name = name;
+        if (name == null || name.trim().isEmpty())
+            throw new IllegalArgumentException("Item name cannot be empty");
+        this.name = name.trim();
     }
 
-    public double getPrice() {
-        return price;
-    }
+    public double getPrice() { return price; }
     public void setPrice(double price) {
+        if (price < 0) throw new IllegalArgumentException("Price cannot be negative");
         this.price = price;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public double getQuantity() { return quantity; }
+    public void setQuantity(double quantity) {
+        if (quantity < 0) throw new IllegalArgumentException("Quantity cannot be negative");
+        this.quantity = quantity;
     }
 
-    public int getMinLimit() {
-        return minLimit;
-    }
-    public void setMinLimit(int minLimit) {
+    public double getMinLimit() { return minLimit; }
+    public void setMinLimit(double minLimit) {
+        if (minLimit < 0) throw new IllegalArgumentException("Min limit cannot be negative");
         this.minLimit = minLimit;
     }
-
-
-    public Category getCategory() {
-        return category;
+    public Unit getUnit() { return unit; }
+    public void setUnit(Unit unit) {
+        if (unit == null) throw new IllegalArgumentException("Unit cannot be null");
+        this.unit = unit;
     }
+
+    public Category getCategory() { return category; }
     public void setCategory(Category category) {
+        if (category == null) throw new IllegalArgumentException("Category cannot be null");
         this.category = category;
     }
 
     @Override
     public String toString() {
-        return name + " | Quantity: " + quantity + " [" + category.getName() + "]";
+        return String.format(Locale.ROOT, "%s | Quantity: %.2f %s [%s]", name, quantity, unit, category.getName());
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item)) return false;
+        return this.id == ((Item) o).id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
     }
 }
