@@ -86,29 +86,7 @@ public class ManagerPanel extends JPanel{
         addProductLineButton.setBackground(AppConstants.PRIMARY_COLOR);
         addProductLineButton.addActionListener((ActionEvent event) -> addProductLineDialog.resetDisplay());
 
-        String[] columnName = {"ID", "Name", "Status", "Tasks", "Progress %"};
-        DefaultTableModel model = new DefaultTableModel(loadProductLinesToTable(), columnName) {
-            @Override
-            public boolean isCellEditable(int row, int col) {
-                final int NAME_COL_INDEX = 1;
-                return col == NAME_COL_INDEX;
-            }
-            @Override
-            public Class<?> getColumnClass(int colIndex) {
-                final int ID_COL_INDEX = 0;
-                final int STATUS_COL_INDEX = 2;
-                final int PROGRESS_COL_INDEX = 4;
-                if(colIndex == ID_COL_INDEX) {
-                    return ProductLine.class;
-                } else if(colIndex == STATUS_COL_INDEX) {
-                    return ProductLineStatus.class;
-                } else if(colIndex == PROGRESS_COL_INDEX) {
-                    return Float.class;
-                }
-                return super.getColumnClass(colIndex);
-            }
-        };
-        table = new ProductLineManagerTable(model);
+        table = new ProductLineManagerTable();
         JScrollPane tableContainer = new JScrollPane(table);
         table.getTableHeader().setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
@@ -152,21 +130,11 @@ public class ManagerPanel extends JPanel{
     }
 
     private class ProductLineManagerTable extends JTable {
+        private DefaultTableModel model;
         private ProductLine selectedProductLine = null;
-        public ProductLineManagerTable(TableModel model) {
-            super(model);
-            model.addTableModelListener((TableModelEvent event) -> {
-                int row = event.getFirstRow();
-                if(event.getType() == TableModelEvent.UPDATE) {
-                    ProductLine pl = (ProductLine) model.getValueAt(row, 0);
-                    boolean success = productLineController.changeProductLineName(pl, (String) model.getValueAt(row, 1));
-                    if(!success) {
-                        JOptionPane.showMessageDialog(null, "Production line name can only contain letters, numbers, and -",
-                                "Invalid Production Line Name", JOptionPane.WARNING_MESSAGE);
-                        model.setValueAt(pl.getName(), row, 1);
-                    }
-                }
-            });
+        public ProductLineManagerTable() {
+            initModel();
+            setModel(model);
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             JPopupMenu optionMenu = new JPopupMenu();
             JMenuItem option = new JMenuItem("show details");
@@ -188,7 +156,42 @@ public class ManagerPanel extends JPanel{
                 }
             });
         }
-
+        private void initModel() {
+            String[] columnName = {"ID", "Name", "Status", "Tasks", "Progress %"};
+            model = new DefaultTableModel(loadProductLinesToTable(), columnName) {
+                @Override
+                public boolean isCellEditable(int row, int col) {
+                    final int NAME_COL_INDEX = 1;
+                    return col == NAME_COL_INDEX;
+                }
+                @Override
+                public Class<?> getColumnClass(int colIndex) {
+                    final int ID_COL_INDEX = 0;
+                    final int STATUS_COL_INDEX = 2;
+                    final int PROGRESS_COL_INDEX = 4;
+                    if(colIndex == ID_COL_INDEX) {
+                        return ProductLine.class;
+                    } else if(colIndex == STATUS_COL_INDEX) {
+                        return ProductLineStatus.class;
+                    } else if(colIndex == PROGRESS_COL_INDEX) {
+                        return Float.class;
+                    }
+                    return super.getColumnClass(colIndex);
+                }
+            };
+            model.addTableModelListener((TableModelEvent event) -> {
+                int row = event.getFirstRow();
+                if(event.getType() == TableModelEvent.UPDATE) {
+                    ProductLine pl = (ProductLine) model.getValueAt(row, 0);
+                    boolean success = productLineController.changeProductLineName(pl, (String) model.getValueAt(row, 1));
+                    if(!success) {
+                        JOptionPane.showMessageDialog(null, "Production line name can only contain letters, numbers, and -",
+                                "Invalid Production Line Name", JOptionPane.WARNING_MESSAGE);
+                        model.setValueAt(pl.getName(), row, 1);
+                    }
+                }
+            });
+        }
         private void setColumnRenderer() {
             DefaultTableCellRenderer productLineRenderer = new DefaultTableCellRenderer() {
                 @Override
