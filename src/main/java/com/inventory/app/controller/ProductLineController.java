@@ -31,6 +31,10 @@ public class ProductLineController {
         return false;
     }
 
+    public boolean changeProductLineName(ProductLine pl, String name) {
+        return productLineService.changeProductLineName(pl, name);
+    }
+
     public void changeProductLineStatus(ProductLine pl, String action) {
         if(action.equals("activate")) {
             productLineService.changeProductLineStatus(pl, ProductLineStatus.ACTIVE);

@@ -9,6 +9,7 @@ import com.inventory.app.viewer.components.GradientPanel;
 import com.inventory.app.viewer.components.ShadowedLabel;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -60,7 +61,8 @@ public class ManagerPanel extends JPanel{
         DefaultTableModel model = new DefaultTableModel(loadProductLinesToTable(), columnName) {
             @Override
             public boolean isCellEditable(int row, int col) {
-                return false;
+                final int NAME_COL_INDEX = 1;
+                return col == NAME_COL_INDEX;
             }
             @Override
             public Class<?> getColumnClass(int colIndex) {
@@ -128,6 +130,19 @@ public class ManagerPanel extends JPanel{
         private ProductLine selectedProductLine = null;
         public ProductLineTable(TableModel model) {
             super(model);
+            model.addTableModelListener((TableModelEvent event) -> {
+                int row = event.getFirstRow();
+                if(event.getType() == TableModelEvent.UPDATE) {
+                    ProductLine pl = (ProductLine) model.getValueAt(row, 0);
+                    boolean success = productLineController.changeProductLineName(pl, (String) model.getValueAt(row, 1));
+                    if(!success) {
+                        JOptionPane.showMessageDialog(null, "Production line name can only contain letters, numbers, and -",
+                                "Invalid Production Line Name", JOptionPane.WARNING_MESSAGE);
+                        model.setValueAt(pl.getName(), row, 1);
+                    }
+
+                }
+            });
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             JPopupMenu optionMenu = new JPopupMenu();
             JMenuItem option = new JMenuItem("show details");
@@ -136,21 +151,18 @@ public class ManagerPanel extends JPanel{
             });
             optionMenu.add(option);
             setColumnRenderer();
-            final JTable table = this;
             addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(MouseEvent event) {
-                    int selectedRow = getSelectedRow();
-                    if(selectedRow != -1) {
-                        selectedProductLine = (ProductLine) getModel().getValueAt(selectedRow, 0);
-                        optionMenu.show(table, event.getX(), event.getY());
+                public void mouseReleased(MouseEvent event) {
+                    if(getSelectedColumn() != 1) {
+                        int selectedRow = getSelectedRow();
+                        if(selectedRow != -1) {
+                            selectedProductLine = (ProductLine) getModel().getValueAt(selectedRow, 0);
+                            optionMenu.show(event.getComponent(), event.getX(), event.getY());
+                        }
                     }
                 }
             });
-        }
-
-        public ProductLine getSelectedProductLine() {
-            return selectedProductLine;
         }
 
         private void setColumnRenderer() {

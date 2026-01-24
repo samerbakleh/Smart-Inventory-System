@@ -128,6 +128,14 @@ public class ProductLineService {
         return getLeastBusyProductLineID(pt);
     }
 
+    public boolean changeProductLineName(ProductLine pl, String name) {
+        if(validateProductLineName(name)) {
+            pl.setName(name);
+            return true;
+        }
+        return false;
+    }
+
     public void changeProductLineStatus(ProductLine pl, ProductLineStatus plStatus) {
         pl.setStatus(plStatus);
     }
