@@ -15,11 +15,10 @@ public class ProductType {
         this.name = name;
         this.subtype = subtype;
     }
-    public ProductType(String name, String subtype, Map<Item, Double> requiredItems, List<ProductLine> productLines) {
+    public ProductType(String name, String subtype, Map<Item, Double> requiredItems) {
         this.name = name;
         this.subtype = subtype;
         setRequiredItems(requiredItems);
-        this.productLines = productLines;
     }
 
     public String getName() {
@@ -43,7 +42,7 @@ public class ProductType {
     }
     public void setRequiredItems(Map<Item, Double> requiredItems) {
         for(Map.Entry<Item, Double> entry : requiredItems.entrySet()) {
-            if (entry.getValue() <= 0) {
+            if(entry.getValue() <= 0) {
                 throw new IllegalArgumentException(entry.getKey().getName()
                                                  + " required amount can't be negative or zero in " + this);
             }

@@ -17,14 +17,20 @@ import java.util.HashMap;
 
 public class ProductTypeRepository {
 
-    private static List<ProductType> productTypes;
+    private List<ProductType> productTypes;
 
     public List<ProductType> getProductTypes() {
         return productTypes;
     }
 
     public void add(ProductType pt) {
-        productTypes.add(pt);
+        int i=0;
+        while(i< productTypes.size()&& productTypes.get(i).toString().compareTo(pt.toString())<=0)
+        {
+            ++i;
+        }
+        productTypes.add(i,pt);
+
     }
 
                                              // name;subType;itemID1,quantity1,itemID2,quantity2,...

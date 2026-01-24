@@ -2,6 +2,7 @@ package com.inventory.app.controller;
 
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
+import com.inventory.app.model.enums.Unit;
 import com.inventory.app.service.InventoryService;
 
 import java.util.List;
@@ -23,13 +24,13 @@ public class ItemController {
         return service.getAllCategories();
     }
 
-    public String addItem(String name, String priceStr, String qtyStr, String minStr, int categoryId) {
+    public String addItem(String name, String priceStr, String qtyStr, String minStr, Unit unit, int categoryId) {
         try {
             double price = Double.parseDouble(priceStr.trim());
-            int qty = Integer.parseInt(qtyStr.trim());
-            int min = Integer.parseInt(minStr.trim());
+            double qty = Double.parseDouble(qtyStr.trim());
+            double min = Double.parseDouble(minStr.trim());
 
-            service.addItem(name, price, qty, min, categoryId);
+            service.addItem(name, price, qty, min, unit, categoryId);
             return null;
         } catch (NumberFormatException e) {
             return "Please enter valid numbers for price / quantity / minLimit.";
@@ -39,14 +40,17 @@ public class ItemController {
             return "Unexpected error while adding item: " + e.getMessage();
         }
     }
+    public String addItem(String name, String priceStr, String qtyStr, String minStr, int categoryId) {
+        return addItem(name, priceStr, qtyStr, minStr, Unit.PCS, categoryId);
+    }
 
-    public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, int categoryId) {
+    public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, Unit unit, int categoryId) {
         try {
             double price = Double.parseDouble(priceStr.trim());
-            int qty = Integer.parseInt(qtyStr.trim());
-            int min = Integer.parseInt(minStr.trim());
+            double qty = Double.parseDouble(qtyStr.trim());
+            double min = Double.parseDouble(minStr.trim());
 
-            service.updateItem(id, name, price, qty, min, categoryId);
+            service.updateItem(id, name, price, qty, min, unit, categoryId);
             return null;
         } catch (NumberFormatException e) {
             return "Please enter valid numbers for price / quantity / minLimit.";
@@ -55,6 +59,10 @@ public class ItemController {
         } catch (Exception e) {
             return "Unexpected error while updating item: " + e.getMessage();
         }
+    }
+
+    public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, int categoryId) {
+        return updateItem(id, name, priceStr, qtyStr, minStr, Unit.PCS, categoryId);
     }
 
     public String deleteItem(String idStr) {

@@ -45,4 +45,20 @@ public class ProductTypeService {
         linkItemToProductType(loadFromRepository());
     }
 
+    private boolean checkProductTypeData(ProductType pt) {
+        if (pt.toString() == null || pt.toString().isEmpty()) return false;
+        if (!pt.toString().matches("^[\\u0600-\\u06FFa-zA-Z ]+$")) return false;
+        for (Double quantity : pt.getRequiredItems().values()) {
+            if (quantity <= 0)
+                return false;
+        }
+        return true;
+    }
+
+    public boolean add(ProductType pt) {
+        if (!checkProductTypeData(pt)) return false;
+        else
+            productTypeRepository.add(pt);
+        return true;
+    }
 }

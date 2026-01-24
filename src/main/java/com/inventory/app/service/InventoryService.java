@@ -162,7 +162,7 @@ public class InventoryService {
         return created;
     }
 
-    public Item addItem(String name, double price, int quantity, int minLimit, Unit unit, int categoryId) {
+    public Item addItem(String name, double price,  double quantity, double minLimit, Unit unit, int categoryId) {
         List<Item> itemsSnap;
         List<Category> catsSnap;
         long expectedVersion;
@@ -193,7 +193,7 @@ public class InventoryService {
     public void updateItem(int id, String name, double price, int quantity, int minLimit, int categoryId) {
         updateItem(id, name, price, quantity, minLimit, Unit.PCS, categoryId);
     }
-    public void updateItem(int id, String name, double price, int quantity, int minLimit, Unit unit, int categoryId){
+    public void updateItem(int id, String name, double price, double quantity, double minLimit, Unit unit, int categoryId){
         List<Item> itemsSnap;
         List<Category> catsSnap;
         long expectedVersion;
