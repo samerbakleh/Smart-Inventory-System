@@ -1,2 +1,2 @@
-id,name,price,qty,minLimit,categoryId
-1,wdfg,111.0,2,1,1
+id,name,price,qty,minLimit,unit,categoryId
+1,tot,500.0,5.0,1.0,KG,3

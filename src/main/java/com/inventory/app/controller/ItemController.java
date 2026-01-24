@@ -25,7 +25,7 @@ public class ItemController {
     }
 
     public String addItem(String name, String priceStr, String qtyStr, String minStr, Unit unit, int categoryId) {
-        try {
+        try {if (unit == null) unit = Unit.PCS;
             double price = Double.parseDouble(priceStr.trim());
             double qty = Double.parseDouble(qtyStr.trim());
             double min = Double.parseDouble(minStr.trim());
@@ -45,7 +45,8 @@ public class ItemController {
     }
 
     public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, Unit unit, int categoryId) {
-        try {
+        try {if (unit == null) unit = Unit.PCS;
+
             double price = Double.parseDouble(priceStr.trim());
             double qty = Double.parseDouble(qtyStr.trim());
             double min = Double.parseDouble(minStr.trim());
@@ -63,6 +64,15 @@ public class ItemController {
 
     public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, int categoryId) {
         return updateItem(id, name, priceStr, qtyStr, minStr, Unit.PCS, categoryId);
+    }
+    public String addItem(String name, String priceStr, String qtyStr, String minStr, String unitStr, int categoryId) {
+        Unit unit = Unit.parse(unitStr);
+        return addItem(name, priceStr, qtyStr, minStr, unit, categoryId);
+    }
+
+    public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, String unitStr, int categoryId) {
+        Unit unit = Unit.parse(unitStr);
+        return updateItem(id, name, priceStr, qtyStr, minStr, unit, categoryId);
     }
 
     public String deleteItem(String idStr) {
