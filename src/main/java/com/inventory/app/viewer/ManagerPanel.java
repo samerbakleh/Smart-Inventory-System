@@ -79,7 +79,7 @@ public class ManagerPanel extends JPanel{
                 return super.getColumnClass(colIndex);
             }
         };
-        ProductLineTable table = new ProductLineTable(model);
+        ProductLineManagerTable table = new ProductLineManagerTable(model);
         JScrollPane tableContainer = new JScrollPane(table);
         table.getTableHeader().setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
@@ -126,9 +126,9 @@ public class ManagerPanel extends JPanel{
         return result;
     }
 
-    private class ProductLineTable extends JTable {
+    private class ProductLineManagerTable extends JTable {
         private ProductLine selectedProductLine = null;
-        public ProductLineTable(TableModel model) {
+        public ProductLineManagerTable(TableModel model) {
             super(model);
             model.addTableModelListener((TableModelEvent event) -> {
                 int row = event.getFirstRow();

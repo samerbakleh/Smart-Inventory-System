@@ -16,6 +16,7 @@ public class MainFrame extends JFrame {
     private JPanel cardPanel;
     private LogInPanel logInPanel;
     private ManagerPanel managerPanel;
+    private SupervisorPanel supervisorPanel;
 
     public MainFrame(MainController mainController, AuthenticationController authenticationController,
                      ProductLineController productLineController) {
@@ -23,6 +24,7 @@ public class MainFrame extends JFrame {
         this.mainController = mainController;
         this.logInPanel = new LogInPanel(authenticationController);
         this.managerPanel = new ManagerPanel(productLineController);
+        this.supervisorPanel = new SupervisorPanel(productLineController);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -95,9 +97,10 @@ public class MainFrame extends JFrame {
         cardPanel = new JPanel(new CardLayout());
 
         logInPanel.setContainer(this);
-        cardPanel.add(logInPanel, logInPanel.getName());
 
+        cardPanel.add(logInPanel, logInPanel.getName());
         cardPanel.add(managerPanel, managerPanel.getName());
+        cardPanel.add(supervisorPanel, supervisorPanel.getName());
 
         add(cardPanel);
     }
@@ -111,6 +114,9 @@ public class MainFrame extends JFrame {
     }
     public void switchToManagerPanel() {
         switchCard(managerPanel.getName());
+    }
+    public void switchToSupervisorPanel() {
+        switchCard(supervisorPanel.getName());
     }
 
 }
