@@ -2,7 +2,6 @@ package com.inventory.app.viewer;
 
 import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.model.ProductLine;
-import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.GradientPanel;
@@ -21,17 +20,47 @@ import java.util.List;
 public class ManagerPanel extends JPanel{
 
     private ProductLineController productLineController;
+
     private AddProductLineDialog addProductLineDialog;
     private ProductLineInfoDialog productLineInfoDialog;
+    private ProductLineManagerTable table;
 
     public ManagerPanel(ProductLineController productLineController) {
         super(new GridBagLayout());
         this.productLineController = productLineController;
         this.addProductLineDialog = new AddProductLineDialog(productLineController);
         this.productLineInfoDialog = new ProductLineInfoDialog(productLineController);
+        this.productLineInfoDialog.setContainer(this);
         setName("Manager panel");
         setBackground(Color.white);
         addComponents();
+    }
+
+    public void refreshTableContent() {
+        int n = table.getRowCount();
+        List<Float> percentages = productLineController.getProductLineProductionPercentage();
+        for(int i = 0; i < n; i++) {
+            refreshRowContent(i, percentages.get(i));
+        }
+    }
+
+    public void refreshRowContent(int rowIndex) {
+        TableModel model = table.getModel();
+        List<Float> percentages = productLineController.getProductLineProductionPercentage();
+        ProductLine pl = (ProductLine) model.getValueAt(rowIndex, 0);
+        model.setValueAt(pl.getName(), rowIndex, 1);
+        model.setValueAt(pl.getStatus(), rowIndex, 2);
+        model.setValueAt(pl.getNumOfTasks(), rowIndex, 3);
+        model.setValueAt(percentages.get(rowIndex), rowIndex, 4);
+    }
+
+    private void refreshRowContent(int rowIndex, float percentage) {
+        TableModel model = table.getModel();
+        ProductLine pl = (ProductLine) model.getValueAt(rowIndex, 0);
+        model.setValueAt(pl.getName(), rowIndex, 1);
+        model.setValueAt(pl.getStatus(), rowIndex, 2);
+        model.setValueAt(pl.getNumOfTasks(), rowIndex, 3);
+        model.setValueAt(percentage, rowIndex, 4);
     }
 
     private void addComponents() {
@@ -79,7 +108,7 @@ public class ManagerPanel extends JPanel{
                 return super.getColumnClass(colIndex);
             }
         };
-        ProductLineManagerTable table = new ProductLineManagerTable(model);
+        table = new ProductLineManagerTable(model);
         JScrollPane tableContainer = new JScrollPane(table);
         table.getTableHeader().setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
@@ -117,11 +146,7 @@ public class ManagerPanel extends JPanel{
         Object[][] result = new Object[productLines.size()][5];
         for(int i = 0; i < productLines.size(); i++) {
             ProductLine pl = productLines.get(i);
-            int numOfTasks = 0;
-            for(List<Task> tasks : pl.getTasks().values()) {
-                numOfTasks += tasks.size();
-            }
-            result[i] = new Object[]{pl, pl.getName(), pl.getStatus(), numOfTasks, percentages.get(i)};
+            result[i] = new Object[]{pl, pl.getName(), pl.getStatus(), pl.getNumOfTasks(), percentages.get(i)};
         }
         return result;
     }
@@ -140,14 +165,13 @@ public class ManagerPanel extends JPanel{
                                 "Invalid Production Line Name", JOptionPane.WARNING_MESSAGE);
                         model.setValueAt(pl.getName(), row, 1);
                     }
-
                 }
             });
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             JPopupMenu optionMenu = new JPopupMenu();
             JMenuItem option = new JMenuItem("show details");
             option.addActionListener((ActionEvent event) -> {
-                productLineInfoDialog.display(selectedProductLine);
+                productLineInfoDialog.display(selectedProductLine, getSelectedRow());
             });
             optionMenu.add(option);
             setColumnRenderer();

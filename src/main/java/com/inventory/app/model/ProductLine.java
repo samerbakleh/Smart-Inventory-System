@@ -82,6 +82,13 @@ public class ProductLine {
     public boolean getSublineWorkingStatus(ProductType pt) {
         return sublineWorkingStatus.get(pt);
     }
+    public int getNumOfTasks() {
+        int total = 0;
+        for(Queue<Task> queue : tasks.values()) {
+            total += queue.size();
+        }
+        return total;
+    }
 
     public void setName(String name) {
         this.name = name;

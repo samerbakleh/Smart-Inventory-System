@@ -36,14 +36,11 @@ public class ProductLineController {
     }
 
     public void changeProductLineStatus(ProductLine pl, String action) {
-        if(action.equals("activate")) {
-            productLineService.changeProductLineStatus(pl, ProductLineStatus.ACTIVE);
-        } else if(action.equals("stop")) {
-            productLineService.changeProductLineStatus(pl, ProductLineStatus.STOPPED);
-        } else if(action.equals("maintain")) {
-            productLineService.changeProductLineStatus(pl, ProductLineStatus.MAINTENANCE);
-        } else {
-            throw new IllegalArgumentException("Invalid production line status command");
+        try {
+            ProductLineStatus status = ProductLineStatus.valueOf(action);
+            productLineService.changeProductLineStatus(pl, status);
+        } catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid production line status command", e);
         }
     }
 
