@@ -62,7 +62,7 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
 
                      */
                 }
-                productService.addNewProduct(productType, productLine);
+                productService.add(productType, productLine.getID());
                 productLine.incrementTotalProduction();
                 taskService.completeTask(task.getTaskID());
             }
