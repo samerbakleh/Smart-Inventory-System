@@ -1,5 +1,6 @@
 package com.inventory.app.repository;
 
+import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
 
@@ -7,11 +8,18 @@ import com.inventory.app.model.enums.TaskStatus;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskRepository {
     private ArrayList <Task> tasks = new ArrayList<>();
+    private ProductTypeRepository productTypeRepository;
     private final String TASK_FILE = "src/main/resources/data/tasks.csv";
-     public void save (Task task){
+    public TaskRepository() {}
+    public void setProductTypeRepository(ProductTypeRepository productTypeRepository) {
+        this.productTypeRepository = productTypeRepository;
+    }
+
+    public void save (Task task){
 
              tasks.add(task);
              System.out.println("saved");
@@ -21,6 +29,10 @@ public class TaskRepository {
 
      public ArrayList<Task> getTasks() {
          return tasks;
+     }
+     public List<ProductType>getProductTypes()
+     {
+         return productTypeRepository.getProductTypes();
      }
 
     public Task findById(int id) {
@@ -37,7 +49,7 @@ public class TaskRepository {
                 // System.out.println(task.getTaskID());
                  printWriter.println(
                          String.valueOf(task.getTaskID())+ ',' +
-                         task.getProductName() + ',' +
+                         task.getProductType().toString() + ',' +
                          task.getQuantityRequired()+ ',' +
                          task.getProductLineID()+ ','+
                          task.getClientName()+ ',' +
@@ -61,7 +73,7 @@ public class TaskRepository {
                 String data[] = Line.split(",");
                 Task t = new Task(
                         Integer.parseInt(data[2]),//QTY
-                        data[1], //ProductName
+                        productTypeRepository.findByFullName(data[1]), //ProductName
                         data[4], // clientName
                         Integer.parseInt(data[3]),// PL-ID
                         LocalDate.parse(data[7]) // D-date
@@ -88,5 +100,9 @@ public class TaskRepository {
                  tasks1.add(t);
          }
          return tasks1;
+    }
+
+    public ProductTypeRepository getProductTypeRepository() {
+        return productTypeRepository;
     }
 }

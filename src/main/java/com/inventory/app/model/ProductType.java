@@ -10,7 +10,6 @@ public class ProductType {
     private String subtype;
     private Map<Item, Double> requiredItems;
     private List<ProductLine> productLines;
-
     public ProductType(String name, String subtype) {
         this.name = name;
         this.subtype = subtype;

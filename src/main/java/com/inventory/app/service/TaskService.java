@@ -1,20 +1,28 @@
 package com.inventory.app.service;
 
+import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.repository.ProductTypeRepository;
 import com.inventory.app.repository.TaskRepository;
 import com.inventory.app.service.Threads.TaskThread;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskService {
     private final TaskRepository taskRepository ;
+    //private final ProductTypeRepository productTypeRepository;
+    public TaskService(TaskRepository taskRepository,ProductTypeRepository productTypeRepository) {
 
-    public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
+        this.taskRepository.setProductTypeRepository(productTypeRepository);
     }
-
+    public ProductTypeRepository getProductTypeRepository()
+    {
+        return taskRepository.getProductTypeRepository();
+    }
     public void addTask(Task task){
             if (!task.isTaken()) {
                 taskRepository.save(task);
@@ -78,6 +86,13 @@ public class TaskService {
     public TaskRepository getTaskRepository(){
         return taskRepository;
     }
+    public List<String>getProductTypesFullNames()
+    {
+        List<String>fullNames= new ArrayList<>();
+        for (ProductType pt : taskRepository.getProductTypes())
+            fullNames.add(pt.toString());
+        return fullNames;
+    }
 
     public ArrayList<Task> getAllTasks(){
         return taskRepository.getTasks();
@@ -132,6 +147,7 @@ public class TaskService {
         task.setProductName(newProductName);
     }
     public void executeTask(Task task){
+
         if (task.getTaskStatus() == TaskStatus.CANCELLED) {
             throw new IllegalStateException("Task can not be started");
         }

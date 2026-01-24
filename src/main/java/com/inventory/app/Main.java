@@ -1,8 +1,10 @@
 package com.inventory.app;
 
 import com.inventory.app.controller.TaskController;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.repository.ProductTypeRepository;
 import com.inventory.app.repository.TaskRepository;
 import com.inventory.app.service.TaskService;
 import com.inventory.app.util.AppConstants;
@@ -13,25 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Main {
-    public static void testTasks (){
-        TaskRepository taskRepository = new TaskRepository();
-        TaskService taskService = new TaskService(taskRepository);
-        TaskController taskController = new TaskController(taskService);
 
-        Task task1 = new Task(100,"charger","zaher",101,LocalDate.now());
-        Task task2 = new Task(140,"Juice","Samer",102,LocalDate.now());
-        Task task3 = new Task(10,"lap","Ahmad",103,LocalDate.now());
-
-        taskController.addTask(task1);
-        taskController.addTask(task2);
-        taskController.addTask(task3);
-
-        taskController.startTask(task1);
-        taskController.startTask(task2);
-        taskController.startTask(task3);
-
-        view(taskController.getAllTasks());
-    }
     public static void view(ArrayList<Task>tasks){
 
         Thread viewThread = new Thread(new Runnable() {
@@ -72,12 +56,17 @@ public class Main {
     public static void TaskUI() {
 
         TaskRepository taskRepository = new TaskRepository();
-        TaskService taskService = new TaskService(taskRepository);
+        ProductTypeRepository productTypeRepository = new ProductTypeRepository();
+        productTypeRepository.add(new ProductType("f","16"));
+        productTypeRepository.add(new ProductType("a","16"));
+        productTypeRepository.add(new ProductType("z","16"));
+        TaskService taskService = new TaskService(taskRepository,productTypeRepository);
+
         taskRepository.loadTasks();
         TaskController taskController = new TaskController(taskService);
 
-        // taskController.addTask(new Task(100,"KHUBEZ","zaher",12,LocalDate.now().plusDays(2)));
-        // taskController.addTask(new Task(500,"MUJADARA","ahmad",15,LocalDate.now().plusDays(6)));
+        taskController.addTask(new Task(100,productTypeRepository.findByFullName("f","16"),"zaher",12,LocalDate.now().plusDays(2)));
+         taskController.addTask(new Task(500,productTypeRepository.findByFullName("a","16"),"ahmad",15,LocalDate.now().plusDays(6)));
         // taskController.addTask(new Task(10,"SHISH-BARAK","samer",13,LocalDate.now().plusDays(5)));
         // taskRepository.save(taskController.getTaskById(10000));
         SwingUtilities.invokeLater(() -> {
@@ -87,7 +76,7 @@ public class Main {
 
         taskController.startTask(taskController.getTaskById(10000));
         taskController.startTask(taskController.getTaskById(10001));
-        taskController.startTask(taskController.getTaskById(10002));
+        //taskController.startTask(taskController.getTaskById(10002));
     }
     public static void main(String[] args) {
         System.out.println("Starting " + AppConstants.APP_NAME + " v" + AppConstants.VERSION);

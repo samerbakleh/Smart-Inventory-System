@@ -16,7 +16,8 @@ public class TaskCreationDialog extends JDialog{
 
         JPanel formPanel = new JPanel(new GridLayout(2, 4, 10, 5));
 
-        JTextField productNameField = new JTextField();
+        JComboBox<String>productCombo= new JComboBox<>(controller.getProductTypesFullNames().toArray(new String[0]));
+
         JTextField clientField = new JTextField();
         JTextField quantityField = new JTextField();
         JTextField deliveryDateField = new JTextField();
@@ -26,7 +27,7 @@ public class TaskCreationDialog extends JDialog{
         formPanel.add(new JLabel("Quantity"));
         formPanel.add(new JLabel("Delivery Date"));
 
-        formPanel.add(productNameField);
+        formPanel.add(productCombo);
         formPanel.add(clientField);
         formPanel.add(quantityField);
         formPanel.add(deliveryDateField);
@@ -43,7 +44,7 @@ public class TaskCreationDialog extends JDialog{
         saveBtn.addActionListener(e -> {
             try {
                 Task task = new Task(Integer.parseInt(quantityField.getText()),
-                        productNameField.getText(),
+                        controller.getTaskService().getProductTypeRepository().findByFullName((String) productCombo.getSelectedItem()),
                         clientField.getText(),
                         12,//حط تابع احمد
                         LocalDate.parse(deliveryDateField.getText())

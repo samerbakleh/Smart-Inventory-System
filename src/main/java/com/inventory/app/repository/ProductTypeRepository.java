@@ -17,16 +17,22 @@ import java.util.HashMap;
 
 public class ProductTypeRepository {
 
-    private List<ProductType> productTypes;
+    private List<ProductType> productTypes= new ArrayList<>();
 
     public List<ProductType> getProductTypes() {
         return productTypes;
     }
 
     public void add(ProductType pt) {
-        productTypes.add(pt);
-    }
+        int i=0;
 
+        while(i< productTypes.size()&& productTypes.get(i).toString().compareTo(pt.toString())<=0)
+        {
+            ++i;
+        }
+        productTypes.add(i,pt);
+        System.out.println(productTypes);
+    }
     // name;subType;itemId1,quantity1,itemId2,quantity2,...
     public void save() throws IOException {
         BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE));

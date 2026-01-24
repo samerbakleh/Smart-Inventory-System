@@ -1,11 +1,13 @@
 package com.inventory.app.controller;
 
+import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.service.TaskService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TaskController {
 
@@ -15,8 +17,16 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    public TaskService getTaskService() {
+        return taskService;
+    }
+
     public void addTask (Task task){
         taskService.addTask(task);
+    }
+    public List<String>getProductTypesFullNames()
+    {
+        return taskService.getProductTypesFullNames();
     }
 
     public void startTask(Task task){
