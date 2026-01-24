@@ -3,9 +3,9 @@ package com.inventory.app.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProductType {
-
     private String name;
     private String subtype;
     private Map<Item, Double> requiredItems;
@@ -15,6 +15,7 @@ public class ProductType {
         this.subtype = subtype;
     }
     public ProductType(String name, String subtype, Map<Item, Double> requiredItems, List<ProductLine> productLines) {
+    public ProductType(String name, String subtype, Map<Item, Double> requiredItems) {
         this.name = name;
         this.subtype = subtype;
         setRequiredItems(requiredItems);

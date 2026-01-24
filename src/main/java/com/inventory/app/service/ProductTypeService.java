@@ -23,32 +23,53 @@ public class ProductTypeService {
 
     public void setProductTypeRepository(ProductTypeRepository productTypeRepository) {
         this.productTypeRepository = productTypeRepository;
+    private ItemRepository itemRepository;
+
+    public ProductTypeService(ProductTypeRepository productTypeRepository, ItemRepository itemRepository) {
+        this.productTypeRepository = productTypeRepository;
+        this.itemRepository = itemRepository;
     }
 
     public void saveToRepository() throws IOException {
         productTypeRepository.save();
     }
 
-   /* public Map<ProductType, Map<Integer, Double>> loadFromRepository() throws IOException {
+    public Map<ProductType, Map<Integer, Double>> loadFromRepository() throws IOException {
         return productTypeRepository.load();
-    }*/
+    }
 
-   /* public void linkItemToProductType(Map<ProductType, Map<Integer, Double>> unlinkedProductTypes,
-                                      ItemRepository itemRepository) throws IOException {
-        for(Map.Entry<ProductType, Map<Integer, Double>> entry : unlinkedProductTypes.entrySet()) {
+    public void linkItemToProductType(Map<ProductType, Map<Integer, Double>> unlinkedProductTypes) throws IOException {
+        for (Map.Entry<ProductType, Map<Integer, Double>> entry : unlinkedProductTypes.entrySet()) {
             Map<Item, Double> requiredItems = new HashMap<>();
-            for(Map.Entry<Integer, Double> reqItem : entry.getValue().entrySet()) {
-                Item item = itemRepository.findById(reqItem.getKey());
-                if(item == null)
+            for (Map.Entry<Integer, Double> reqItem : entry.getValue().entrySet()) {
+                Item item = itemRepository.findByID(reqItem.getKey());
+                if (item == null) {
                     throw new IOException("Some of the files content is corrupted");
+                }
                 requiredItems.put(item, reqItem.getValue());
             }
             entry.getKey().setRequiredItems(requiredItems);
         }
     }
 
-    public void loadAndLink(ItemRepository itemRepository) throws IOException {
-        linkItemToProductType(loadFromRepository(), itemRepository);
-    }*/
+    public void loadAndLink() throws IOException {
+        linkItemToProductType(loadFromRepository());
+    }
 
+    private boolean checkProductTypeData(ProductType pt) {
+        if (pt.toString() == null || pt.toString().isEmpty()) return false;
+        if (!pt.toString().matches("^[\\u0600-\\u06FFa-zA-Z ]+$")) return false;
+        for (Double quantity : pt.getRequiredItems().values()) {
+            if (quantity <= 0)
+                return false;
+        }
+        return true;
+    }
+
+    public boolean add(ProductType pt) {
+        if (!checkProductTypeData(pt)) return false;
+        else
+            productTypeRepository.add(pt);
+        return true;
+    }
 }

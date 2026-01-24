@@ -13,6 +13,10 @@ import com.inventory.app.viewer.TaskViewerFrame;
 import javax.swing.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import com.inventory.app.util.ErrorLog;
+import com.inventory.app.viewer.MainFrame;
+
+import javax.swing.SwingUtilities;
 
 public class Main {
 
@@ -79,7 +83,13 @@ public class Main {
         //taskController.startTask(taskController.getTaskById(10002));
     }
     public static void main(String[] args) {
+
         System.out.println("Starting " + AppConstants.APP_NAME + " v" + AppConstants.VERSION);
+        UserRepository.loadUsersFromFile();
+        MainFrame.startMainFrame();
+        ErrorLog.installGlobalHandlers();
+
+     
 
         // تشغيل الواجهة في الثريد الخاص بها (Best Practice for Swing)
         SwingUtilities.invokeLater(() -> {
