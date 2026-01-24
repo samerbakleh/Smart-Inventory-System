@@ -1,6 +1,7 @@
 package com.inventory.app.viewer;
 
 import com.inventory.app.controller.AuthenticationController;
+import com.inventory.app.controller.ItemController;
 import com.inventory.app.controller.MainController;
 import com.inventory.app.controller.ProductLineController;
 
@@ -19,12 +20,12 @@ public class MainFrame extends JFrame {
     private SupervisorPanel supervisorPanel;
 
     public MainFrame(MainController mainController, AuthenticationController authenticationController,
-                     ProductLineController productLineController) {
+                     ItemController itemController, ProductLineController productLineController) {
         super("Production & Inventory Management System");
         this.mainController = mainController;
         this.logInPanel = new LogInPanel(authenticationController);
         this.managerPanel = new ManagerPanel(productLineController);
-        this.supervisorPanel = new SupervisorPanel(productLineController);
+        this.supervisorPanel = new SupervisorPanel(itemController, productLineController);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override

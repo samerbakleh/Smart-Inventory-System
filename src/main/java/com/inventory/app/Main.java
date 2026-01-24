@@ -1,9 +1,11 @@
 package com.inventory.app;
 
 import com.inventory.app.controller.AuthenticationController;
+import com.inventory.app.controller.ItemController;
 import com.inventory.app.controller.MainController;
 import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.repository.*;
+import com.inventory.app.service.InventoryService;
 import com.inventory.app.service.ProductLineService;
 import com.inventory.app.service.ProductTypeService;
 import com.inventory.app.util.AppConstants;
@@ -23,11 +25,13 @@ public class Main {
         ProductLineRepository productLineRepository = new ProductLineRepository();
         TaskRepository taskRepository = new TaskRepository();
 
+        InventoryService inventoryService = new InventoryService(itemRepository, categoryRepository);
         ProductLineService productLineService = new ProductLineService(productLineRepository, taskRepository,
                                                                        productTypeRepository);
         ProductTypeService productTypeService = new ProductTypeService(productTypeRepository, itemRepository);
 
         MainController mainController = new MainController(productTypeService, productLineService);
+        ItemController itemController = new ItemController(inventoryService);
         ProductLineController productLineController = new ProductLineController(productLineService);
         AuthenticationController authenticationController = new AuthenticationController();
 
@@ -46,7 +50,7 @@ public class Main {
                     e.printStackTrace();
                 }
 
-                MainFrame mainFrame = new MainFrame(mainController, authenticationController, productLineController);
+                MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController, productLineController);
             }
         });
 
