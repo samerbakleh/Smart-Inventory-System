@@ -17,9 +17,13 @@ public class ProductLineTable extends JTable {
     public ProductLineTable(List<ProductLine> productLines) {
         this.productLines = productLines;
         initModel();
-        setModel(model);
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         setColumnRenderer();
+    }
+
+    public void setProductLines(List<ProductLine> productLines) {
+        this.productLines = productLines;
+        initModel();
     }
 
     private void initModel() {
@@ -44,6 +48,7 @@ public class ProductLineTable extends JTable {
                 return super.getColumnClass(colIndex);
             }
         };
+        setModel(model);
     }
 
     private void setColumnRenderer() {

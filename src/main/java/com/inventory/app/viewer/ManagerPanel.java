@@ -134,7 +134,6 @@ public class ManagerPanel extends JPanel{
         private ProductLine selectedProductLine = null;
         public ProductLineManagerTable() {
             initModel();
-            setModel(model);
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             JPopupMenu optionMenu = new JPopupMenu();
             JMenuItem option = new JMenuItem("show details");
@@ -191,6 +190,7 @@ public class ManagerPanel extends JPanel{
                     }
                 }
             });
+            setModel(model);
         }
         private void setColumnRenderer() {
             DefaultTableCellRenderer productLineRenderer = new DefaultTableCellRenderer() {
