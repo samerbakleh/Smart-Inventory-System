@@ -7,6 +7,7 @@ import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.exception.ReachedMinLimitException;
 import com.inventory.app.service.InventoryService;
 import com.inventory.app.service.ProductService;
+import com.inventory.app.service.TaskService;
 
 import javax.swing.*;
 import java.util.Queue;
@@ -18,13 +19,15 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
     private ProductType productType;
     private InventoryService inventoryService;
     private ProductService productService;
+    private TaskService taskService;
 
     public ProductionWorker(ProductLine productLine, ProductType productType, InventoryService inventoryService,
-                            ProductService productService) {
+                            ProductService productService, TaskService taskService) {
         this.productLine = productLine;
         this.productType = productType;
         this.inventoryService = inventoryService;
         this.productService = productService;
+        this.taskService = taskService;
     }
 
     public ProductLine getProductLine() {
@@ -42,7 +45,7 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
         Queue<Task> tasksQueue = productLine.getTasks(productType);
         while(!tasksQueue.isEmpty() && productLine.isActive()) {
             Task task = tasksQueue.peek();
-            task.setTaskStatus(TaskStatus.IN_PROGRESS);
+            taskService.startTask(task.getTaskID());
             double time = 0;
             for(Double amount : productType.getRequiredItems().values()) {
                 time += amount;
@@ -61,11 +64,7 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
                 }
                 productService.addNewProduct(productType, productLine);
                 productLine.incrementTotalProduction();
-                /*
-
-                update task progress & maybe status
-
-                 */
+                taskService.completeTask(task.getTaskID());
             }
             tasksQueue.remove();
         }
