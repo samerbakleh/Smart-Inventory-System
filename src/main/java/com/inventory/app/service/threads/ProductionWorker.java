@@ -4,7 +4,7 @@ import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
-import com.inventory.app.model.exceptions.ReachedMinLimitException;
+import com.inventory.app.exception.ReachedMinLimitException;
 import com.inventory.app.service.InventoryService;
 import com.inventory.app.service.ProductService;
 
