@@ -1,5 +1,7 @@
 package com.inventory.app.model;
 
+import com.inventory.app.model.enums.Unit;
+
 import java.io.Serializable;
 import java.util.Locale;
 
@@ -20,15 +22,18 @@ public class Item implements Serializable {
 
     private String name;
     private double price;
-    private int quantity;
-    private int minLimit;
+    private double quantity;
+    private double minLimit;
+    private Unit unit;
     private Category category;
 
-    public Item(String name, double price, int quantity, int minLimit, Category category) {
-        this(nextId(), name, price, quantity, minLimit, category);
+    public Item(String name, double price, double quantity, double minLimit, Category category) {
+        this(nextId(), name, price, quantity, minLimit, Unit.PCS, category);
     }
-
-    public Item(int id, String name, double price, int quantity, int minLimit, Category category) {
+    public Item(String name, double price, double quantity, double minLimit, Unit unit, Category category) {
+        this(nextId(), name, price, quantity, minLimit, unit, category);
+    }
+    public Item(int id, String name, double price, double quantity, double minLimit, Unit unit, Category category) {
         if (id <= 0) throw new IllegalArgumentException("Item id must be positive");
         this.id = id;
 
@@ -36,6 +41,7 @@ public class Item implements Serializable {
         setPrice(price);
         setQuantity(quantity);
         setMinLimit(minLimit);
+        setUnit(unit);
         setCategory(category);
 
         syncCounter(id);
@@ -56,16 +62,21 @@ public class Item implements Serializable {
         this.price = price;
     }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) {
+    public double getQuantity() { return quantity; }
+    public void setQuantity(double quantity) {
         if (quantity < 0) throw new IllegalArgumentException("Quantity cannot be negative");
         this.quantity = quantity;
     }
 
-    public int getMinLimit() { return minLimit; }
-    public void setMinLimit(int minLimit) {
+    public double getMinLimit() { return minLimit; }
+    public void setMinLimit(double minLimit) {
         if (minLimit < 0) throw new IllegalArgumentException("Min limit cannot be negative");
         this.minLimit = minLimit;
+    }
+    public Unit getUnit() { return unit; }
+    public void setUnit(Unit unit) {
+        if (unit == null) throw new IllegalArgumentException("Unit cannot be null");
+        this.unit = unit;
     }
 
     public Category getCategory() { return category; }
@@ -76,8 +87,9 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return String.format( "%s | Quantity: %d [%s]", name, quantity, category.getName());
+        return String.format("%s | Quantity: %d %s [%s]", name, quantity, unit, category.getName());
     }
+
 
     @Override
     public boolean equals(Object o) {

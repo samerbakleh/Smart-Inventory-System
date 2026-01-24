@@ -13,7 +13,7 @@ public class AppConstants {
     public static final String USERS_FILE = DATA_DIR + "users.txt";
     public static final String LOG_FILE = DATA_DIR + "error_log.txt";
     public static final String ITEMS_FILE = DATA_DIR +"items.csv";
-    public static final String CATEGORIES_FILE = DATA_DIR +"items.csv";
+    public static final String CATEGORIES_FILE = DATA_DIR +"categories.csv";
     public static final String CSV_DELIMITER = ",";
 
     // Colors (For UI consistency)
