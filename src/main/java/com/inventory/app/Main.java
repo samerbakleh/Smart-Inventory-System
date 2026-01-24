@@ -3,10 +3,7 @@ package com.inventory.app;
 import com.inventory.app.controller.AuthenticationController;
 import com.inventory.app.controller.MainController;
 import com.inventory.app.controller.ProductLineController;
-import com.inventory.app.repository.ItemRepository;
-import com.inventory.app.repository.ProductLineRepository;
-import com.inventory.app.repository.ProductTypeRepository;
-import com.inventory.app.repository.TaskRepository;
+import com.inventory.app.repository.*;
 import com.inventory.app.service.ProductLineService;
 import com.inventory.app.service.ProductTypeService;
 import com.inventory.app.util.AppConstants;
@@ -21,7 +18,8 @@ public class Main {
         System.out.println("Starting " + AppConstants.APP_NAME + " v" + AppConstants.VERSION);
 
         ProductTypeRepository productTypeRepository = new ProductTypeRepository();
-        ItemRepository itemRepository = new ItemRepository();
+        CategoryRepository categoryRepository = new CategoryRepository();
+        ItemRepository itemRepository = new ItemRepository(categoryRepository);
         ProductLineRepository productLineRepository = new ProductLineRepository();
         TaskRepository taskRepository = new TaskRepository();
 
