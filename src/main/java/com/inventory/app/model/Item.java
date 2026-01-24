@@ -87,7 +87,7 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s | Quantity: %d %s [%s]", name, quantity, unit, category.getName());
+        return String.format(Locale.ROOT, "%s | Quantity: %.2f %s [%s]", name, quantity, unit, category.getName());
     }
 
 

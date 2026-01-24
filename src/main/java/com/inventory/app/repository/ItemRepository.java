@@ -87,8 +87,9 @@ public class ItemRepository {
                     int id = parseInt(parts.get(0), "id");
                     String name = parts.get(1).trim();
                     double price = parseDouble(parts.get(2), "price");
-                    int qty = parseInt(parts.get(3), "qty");
-                    int minLimit = parseInt(parts.get(4), "minLimit");
+                    double qty = parseDouble(parts.get(3), "qty");
+                    double minLimit = parseDouble(parts.get(4), "minLimit");
+
 
                     Unit unit;
                     int categoryId;
@@ -108,6 +109,7 @@ public class ItemRepository {
                     }
 
                     items.add(new Item(id, name, price, qty, minLimit, unit, category));
+
 
                 } catch (RuntimeException ex) {
                     if (strict) throw ex;
@@ -176,6 +178,62 @@ public class ItemRepository {
         } catch (Exception e) {
             throw new RepositoryException("Invalid " + field + ": " + s);
         }
+    }
+    public Item findById(int id) {
+        if (id <= 0) throw new IllegalArgumentException("id must be positive");
+
+        ensureDataDir();
+        if (!Files.exists(itemsFile)) return null;
+
+        Map<Integer, Category> categoriesById = categoryRepository.loadById();
+
+        try (BufferedReader br = Files.newBufferedReader(itemsFile, StandardCharsets.UTF_8)) {
+            String line;
+            boolean headerChecked = false;
+
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
+                if (!headerChecked) {
+                    headerChecked = true;
+                    String lower = line.toLowerCase(Locale.ROOT);
+                    if (lower.startsWith("id" + delimiter)) continue;
+                }
+
+                List<String> parts = Csv.parseLine(line, delimiter);
+                if (parts.size() < MIN_COLS_OLD) continue;
+
+                int rowId = parseInt(parts.get(0), "id");
+                if (rowId != id) continue;
+
+                String name = parts.get(1).trim();
+                double price = parseDouble(parts.get(2), "price");
+                double qty = parseDouble(parts.get(3), "qty");
+                double minLimit = parseDouble(parts.get(4), "minLimit");
+
+                Unit unit;
+                int categoryId;
+
+                if (parts.size() >= COLS_NEW) {
+                    unit = Unit.parse(parts.get(5));
+                    categoryId = parseInt(parts.get(6), "categoryId");
+                } else {
+                    unit = Unit.PCS;
+                    categoryId = parseInt(parts.get(5), "categoryId");
+                }
+
+                Category category = categoriesById.get(categoryId);
+                if (category == null) return null;
+
+                return new Item(rowId, name, price, qty, minLimit, unit, category);
+            }
+
+        } catch (IOException e) {
+            throw new RepositoryException("Error reading items file: " + itemsFile, e);
+        }
+
+        return null;
     }
 
     private static final class Csv {
