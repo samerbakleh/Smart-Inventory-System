@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class ProductTypeRepository {
 
-    private List<ProductType> productTypes;
+    private List<ProductType> productTypes= new ArrayList<>();
 
     public List<ProductType> getProductTypes() {
         return productTypes;
@@ -25,6 +25,7 @@ public class ProductTypeRepository {
 
     public void add(ProductType pt) {
         int i=0;
+
         while(i< productTypes.size()&& productTypes.get(i).toString().compareTo(pt.toString())<=0)
         {
             ++i;
@@ -44,6 +45,44 @@ public class ProductTypeRepository {
         }
     }
 
+    // returns a map with product types as keys and the corresponding values
+    // are required items by id to link with the product type
+/*    public Map<ProductType, Map<Integer, Double>> load() throws IOException {
+        productTypes = new ArrayList<>();
+        Map<ProductType, Map<Integer, Double>> unlinkedProductTypes = new HashMap<>();
+        try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_TYPES_FILE))) {
+            for(String line : bfReader.readAllLines()) {
+                if(line.isEmpty())
+                    continue;
+                String[] mainParts = line.split(";");
+                if(mainParts.length < 3 || !mainParts[0].matches("[a-zA-Z0-9-]+") || !mainParts[1].matches("[a-zA-Z0-9.-]+"))
+                    throw new IOException(AppConstants.PRODUCT_TYPES_FILE + " content is corrupted");
+                ProductType pt = new ProductType(mainParts[0], mainParts[1]);
+                productTypes.add(pt);
+                Map<Integer, Double> requiredItemsById = new HashMap<>();
+                String[] requiredItemsParts = mainParts[1].split(",");
+                for(int i = 0; i < requiredItemsParts.length; i += 2) {
+                    try {
+                        Integer id = Integer.valueOf(requiredItemsParts[i]);
+                        Double quantity = Double.valueOf(requiredItemsParts[i + 1]);
+                        requiredItemsById.put(id, quantity);
+                    } catch(NumberFormatException | IndexOutOfBoundsException e) {
+                        throw new IOException(AppConstants.PRODUCT_TYPES_FILE + " content is corrupted", e);
+                    }
+                }
+                unlinkedProductTypes.put(pt, requiredItemsById);
+            }
+        }
+        return unlinkedProductTypes;
+    }*/
+
+    public List<ProductType> findByName(String name) {
+        List<ProductType> result = new ArrayList<>();
+        for(ProductType pt : productTypes)
+            if(pt.getName().equals(name))
+                result.add(pt);
+        return result;
+    }
                                                 // returns a map with product types as keys and the corresponding values
                                                 // are required items by id to link with the product type
 //    public Map<ProductType, Map<Integer, Double>> load() throws IOException {
@@ -85,6 +124,12 @@ public class ProductTypeRepository {
 
     public ProductType findByFullName(String name, String subType) {
         String fullName = name + " " + subType;
+        for(ProductType pt : productTypes)
+            if(pt.toString().equals(fullName))
+                return pt;
+        return null;
+    }
+    public ProductType findByFullName(String fullName) {
         for(ProductType pt : productTypes)
             if(pt.toString().equals(fullName))
                 return pt;

@@ -46,6 +46,9 @@ public class ItemRepository {
     }
 
     public List<Item> loadAll() {
+        List<Item> items = new ArrayList<>();
+        File file = new File(AppConstants.ITEMS_FILE);
+    public List<Item> loadAll() {
         Map<Integer, Category> categoriesById = categoryRepository.loadById();
         return loadAll(categoriesById, false);
     }
@@ -287,6 +290,7 @@ public class ItemRepository {
             return "\"" + s.replace("\"", "\"\"") + "\"";
         }
     }
+
 }
 
 

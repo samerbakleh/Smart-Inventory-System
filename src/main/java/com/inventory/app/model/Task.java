@@ -1,8 +1,10 @@
 package com.inventory.app.model;
 
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.repository.ProductTypeRepository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Task {
     private static int IDCounter = 10000;
@@ -11,7 +13,6 @@ public class Task {
     private int quantityRequired ;
     private String clientName;
     private int progress;// 0 - 100
-
     private String productName;
     private int productLineID;
 
@@ -20,14 +21,21 @@ public class Task {
     private LocalDate startDate; // when status become "IN_PROGRESS"
     private LocalDate deliveryDate;
 
-    public Task(int quantityRequired, String clientName, String productName, int productLineID,LocalDate deliveryDate) {
+    private boolean isTaken=false;
+    private boolean isSaved=false;
+    private ProductType productType;
+
+  //  private static ProductTypeRepository productTypeRepository= new ProductTypeRepository();
+    public Task(int quantityRequired, ProductType productType ,String clientName , int productLineID,LocalDate deliveryDate) {
         this.quantityRequired = quantityRequired;
         this.clientName = clientName;
-        this.productName = productName;
+        this.productType=productType;
+        this.productName = this.productType.toString();
         this.productLineID = productLineID;
         this.deliveryDate= deliveryDate;
-        this.taskStatus= TaskStatus.PENDING;
+        this.taskStatus = TaskStatus.PENDING;
         this.progress=0;
+
     }
 
     public int getQuantityRequired() {
@@ -74,6 +82,7 @@ public class Task {
         return taskStatus;
     }
 
+
     public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
@@ -97,4 +106,33 @@ public class Task {
     public int getTaskID() {
         return taskID;
     }
+    public boolean isTaken(){
+        return isTaken;
+    }
+
+    public void setIsTaken(boolean taken) {
+        isTaken = taken;
+    }
+
+    public boolean isSaved() {
+        return isSaved;
+    }
+
+    public void setSaved(boolean saved) {
+        isSaved = saved;
+    }
+    public int getProducedAmount()
+    {
+        return quantityRequired * progress /100;
+    }
+    public ProductType getProductType ()
+    {
+        return productType;
+    }
+    public void setProductType(ProductType productType)
+    {
+        this.productType=productType;
+    }
+
+
 }
