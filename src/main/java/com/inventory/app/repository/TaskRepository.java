@@ -105,4 +105,13 @@ public class TaskRepository {
     public ProductTypeRepository getProductTypeRepository() {
         return productTypeRepository;
     }
+    public void update(Task updatedTask) {
+        for (int i = 0; i < tasks.size(); i++) {
+            if (tasks.get(i).getTaskID() == updatedTask.getTaskID()) {
+                tasks.set(i, updatedTask);
+                return;
+            }
+        }
+    }
+
 }

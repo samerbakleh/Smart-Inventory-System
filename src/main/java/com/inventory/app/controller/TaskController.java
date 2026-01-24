@@ -58,5 +58,11 @@ public class TaskController {
 
     public ArrayList<Task> getTasksByStatus(TaskStatus status){    System.out.println("Controller: filter by " + status);
         return taskService.getTaskRepository().getTasksByStatus(status);}
+    public void updateTask(Task task) {
+        taskService.updateTask(task);
+    }
+
+
+
 
 }

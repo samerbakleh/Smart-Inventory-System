@@ -157,5 +157,9 @@ public class TaskService {
     public ArrayList<Task> getTasksByStatus(TaskStatus status){
         return taskRepository.getTasksByStatus(status);
     }
+    public void updateTask(Task task) {
+        taskRepository.update(task);
+    }
+
 
 }

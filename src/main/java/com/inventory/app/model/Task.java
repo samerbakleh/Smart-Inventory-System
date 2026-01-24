@@ -30,7 +30,7 @@ public class Task {
         this.quantityRequired = quantityRequired;
         this.clientName = clientName;
         this.productType=productType;
-        this.productName = this.productType.getName();
+        this.productName = this.productType.toString();
         this.productLineID = productLineID;
         this.deliveryDate= deliveryDate;
         this.taskStatus = TaskStatus.PENDING;

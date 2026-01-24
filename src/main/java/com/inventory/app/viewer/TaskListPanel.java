@@ -6,27 +6,41 @@ import com.inventory.app.model.enums.TaskStatus;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TaskListPanel extends JPanel {
+public class TaskListPanel extends JPanel{
+
     private DefaultTableModel tableModel;
     private TaskController taskController;
     private JFrame frame;
-    public TaskListPanel (TaskController taskController,JFrame frame){
-     this.taskController = taskController;
-     this.frame=frame;
 
-        setLayout(new BorderLayout(10,10));
-        tableModel = new DefaultTableModel(new String[]{"TaskID","Quantity","P-Name","PL-ID","Client","Status","Progress"},0);
-        JTable table = new JTable(tableModel);
+    private JTable table;
+
+    public TaskListPanel(TaskController taskController, JFrame frame) {
+
+        this.taskController = taskController;
+        this.frame = frame;
+
+        setLayout(new BorderLayout(10, 10));
+
+        tableModel = new DefaultTableModel(
+                new String[]{
+                        "TaskID", "Quantity", "P-Name",
+                        "PL-ID", "Client", "Status",
+                        "Progress", "Edit", "Cancel"
+                }, 0
+        );
+
+        table = new JTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        JComboBox<String>filterBox = new JComboBox<>(new String[]{"All Tasks","In Progress","Completed"});
+        JComboBox<String> filterBox =
+                new JComboBox<>(new String[]{"All Tasks", "In Progress", "Completed"});
 
-        JPanel topPanel= new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton addTaskBtn = new JButton("Add Task");
-
         JButton refreshTaskBtn = new JButton("Refresh");
 
         topPanel.add(new JLabel("Filter: "));
@@ -34,7 +48,7 @@ public class TaskListPanel extends JPanel {
         topPanel.add(addTaskBtn);
         topPanel.add(refreshTaskBtn);
 
-        add(topPanel,BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
 
         filterBox.addActionListener(e -> {
             String selected = (String) filterBox.getSelectedItem();
@@ -47,18 +61,49 @@ public class TaskListPanel extends JPanel {
                 refresh(taskController.getAllTasks());
             }
         });
+
         addTaskBtn.addActionListener(e -> {
-            TaskCreationDialog dialog = new TaskCreationDialog(frame,taskController);
+            TaskCreationDialog dialog =
+                    new TaskCreationDialog(frame, taskController);
             dialog.setVisible(true);
             refresh(taskController.getAllTasks());
         });
-        refreshTaskBtn.addActionListener(e -> {refresh(taskController.getAllTasks());});
+
+        refreshTaskBtn.addActionListener(e ->
+                refresh(taskController.getAllTasks())
+        );
 
         refresh(taskController.getAllTasks());
+
+        int Edit_COLUMN_INDEX = 7;
+
+        int Cancel_COLUMN_INDEX = 8;
+        TableColumn editColumn =
+                table.getColumnModel().getColumn(Edit_COLUMN_INDEX);
+
+        editColumn.setCellRenderer(
+                new TaskActionCellRenderer(true)
+        );
+
+        editColumn.setCellEditor(
+                new TaskActionCellEditor(table, taskController, frame,true)
+        );
+        TableColumn cancelColumn =
+                table.getColumnModel().getColumn(Cancel_COLUMN_INDEX);
+
+        cancelColumn.setCellRenderer(
+                new TaskActionCellRenderer(false)
+        );
+
+        cancelColumn.setCellEditor(
+                new TaskActionCellEditor(table, taskController, frame,false)
+        );
     }
-    private void refresh(ArrayList<Task>tasks){
+
+    private void refresh(ArrayList<Task> tasks) {
         tableModel.setRowCount(0);
-        for (Task task:tasks){
+
+        for (Task task : tasks) {
             tableModel.addRow(new Object[]{
                     task.getTaskID(),
                     task.getQuantityRequired(),
@@ -66,9 +111,10 @@ public class TaskListPanel extends JPanel {
                     task.getProductLineID(),
                     task.getClientName(),
                     task.getTaskStatus(),
-                    task.getProgress()+"%"});
+                    task.getProgress() + "%",
+                    "Edit",
+                    "Cancel"
+            });
         }
-
-}
-
+    }
 }
