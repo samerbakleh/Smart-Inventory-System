@@ -125,17 +125,32 @@ public class ManagerPanel extends JPanel{
     }
 
     private class ProductLineTable extends JTable {
+        private ProductLine selectedProductLine = null;
         public ProductLineTable(TableModel model) {
             super(model);
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            JPopupMenu optionMenu = new JPopupMenu();
+            JMenuItem option = new JMenuItem("show details");
+            option.addActionListener((ActionEvent event) -> {
+                productLineInfoDialog.display(selectedProductLine);
+            });
+            optionMenu.add(option);
             setColumnRenderer();
+            final JTable table = this;
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent event) {
-                    ProductLine pl = (ProductLine) getModel().getValueAt(getSelectedRow(), 0);
-                    productLineInfoDialog.display(pl);
+                    int selectedRow = getSelectedRow();
+                    if(selectedRow != -1) {
+                        selectedProductLine = (ProductLine) getModel().getValueAt(selectedRow, 0);
+                        optionMenu.show(table, event.getX(), event.getY());
+                    }
                 }
             });
+        }
+
+        public ProductLine getSelectedProductLine() {
+            return selectedProductLine;
         }
 
         private void setColumnRenderer() {

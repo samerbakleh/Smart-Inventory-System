@@ -92,7 +92,11 @@ public class ProductLineService {
         }
         if(allProduction != 0) {
             for(int i = 0; i < n; i++) {
-                result.set(i, 100f * productLines.get(i).getTotalProduction() / allProduction);
+                result.add(100f * productLines.get(i).getTotalProduction() / allProduction);
+            }
+        } else {
+            for(int i = 0; i < n; i++) {
+                result.add(0f);
             }
         }
         return result;
