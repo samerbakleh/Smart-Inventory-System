@@ -58,7 +58,7 @@ public class ProductLineRepository {
         int previousID = -1;
         final String ERROR_MESSAGE = AppConstants.PRODUCT_LINES_FILE + " content is corrupted";
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_LINES_FILE))) {
-            for(String line : bfReader.readAllLines()) {
+            for(String line = bfReader.readLine();line!=null;bfReader.readLine()) {
                 if(line.isEmpty()) {
                     continue;
                 }

@@ -31,7 +31,7 @@ public class ProductService {
     }
 
 
-    public List<ProductLine> findLinesByProductAndDateRange(
+   /* public List<ProductLine> findLinesByProductAndDateRange(
             int productId,
             LocalDate fromDate,
             LocalDate toDate) {
@@ -51,9 +51,9 @@ public class ProductService {
             }
         }
         return productLines;
-    }
+    }*/
 
-    List<ProductLine> findLinesByProductAndClient(
+   /* List<ProductLine> findLinesByProductAndClient(
             int productId,
             String client) {
         List<ProductLine> productLines = new ArrayList<>();
@@ -92,7 +92,7 @@ public class ProductService {
             }
         }
         return productLines;
-    }
+    }*/
 
 
 }

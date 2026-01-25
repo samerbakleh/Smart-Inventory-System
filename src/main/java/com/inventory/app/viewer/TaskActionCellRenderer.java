@@ -30,7 +30,6 @@ public class TaskActionCellRenderer extends JPanel
             boolean isSelected, boolean hasFocus,
             int row, int column) {
 
-        // 🔥 THIS IS THE KEY
         editBtn.setText("ed");
         cancelBtn.setText("x");
 
