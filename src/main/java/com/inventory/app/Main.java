@@ -28,7 +28,7 @@ public class Main {
         TaskService taskService = new TaskService(taskRepository, productTypeRepository);
         AuthenticationService authenticationService = new AuthenticationService(userRepository);
 
-        MainController mainController = new MainController(productTypeService, productLineService,authenticationService);
+        MainController mainController = new MainController(productTypeService, productLineService, authenticationService);
         ItemController itemController = new ItemController(inventoryService);
         ProductLineController productLineController = new ProductLineController(productLineService);
         TaskController taskController = new TaskController(taskService);
@@ -48,6 +48,7 @@ public class Main {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
                 MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController,
                         productLineController, taskController);
             }

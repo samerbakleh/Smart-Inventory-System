@@ -18,7 +18,8 @@ public class MainController {
         other class Services ....
      */
 
-    public MainController(ProductTypeService productTypeService, ProductLineService productLineService, AuthenticationService authenticationService) {
+    public MainController(ProductTypeService productTypeService, ProductLineService productLineService,
+                          AuthenticationService authenticationService) {
         this.productTypeService = productTypeService;
         this.productLineService = productLineService;
         this.authenticationService = authenticationService;

@@ -96,13 +96,14 @@ public class SupervisorPanel extends JPanel {
 
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridwidth = 4;
-        gbc.weighty = 0.4;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.25;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(0, 0, 0, 0);
         add(topPanel, gbc);
         gbc.gridwidth = 1;
         gbc.weightx = 0.25;
-        gbc.weighty = 0.1;
+        gbc.weighty = 0.05;
         gbc.gridx = 0;
         gbc.insets = new Insets(5, 0, 5, 0);
         add(itemsButton, gbc);
@@ -118,7 +119,7 @@ public class SupervisorPanel extends JPanel {
         gbc.gridwidth = 4;
         gbc.gridx = 0;
         gbc.weightx = 1.0;
-        gbc.weighty = 0.5;
+        gbc.weighty = 0.7;
         gbc.insets = new Insets(0, 0, 0, 0);
         add(cardPanel, gbc);
     }

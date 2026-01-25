@@ -150,24 +150,18 @@ public class LogInPanel extends JPanel {
         String role = (String) roleBox.getSelectedItem();
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
-        if(authenticationController.loginController(username, password, role)) {
-                /*
-
-                maybe add loading
-
-                 */
-            errorLabel.setForeground(Color.white);
-            if(role.toUpperCase().equals(Role.MANAGER.toString())) {
-                container.switchToManagerPanel();
-            } else {
-                    /*
-
-                    switch to the supervisor panel
-
-                     */
-            }
-        } else {
+        if(!authenticationController.loginController(username, password, role)) {
             errorLabel.setForeground(Color.red);
+            return;
+        }
+        roleBox.setSelectedIndex(0);
+        usernameField.setText("");
+        passwordField.setText("");
+        errorLabel.setForeground(Color.white);
+        if(role.toUpperCase().equals(Role.MANAGER.toString())) {
+            container.switchToManagerPanel();
+        } else {
+            container.switchToSupervisorPanel();
         }
     }
 
