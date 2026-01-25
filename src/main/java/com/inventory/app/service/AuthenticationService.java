@@ -9,13 +9,23 @@ import com.inventory.app.controller.LoginRequest;
 import com.inventory.app.util.Global;
 
 public class AuthenticationService {
-    public static boolean login(LoginRequest request) {
-        User user = UserRepository.findByUsername(request.getUsername());
+    private UserRepository userRepository;
+    public AuthenticationService(UserRepository userRepository)
+    {
+        this.userRepository=userRepository;
+    }
+    public boolean login(LoginRequest request) {
+        User user = userRepository.findByUsername(request.getUsername());
         if (user != null && user.getPassword().equals(request.getPassword()) && user.getRole() == request.getRole()) {
             Global.currentUser = user;
             return true;
         }
         return false;
+    }
+
+    public void loadUsersFromFile()
+    {
+        userRepository.loadUsersFromFile();
     }
 }
 
