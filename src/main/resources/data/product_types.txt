@@ -1,0 +1,6 @@
+joice;Apple;1,3
+joice;Orange;2,3
+joice;Mango;3
+sauce;Tomato;4
+jam;Strawberry;5
+soda;Grape;6
