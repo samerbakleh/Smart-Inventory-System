@@ -1,7 +1,9 @@
 package com.inventory.app.viewer;
 
 import com.inventory.app.controller.ProductLineController;
+import com.inventory.app.controller.ProductTypeController;
 import com.inventory.app.model.ProductLine;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.GradientPanel;
@@ -20,15 +22,17 @@ import java.util.List;
 public class ManagerPanel extends JPanel{
 
     private ProductLineController productLineController;
+    private ProductTypeController productTypeController;
 
     private AddProductLineDialog addProductLineDialog;
     private ProductLineInfoDialog productLineInfoDialog;
     private ProductLineManagerTable table;
 
-    public ManagerPanel(ProductLineController productLineController) {
+    public ManagerPanel(ProductLineController productLineController, ProductTypeController productTypeController) {
         super(new GridBagLayout());
         this.productLineController = productLineController;
-        this.addProductLineDialog = new AddProductLineDialog(productLineController, this);
+        this.productTypeController = productTypeController;
+        this.addProductLineDialog = new AddProductLineDialog(productLineController, productTypeController, this);
         this.productLineInfoDialog = new ProductLineInfoDialog(productLineController, this);
         setName("Manager panel");
         setBackground(Color.white);
@@ -37,6 +41,7 @@ public class ManagerPanel extends JPanel{
 
     public void refresh() {
         refreshTable();
+        addProductLineDialog.updateProductTypes();
     }
 
     public void refreshTable() {

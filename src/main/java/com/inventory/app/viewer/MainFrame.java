@@ -18,11 +18,11 @@ public class MainFrame extends JFrame {
 
     public MainFrame(MainController mainController, AuthenticationController authenticationController,
                      ItemController itemController, ProductLineController productLineController,
-                     TaskController taskController) {
+                     ProductTypeController productTypeController, TaskController taskController) {
         super("Production & Inventory Management System");
         this.mainController = mainController;
         this.logInPanel = new LogInPanel(authenticationController);
-        this.managerPanel = new ManagerPanel(productLineController);
+        this.managerPanel = new ManagerPanel(productLineController, productTypeController);
         this.supervisorPanel = new SupervisorPanel(this, itemController, productLineController, taskController);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {

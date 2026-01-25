@@ -30,6 +30,7 @@ public class Main {
 
         MainController mainController = new MainController(productTypeService, productLineService, authenticationService);
         ItemController itemController = new ItemController(inventoryService);
+        ProductTypeController productTypeController = new ProductTypeController(productTypeService);
         ProductLineController productLineController = new ProductLineController(productLineService);
         TaskController taskController = new TaskController(taskService);
         AuthenticationController authenticationController = new AuthenticationController(authenticationService);
@@ -50,7 +51,7 @@ public class Main {
                 }
 
                 MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController,
-                        productLineController, taskController);
+                        productLineController, productTypeController, taskController);
             }
         });
 

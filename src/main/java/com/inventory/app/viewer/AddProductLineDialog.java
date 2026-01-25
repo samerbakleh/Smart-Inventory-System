@@ -1,15 +1,22 @@
 package com.inventory.app.viewer;
 import com.inventory.app.controller.ProductLineController;
+import com.inventory.app.controller.ProductTypeController;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.RemovableLabelPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AddProductLineDialog extends JDialog {
 
     private ProductLineController productLineController;
+    private ProductTypeController productTypeController;
 
     private JTextField nameField;
     private JLabel invalidNameLabel;
@@ -18,10 +25,14 @@ public class AddProductLineDialog extends JDialog {
     private RemovableLabelPanel subtypePanel;
 
     private ManagerPanel container;
+    private HashMap<String, List<String>> productTypeNames;
 
-    public AddProductLineDialog(ProductLineController productLineController, ManagerPanel container) {
+    public AddProductLineDialog(ProductLineController productLineController, ProductTypeController productTypeController,
+                                ManagerPanel container) {
         this.productLineController = productLineController;
+        this.productTypeController = productTypeController;
         this.container = container;
+        updateProductTypes();
         setLayout(new GridBagLayout());
         getContentPane().setBackground(Color.white);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -35,6 +46,27 @@ public class AddProductLineDialog extends JDialog {
         setVisible(true);
     }
 
+    public void updateProductTypes() {
+        productTypeNames = new HashMap<>();
+        List<ProductType> productTypes = productTypeController.getProductTypes();
+        if(productTypes.isEmpty()) {
+            return;
+        }
+        String productName = productTypes.get(0).getName();
+        List<String> subtypes = new ArrayList<>();
+        for(ProductType pt : productTypes) {
+            if(pt.getName().equals(productName)) {
+                subtypes.add(pt.getSubtype());
+            } else {
+                productTypeNames.put(productName, subtypes);
+                productName = pt.getName();
+                subtypes = new ArrayList<>();
+                productNameBox.addItem(productName);
+            }
+            productTypeNames.put(productName, subtypes);
+        }
+    }
+
     private void addComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -43,6 +75,15 @@ public class AddProductLineDialog extends JDialog {
         nameField = new JTextField(30);
         invalidNameLabel = new JLabel("name must only contain letters, numbers, and -");
         productNameBox = new JComboBox<>();
+        productNameBox.addItemListener((ItemEvent event) -> {
+            if(event.getStateChange() == ItemEvent.SELECTED) {
+                subtypePanel.clearContent();
+                String name = (String) event.getItem();
+                for(String subtype : productTypeNames.get(name)) {
+                    subtypePanel.addLabel(name + " " + subtype);
+                }
+            }
+        });
         nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
         JLabel productNameLabel = new JLabel("Product Name");
         productNameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 12f));
