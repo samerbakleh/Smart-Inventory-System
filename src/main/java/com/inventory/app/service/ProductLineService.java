@@ -78,7 +78,11 @@ public class ProductLineService {
         return name.matches("[a-zA-Z0-9- ]+");
     }
 
-    public void addNewProductLine(String name, List<ProductType> productTypes) {
+    public void addNewProductLine(String name, List<String> productTypeNames) {
+        List<ProductType> productTypes = new ArrayList<>();
+        for(String fullName : productTypeNames) {
+            productTypes.add(productTypeRepository.findByFullName(fullName));
+        }
         productLineRepository.add(new ProductLine(name, productTypes));
     }
 

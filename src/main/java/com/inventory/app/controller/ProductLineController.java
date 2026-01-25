@@ -23,7 +23,7 @@ public class ProductLineController {
         return productLineService.calculateProductionPercentage();
     }
 
-    public boolean addProductLine(String productLineName, List<ProductType> productTypes) {
+    public boolean addProductLine(String productLineName, List<String> productTypes) {
         if(productLineService.validateProductLineName(productLineName)) {
             productLineService.addNewProductLine(productLineName, productTypes);
             return true;
