@@ -12,17 +12,6 @@ import java.util.Map;
 public class ProductTypeService {
 
     private ProductTypeRepository productTypeRepository;
-
-    public ProductTypeService() {
-        productTypeRepository = new ProductTypeRepository();
-    }
-
-    public ProductTypeRepository getProductTypeRepository() {
-        return productTypeRepository;
-    }
-
-    public void setProductTypeRepository(ProductTypeRepository productTypeRepository) {
-        this.productTypeRepository = productTypeRepository;
     private ItemRepository itemRepository;
 
     public ProductTypeService(ProductTypeRepository productTypeRepository, ItemRepository itemRepository) {

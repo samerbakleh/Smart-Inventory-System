@@ -2,6 +2,7 @@ package com.inventory.app.viewer;
 
 import com.inventory.app.controller.ItemController;
 import com.inventory.app.controller.ProductLineController;
+import com.inventory.app.controller.TaskController;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.GradientPanel;
 import com.inventory.app.viewer.components.ShadowedLabel;
@@ -16,16 +17,17 @@ public class SupervisorPanel extends JPanel {
     private ItemViewerPanel itemViewerPanel;
     private ProductViewerPanel productViewerPanel;
     private ProductLineViewerPanel productLineViewerPanel;
-    private TaskViewerPanel taskViewerPanel;
+    private TaskListPanel taskListPanel;
 
-    public SupervisorPanel(ItemController itemController, ProductLineController productLineController) {
+    public SupervisorPanel(JFrame container, ItemController itemController, ProductLineController productLineController,
+                           TaskController taskController) {
         super(new GridBagLayout());
         /*
         this.productViewerPanel = new ProductViewerPanel();
-        this.taskViewerPanel = new TaskViewerPanel();
          */
         this.itemViewerPanel = new ItemViewerPanel(itemController);
         this.productLineViewerPanel = new ProductLineViewerPanel(productLineController);
+        this.taskListPanel = new TaskListPanel(taskController, container);
         setName("Supervisor panel");
         setBackground(Color.white);
         addComponents();
@@ -92,6 +94,7 @@ public class SupervisorPanel extends JPanel {
          */
         cardPanel.add(itemViewerPanel, itemViewerPanel.getName());
         cardPanel.add(productLineViewerPanel, productLineViewerPanel.getName());
+        cardPanel.add(taskListPanel, taskListPanel.getName());
 
         gbc.fill = GridBagConstraints.BOTH;
         gbc.gridwidth = 4;
@@ -136,7 +139,7 @@ public class SupervisorPanel extends JPanel {
         switchCard(productLineViewerPanel.getName());
     }
     public void switchToTasksPanel() {
-        switchCard(taskViewerPanel.getName());
+        switchCard(taskListPanel.getName());
     }
 
 }

@@ -1,13 +1,11 @@
 package com.inventory.app;
 
-import com.inventory.app.controller.AuthenticationController;
-import com.inventory.app.controller.ItemController;
-import com.inventory.app.controller.MainController;
-import com.inventory.app.controller.ProductLineController;
+import com.inventory.app.controller.*;
 import com.inventory.app.repository.*;
 import com.inventory.app.service.InventoryService;
 import com.inventory.app.service.ProductLineService;
 import com.inventory.app.service.ProductTypeService;
+import com.inventory.app.service.TaskService;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.MainFrame;
 
@@ -29,10 +27,12 @@ public class Main {
         ProductLineService productLineService = new ProductLineService(productLineRepository, taskRepository,
                                                                        productTypeRepository);
         ProductTypeService productTypeService = new ProductTypeService(productTypeRepository, itemRepository);
+        TaskService taskService = new TaskService(taskRepository, productTypeRepository);
 
         MainController mainController = new MainController(productTypeService, productLineService);
         ItemController itemController = new ItemController(inventoryService);
         ProductLineController productLineController = new ProductLineController(productLineService);
+        TaskController taskController = new TaskController(taskService);
         AuthenticationController authenticationController = new AuthenticationController();
 
 
@@ -50,7 +50,8 @@ public class Main {
                     e.printStackTrace();
                 }
 
-                MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController, productLineController);
+                MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController,
+                        productLineController, taskController);
             }
         });
 

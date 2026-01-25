@@ -24,6 +24,7 @@ public class TaskListPanel extends JPanel{
         this.frame = frame;
 
         setLayout(new BorderLayout(10, 10));
+        setName("Tasks Viewer Panel");
 
         tableModel = new DefaultTableModel(
                 new String[]{
