@@ -465,10 +465,9 @@ public class InventoryService {
                 double current = invItem.getQuantity();
                 double after = current - need;
 
-                // ما في كمية كافية
                 if (after < -EPS) return false;
 
-                // ينزل تحت/عند minLimit => مرفوض مثل consume()
+
                 if (after <= invItem.getMinLimit() + EPS) return false;
             }
             return true;
