@@ -6,6 +6,7 @@ import com.inventory.app.model.enums.ProductLineStatus;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.List;
 
@@ -24,6 +25,14 @@ public class ProductLineTable extends JTable {
     public void setProductLines(List<ProductLine> productLines) {
         this.productLines = productLines;
         initModel();
+    }
+
+    public void changeColumnsWidth() {
+        double[] relativeColumnWidth = {0.05, 0.25, 0.15, 0.05, 0.05, 0.4};
+        for(int i = 0; i < getColumnCount(); i++) {
+            TableColumn column = getColumnModel().getColumn(i);
+            column.setPreferredWidth((int) (1000 * relativeColumnWidth[i]));
+        }
     }
 
     private void initModel() {
@@ -111,7 +120,7 @@ public class ProductLineTable extends JTable {
         setDefaultRenderer(Object.class, textRenderer);
     }
 
-    private Object[][] generateTableContent() {
+    public Object[][] generateTableContent() {
         int n = productLines.size();
         Object[][] result = new Object[n][6];
         for(int i = 0; i < productLines.size(); i++) {

@@ -137,6 +137,7 @@ public class MainFrame extends JFrame {
 
     public void refresh() {
         managerPanel.refresh();
+        supervisorPanel.refresh();
     }
 
 }

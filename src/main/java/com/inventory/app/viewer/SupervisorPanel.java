@@ -31,6 +31,10 @@ public class SupervisorPanel extends JPanel {
         addComponents();
     }
 
+    public void refresh() {
+        productLineViewerPanel.refresh();
+    }
+
     private void addComponents() {
 
         GridBagConstraints gbc = new GridBagConstraints();
