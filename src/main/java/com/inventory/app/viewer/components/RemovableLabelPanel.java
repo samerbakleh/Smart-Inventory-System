@@ -114,7 +114,7 @@ public class RemovableLabelPanel extends JPanel {
             float xHorizontalPositon = x + textWidth - fm.stringWidth("X");
             g2d.drawString("X", xHorizontalPositon, y);
             clickableArea = new Rectangle2D.Double(xHorizontalPositon, y - fm.getAscent(),
-                    fm.stringWidth("X"), textHeight);
+                                                   fm.stringWidth("X"), textHeight);
         }
 
     }
