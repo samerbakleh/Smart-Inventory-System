@@ -2,8 +2,10 @@ package com.inventory.app.controller;
 
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.Unit;
 import com.inventory.app.service.InventoryService;
+import com.inventory.app.util.ErrorLog;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -81,8 +83,12 @@ public class ItemController {
             boolean removed = service.deleteItem(id);
             return removed ? null : "Item not found.";
         } catch (NumberFormatException e) {
+            ErrorLog.log(LogLevel.ERROR,"deleteItem","NumberFormatException",e);
             return "Invalid item id.";
+
         } catch (Exception e) {
+            ErrorLog.log(LogLevel.ERROR,"deleteItem","Unexpected error while deleting item:",e);
+
             return "Unexpected error while deleting item: " + e.getMessage();
         }
     }
@@ -110,6 +116,7 @@ public class ItemController {
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         } catch (Exception e) {
+            ErrorLog.log(LogLevel.ERROR,"deleteItem","Unexpected error while adding category: " + e.getMessage(),e);
             return "Unexpected error while adding category: " + e.getMessage();
         }
     }
