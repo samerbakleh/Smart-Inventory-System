@@ -4,81 +4,107 @@ import com.inventory.app.controller.ItemController;
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
 import com.inventory.app.model.enums.Unit;
-import com.inventory.app.viewer.components.GradientPanel;
-import com.inventory.app.viewer.components.RoundedPanel;
+import com.inventory.app.util.AppConstants;
+import com.inventory.app.viewer.components.ItemTable;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
 
 import static com.inventory.app.service.InventoryService.EPS;
 
-public class ItemViewerPanel extends GradientPanel {
+public class ItemViewerPanel extends JPanel {
 
     private final ItemController controller;
 
     private final JTextField searchField = new JTextField(18);
     private final JComboBox<Object> categoryBox = new JComboBox<>();
-    private final JLabel statusLabel = new JLabel(" ");
-
-    private final ItemTableModel model = new ItemTableModel();
-    private final JTable table = new JTable(model);
     private final JComboBox<Object> unitBox = new JComboBox<>();
     private final JComboBox<String> stockBox = new JComboBox<>(
             new String[]{"All", "Low Stock (<= Min)", "Out of Stock (=0)", "In Stock (>0)", "Safe (> Min)"}
     );
 
+    private final JLabel statusLabel = new JLabel(" ");
+
+    private ItemTable table;
     private List<Item> allItems = new ArrayList<>();
 
     public ItemViewerPanel(ItemController controller) {
-        super(new Color(250, 252, 255), new Color(236, 244, 255), DIAGONAL2); // فاتح
+        super(new GridBagLayout());
         this.controller = controller;
 
-        buildUI();
+        setName("Items Viewer Panel");
+        setBackground(Color.WHITE);
+
+        addComponents();
         refreshAll();
         applyFilters();
         hookFilters();
     }
 
-    private void buildUI() {
-        setLayout(new BorderLayout(12, 12));
-        setBorder(new EmptyBorder(14, 14, 14, 14));
+    private void addComponents() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+
+        // ======= Top (Buttons + Filters) =======
+        JPanel top = buildTop();
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(12, 30, 8, 30);
+        add(top, gbc);
+
+        // ======= Table =======
+        table = new ItemTable(Collections.emptyList());
+        JScrollPane sp = new JScrollPane(table);
+        sp.getViewport().setBackground(Color.WHITE);
+        sp.setBackground(Color.WHITE);
+        sp.setBorder(BorderFactory.createLineBorder(new Color(225, 232, 245)));
+
+        styleTable();
+
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(0, 30, 10, 30);
+        add(sp, gbc);
+
+        // ======= Bottom (Status + Save) =======
+        JPanel bottom = buildBottom();
+        gbc.gridy = 2;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 30, 18, 30);
+        add(bottom, gbc);
+
+        // styles
+        styleField(searchField);
+        styleCombo(categoryBox);
         styleCombo(unitBox);
         styleCombo(stockBox);
 
-        RoundedPanel card = new RoundedPanel(18);
-        card.setLayout(new BorderLayout(10, 10));
-        card.setBackground(Color.WHITE);
-        card.setBorder(new EmptyBorder(14, 14, 14, 14));
-
-        card.add(buildTop(), BorderLayout.NORTH);
-        card.add(buildCenter(), BorderLayout.CENTER);
-        card.add(buildBottom(), BorderLayout.SOUTH);
-
-        add(card, BorderLayout.CENTER);
-
-        styleField(searchField);
-        styleCombo(categoryBox);
-        styleTable(table);
-        statusLabel.setForeground(new Color(70, 70, 70));
+        statusLabel.setForeground(new Color(80, 80, 80));
+        statusLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(14f));
     }
 
-    private JComponent buildTop() {
+    private JPanel buildTop() {
         JPanel top = new JPanel(new BorderLayout(10, 10));
         top.setOpaque(false);
+        top.setBorder(new EmptyBorder(6, 6, 6, 6));
 
         JLabel title = new JLabel("Inventory - Items");
-        title.setFont(new Font("SansSerif", Font.BOLD, 22));
+        title.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 22f));
         title.setForeground(new Color(20, 35, 70));
         top.add(title, BorderLayout.NORTH);
 
+        // Buttons row
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
         row1.setOpaque(false);
 
@@ -104,25 +130,28 @@ public class ItemViewerPanel extends GradientPanel {
         row1.add(addCatBtn);
         row1.add(reloadBtn);
 
+        // Filters row
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
         row2.setOpaque(false);
 
-        JLabel s = new JLabel("Search:");
-        s.setForeground(new Color(90, 90, 90));
-        JLabel c = new JLabel("Category:");
-        c.setForeground(new Color(90, 90, 90));
+        JLabel s = lbl("Search:");
+        JLabel c = lbl("Category:");
+        JLabel u = lbl("Unit:");
+        JLabel st = lbl("Stock:");
 
         JButton reset = btn("Reset");
         reset.addActionListener(e -> {
             searchField.setText("");
             if (categoryBox.getItemCount() > 0) categoryBox.setSelectedIndex(0);
+            if (unitBox.getItemCount() > 0) unitBox.setSelectedIndex(0);
+            stockBox.setSelectedIndex(0);
             applyFilters();
         });
 
-        row2.add(s);
-        row2.add(searchField);
-        row2.add(c);
-        row2.add(categoryBox);
+        row2.add(s);  row2.add(searchField);
+        row2.add(c);  row2.add(categoryBox);
+        row2.add(u);  row2.add(unitBox);
+        row2.add(st); row2.add(stockBox);
         row2.add(reset);
 
         JPanel wrap = new JPanel(new BorderLayout());
@@ -134,15 +163,7 @@ public class ItemViewerPanel extends GradientPanel {
         return top;
     }
 
-    private JComponent buildCenter() {
-        JScrollPane sp = new JScrollPane(table);
-        sp.setBorder(BorderFactory.createLineBorder(new Color(225, 232, 245)));
-        sp.getViewport().setBackground(Color.WHITE);
-        sp.setBackground(Color.WHITE);
-        return sp;
-    }
-
-    private JComponent buildBottom() {
+    private JPanel buildBottom() {
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.setOpaque(false);
 
@@ -158,6 +179,7 @@ public class ItemViewerPanel extends GradientPanel {
 
         bottom.add(statusLabel, BorderLayout.WEST);
         bottom.add(right, BorderLayout.EAST);
+
         return bottom;
     }
 
@@ -167,23 +189,32 @@ public class ItemViewerPanel extends GradientPanel {
             @Override public void removeUpdate(DocumentEvent e) { applyFilters(); }
             @Override public void changedUpdate(DocumentEvent e) { applyFilters(); }
         });
+
         categoryBox.addActionListener(e -> applyFilters());
+        unitBox.addActionListener(e -> applyFilters());
+        stockBox.addActionListener(e -> applyFilters());
     }
 
     private void refreshAll() {
         allItems = controller.getAllItems();
 
-        DefaultComboBoxModel<Object> m = new DefaultComboBoxModel<>();
-        m.addElement("All Categories");
-        for (Category cat : controller.getAllCategories()) m.addElement(cat);
-        categoryBox.setModel(m);
+        // categories
+        DefaultComboBoxModel<Object> catModel = new DefaultComboBoxModel<>();
+        catModel.addElement("All Categories");
+        for (Category cat : controller.getAllCategories()) catModel.addElement(cat);
+        categoryBox.setModel(catModel);
+
+        // units
+        DefaultComboBoxModel<Object> unitModel = new DefaultComboBoxModel<>();
+        unitModel.addElement("All Units");
+        for (Unit u : Unit.values()) unitModel.addElement(u);
+        unitBox.setModel(unitModel);
 
         statusLabel.setText("Total items: " + allItems.size());
     }
 
     private void applyFilters() {
-        String q = (searchField.getText() == null) ? "" : searchField.getText().trim().toLowerCase(Locale.ROOT);
-
+        String q = (searchField.getText() == null) ? "" : searchField.getText().trim();
         Object catSel = categoryBox.getSelectedItem();
         Integer catId = (catSel instanceof Category) ? ((Category) catSel).getId() : null;
 
@@ -192,48 +223,69 @@ public class ItemViewerPanel extends GradientPanel {
 
         int stockMode = stockBox.getSelectedIndex();
 
-        List<Item> out = new ArrayList<>();
-        for (Item it : allItems) {
+        List<Item> filtered = new ArrayList<>(allItems);
 
-            if (!q.isEmpty()) {
-                String n = it.getName();
-                if (n == null || !n.toLowerCase(Locale.ROOT).contains(q)) continue;
-            }
+        if (!q.isEmpty()) {
+            List<Item> byName = controller.filterByName(q);
+            filtered = intersectById(filtered, byName);
+        }
 
-            if (catId != null) {
-                if (it.getCategory() == null || it.getCategory().getId() != catId) continue;
-            }
+        if (catId != null) {
+            List<Item> byCat = controller.filterByCategory(catId);
+            filtered = intersectById(filtered, byCat);
+        }
 
-            if (unit != null) {
-                if (it.getUnit() != unit) continue;
-            }
+        if (stockMode == 1) {
+            List<Item> low = controller.lowStock();
+            filtered = intersectById(filtered, low);
+        } else if (stockMode == 2) { // Out
+            List<Item> out = controller.outOfStock();
+            filtered = intersectById(filtered, out);
+        }
+
+
+        ArrayList<Item> outFinal = new ArrayList<>();
+        for (Item it : filtered) {
+
+            if (unit != null && it.getUnit() != unit) continue;
 
             double qty = it.getQuantity();
             double min = it.getMinLimit();
 
             boolean okStock = switch (stockMode) {
-                case 0 -> true;                 // All
-                case 1 -> qty <= min + EPS;     // Low Stock
-                case 2 -> Math.abs(qty) <= EPS; // Out of Stock (==0)
-                case 3 -> qty > EPS;            // In Stock (>0)
-                case 4 -> qty > min + EPS;      // Safe (>Min)
+                case 0 -> true;                  // All
+                case 1 -> true;                  // Low already via controller
+                case 2 -> true;                  // Out already via controller
+                case 3 -> qty > EPS;             // In Stock
+                case 4 -> qty > min + EPS;       // Safe
                 default -> true;
             };
             if (!okStock) continue;
 
-            out.add(it);
+            outFinal.add(it);
         }
 
-        model.setData(out);
-        statusLabel.setText("Showing: " + out.size() + " / " + allItems.size());
+        table.setItems(outFinal);
+        statusLabel.setText("Showing: " + outFinal.size() + " / " + allItems.size());
+    }
+
+    private static List<Item> intersectById(List<Item> a, List<Item> b) {
+        if (a == null) return (b == null) ? new ArrayList<>() : new ArrayList<>(b);
+        if (b == null) return new ArrayList<>(a);
+
+        HashSet<Integer> ids = new HashSet<>();
+        for (Item it : b) ids.add(it.getId());
+
+        ArrayList<Item> out = new ArrayList<>();
+        for (Item it : a) {
+            if (ids.contains(it.getId())) out.add(it);
+        }
+        return out;
     }
 
     private Item getSelectedItem() {
-        int r = table.getSelectedRow();
-        return model.getAt(r);
+        return table.getSelectedItem();
     }
-
-
 
     private void onAdd() {
         List<Category> cats = controller.getAllCategories();
@@ -242,10 +294,10 @@ public class ItemViewerPanel extends GradientPanel {
             return;
         }
 
-        ItemForm f = ItemForm.showDialog(this, "Add Item", null, cats);
-        if (f == null) return;
+        ItemFormDialog.Result r = ItemFormDialog.showAdd(this, cats);
+        if (r == null) return;
 
-        String err = controller.addItem(f.name, f.price, f.qty, f.min, f.unit, f.categoryId);
+        String err = controller.addItem(r.name, r.priceStr, r.qtyStr, r.minStr, r.unit, r.categoryId);
         if (err != null) JOptionPane.showMessageDialog(this, err, "Add Item", JOptionPane.WARNING_MESSAGE);
 
         refreshAll();
@@ -259,10 +311,10 @@ public class ItemViewerPanel extends GradientPanel {
             return;
         }
 
-        ItemForm f = ItemForm.showDialog(this, "Edit Item", sel, controller.getAllCategories());
-        if (f == null) return;
+        ItemFormDialog.Result r = ItemFormDialog.showEdit(this, sel, controller.getAllCategories());
+        if (r == null) return;
 
-        String err = controller.updateItem(sel.getId(), f.name, f.price, f.qty, f.min, f.unit, f.categoryId);
+        String err = controller.updateItem(sel.getId(), r.name, r.priceStr, r.qtyStr, r.minStr, r.unit, r.categoryId);
         if (err != null) JOptionPane.showMessageDialog(this, err, "Edit Item", JOptionPane.WARNING_MESSAGE);
 
         refreshAll();
@@ -300,6 +352,26 @@ public class ItemViewerPanel extends GradientPanel {
         applyFilters();
     }
 
+    private void styleTable() {
+        table.getTableHeader().setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
+        table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
+        table.setFont(AppConstants.DEFAULT_FONT.deriveFont(15f));
+        table.setRowHeight(30);
+
+        // ID, Name, Price, Qty, Unit, Min, Category
+        double[] relative = {0.07, 0.22, 0.12, 0.12, 0.10, 0.12, 0.25};
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            TableColumn col = table.getColumnModel().getColumn(i);
+            col.setPreferredWidth((int) (1000 * relative[i]));
+        }
+    }
+
+    private JLabel lbl(String text) {
+        JLabel l = new JLabel(text);
+        l.setForeground(new Color(90, 90, 90));
+        l.setFont(AppConstants.DEFAULT_FONT.deriveFont(14f));
+        return l;
+    }
 
     private JButton btn(String text) {
         JButton b = new JButton(text);
@@ -307,6 +379,7 @@ public class ItemViewerPanel extends GradientPanel {
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         b.setForeground(new Color(30, 30, 30));
         b.setBackground(new Color(245, 248, 255));
+        b.setFont(AppConstants.DEFAULT_FONT.deriveFont(14f));
         b.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 228, 245)),
                 BorderFactory.createEmptyBorder(8, 14, 8, 14)
@@ -334,6 +407,7 @@ public class ItemViewerPanel extends GradientPanel {
         f.setForeground(new Color(30, 30, 30));
         f.setCaretColor(new Color(30, 30, 30));
         f.setBackground(Color.WHITE);
+        f.setFont(AppConstants.DEFAULT_FONT.deriveFont(14f));
         f.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(220, 228, 245)),
                 BorderFactory.createEmptyBorder(7, 10, 7, 10)
@@ -343,108 +417,7 @@ public class ItemViewerPanel extends GradientPanel {
     private void styleCombo(JComboBox<?> box) {
         box.setBackground(Color.WHITE);
         box.setForeground(new Color(30, 30, 30));
+        box.setFont(AppConstants.DEFAULT_FONT.deriveFont(14f));
         box.setBorder(BorderFactory.createLineBorder(new Color(220, 228, 245)));
-    }
-
-    private void styleTable(JTable t) {
-        t.setRowHeight(28);
-        t.setFillsViewportHeight(true);
-        t.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        t.setShowGrid(true);
-        t.setGridColor(new Color(235, 238, 245));
-
-        t.setBackground(Color.WHITE);
-        t.setForeground(new Color(35, 35, 35));
-        t.setSelectionBackground(new Color(220, 235, 255));
-        t.setSelectionForeground(new Color(20, 20, 20));
-
-        JTableHeader header = t.getTableHeader();
-        header.setBackground(new Color(245, 248, 255));
-        header.setForeground(new Color(30, 30, 30));
-        header.setReorderingAllowed(false);
-    }
-
-
-    private static class ItemTableModel extends AbstractTableModel {
-        private final String[] cols = {"ID", "Name", "Price", "Qty", "Unit", "Min", "Category"};
-        private List<Item> data = new ArrayList<>();
-
-        public void setData(List<Item> items) {
-            this.data = (items == null) ? new ArrayList<>() : new ArrayList<>(items);
-            fireTableDataChanged();
-        }
-
-        public Item getAt(int row) {
-            if (row < 0 || row >= data.size()) return null;
-            return data.get(row);
-        }
-
-        @Override public int getRowCount() { return data.size(); }
-        @Override public int getColumnCount() { return cols.length; }
-        @Override public String getColumnName(int c) { return cols[c]; }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Item it = data.get(rowIndex);
-            return switch (columnIndex) {
-                case 0 -> it.getId();
-                case 1 -> it.getName();
-                case 2 -> String.format(Locale.ROOT, "%.2f", it.getPrice());
-                case 3 -> String.format(Locale.ROOT, "%.2f", it.getQuantity());
-                case 4 -> it.getUnit();
-                case 5 -> String.format(Locale.ROOT, "%.2f", it.getMinLimit());
-                case 6 -> (it.getCategory() == null ? "" : it.getCategory().getName());
-                default -> "";
-            };
-        }
-    }
-
-
-
-    private static class ItemForm {
-        String name, price, qty, min;
-        Unit unit;
-        int categoryId;
-
-        static ItemForm showDialog(Component parent, String title, Item existing, List<Category> categories) {
-            JTextField nameF = new JTextField(existing == null ? "" : existing.getName(), 18);
-            JTextField priceF = new JTextField(existing == null ? "" : String.valueOf(existing.getPrice()), 10);
-            JTextField qtyF = new JTextField(existing == null ? "" : String.valueOf(existing.getQuantity()), 10);
-            JTextField minF = new JTextField(existing == null ? "" : String.valueOf(existing.getMinLimit()), 10);
-
-            JComboBox<Unit> unitBox = new JComboBox<>(Unit.values());
-            unitBox.setSelectedItem(existing == null ? Unit.PCS : existing.getUnit());
-
-            JComboBox<Category> catBox = new JComboBox<>(categories.toArray(new Category[0]));
-            if (existing != null && existing.getCategory() != null) {
-                for (int i = 0; i < catBox.getItemCount(); i++) {
-                    if (catBox.getItemAt(i).getId() == existing.getCategory().getId()) {
-                        catBox.setSelectedIndex(i);
-                        break;
-                    }
-                }
-            }
-
-            JPanel p = new JPanel(new GridLayout(0, 2, 8, 8));
-            p.add(new JLabel("Name:")); p.add(nameF);
-            p.add(new JLabel("Price:")); p.add(priceF);
-            p.add(new JLabel("Quantity:")); p.add(qtyF);
-            p.add(new JLabel("Min Limit:")); p.add(minF);
-            p.add(new JLabel("Unit:")); p.add(unitBox);
-            p.add(new JLabel("Category:")); p.add(catBox);
-
-            int ok = JOptionPane.showConfirmDialog(parent, p, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-            if (ok != JOptionPane.OK_OPTION) return null;
-
-            ItemForm f = new ItemForm();
-            f.name = nameF.getText();
-            f.price = priceF.getText();
-            f.qty = qtyF.getText();
-            f.min = minF.getText();
-            f.unit = (Unit) unitBox.getSelectedItem();
-            Category c = (Category) catBox.getSelectedItem();
-            f.categoryId = (c == null) ? 0 : c.getId();
-            return f;
-        }
     }
 }

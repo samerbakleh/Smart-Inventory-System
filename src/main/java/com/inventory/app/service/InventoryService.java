@@ -3,6 +3,8 @@ package com.inventory.app.service;
 import com.inventory.app.exception.ReachedMinLimitException;
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
+import com.inventory.app.model.Product;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.repository.CategoryRepository;
 import com.inventory.app.repository.ItemRepository;
 import com.inventory.app.model.enums.Unit;
@@ -429,6 +431,55 @@ public class InventoryService {
 
 
         persistIfCurrent(expectedVersion, itemsSnap, catsSnap);
+    }
+    public boolean canProduce(ProductType productType, double productCount) {
+        if (productType == null) throw new IllegalArgumentException("ProductType is null");
+        if (productCount < -EPS) throw new IllegalArgumentException("Product count cannot be negative");
+        if (Math.abs(productCount) <= EPS) return true;
+
+        Map<Item, Double> perUnit = productType.getRequiredItems();
+        if (perUnit == null || perUnit.isEmpty()) return true;
+
+        dataLock.readLock().lock();
+        try {
+            for (Map.Entry<Item, Double> e : perUnit.entrySet()) {
+                Item reqItemKey = e.getKey();
+                Double perUnitNeedObj = e.getValue();
+
+                if (reqItemKey == null) return false;
+                if (perUnitNeedObj == null) return false;
+
+                double perUnitNeed = perUnitNeedObj;
+                if (perUnitNeed < -EPS) return false;
+                if (Math.abs(perUnitNeed) <= EPS) continue;
+
+                Item invItem = null;
+                for (Item i : items) {
+                    if (i.getId() == reqItemKey.getId()) { invItem = i; break; }
+                }
+                if (invItem == null) return false;
+
+                double need = perUnitNeed * productCount;
+                if (Math.abs(need) <= EPS) continue;
+
+                double current = invItem.getQuantity();
+                double after = current - need;
+
+                // ما في كمية كافية
+                if (after < -EPS) return false;
+
+                // ينزل تحت/عند minLimit => مرفوض مثل consume()
+                if (after <= invItem.getMinLimit() + EPS) return false;
+            }
+            return true;
+        } finally {
+            dataLock.readLock().unlock();
+        }
+    }
+
+    public boolean canProduce(Product product, double productCount) {
+        if (product == null) throw new IllegalArgumentException("Product is null");
+        return canProduce(product.getProductType(), productCount);
     }
 
 

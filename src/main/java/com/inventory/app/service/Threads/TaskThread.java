@@ -1,4 +1,4 @@
-package com.inventory.app.service.threads;
+package com.inventory.app.service.Threads;
 
 import com.inventory.app.model.Task;
 import com.inventory.app.service.TaskService;
