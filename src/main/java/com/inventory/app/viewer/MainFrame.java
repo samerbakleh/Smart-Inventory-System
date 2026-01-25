@@ -15,15 +15,17 @@ public class MainFrame extends JFrame {
     private LogInPanel logInPanel;
     private ManagerPanel managerPanel;
     private SupervisorPanel supervisorPanel;
+    private ShowProductsPanel showProductsPanel;
 
     public MainFrame(MainController mainController, AuthenticationController authenticationController,
                      ItemController itemController, ProductLineController productLineController,
-                     TaskController taskController) {
+                     TaskController taskController,ProductController productController) {
         super("Production & Inventory Management System");
         this.mainController = mainController;
         this.logInPanel = new LogInPanel(authenticationController);
         this.managerPanel = new ManagerPanel(productLineController);
         this.supervisorPanel = new SupervisorPanel(this, itemController, productLineController, taskController);
+        this.showProductsPanel = new ShowProductsPanel(productController);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -58,6 +60,12 @@ public class MainFrame extends JFrame {
                 saveFilesWorker.execute();
             }
         });
+
+        logInPanel.setName("login");
+        managerPanel.setName("manager");
+        supervisorPanel.setName("supervisor");
+        showProductsPanel.setName("showProducts");
+
         addComponents();
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
@@ -100,7 +108,7 @@ public class MainFrame extends JFrame {
         cardPanel.add(logInPanel, logInPanel.getName());
         cardPanel.add(managerPanel, managerPanel.getName());
         cardPanel.add(supervisorPanel, supervisorPanel.getName());
-
+        cardPanel.add(showProductsPanel, showProductsPanel.getName());
         add(cardPanel);
     }
 
@@ -117,5 +125,10 @@ public class MainFrame extends JFrame {
     public void switchToSupervisorPanel() {
         switchCard(supervisorPanel.getName());
     }
+public void switchToShowProductsPanel()
+{
+    showProductsPanel.loadProductsAndBuildTable();
+    switchCard(showProductsPanel.getName());
 
+}
 }

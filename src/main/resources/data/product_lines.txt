@@ -1,0 +1,20 @@
+1;LineAppleJuice;ACTIVE;joice,Apple;10001;4;120;Apple juice line
+2;LineOrangeJuice;ACTIVE;joice,Orange;10002;3;95;Orange juice line
+3;LineBananaJuice;ACTIVE;joice,Banana;10003;3;80;Banana juice line
+4;LineGrapeJuice;ACTIVE;joice,Grape;10004;4;60;Grape juice line
+5;LineMangoJuice;ACTIVE;joice,Mango;10005;5;70;Mango juice line
+6;LineMilkDrink;ACTIVE;dairy,MilkDrink;10006;4;200;Milk drink line
+7;LineYogurtCup;ACTIVE;dairy,YogurtCup;10007;4;160;Yogurt cup line
+8;LineCheesePack;ACTIVE;dairy,CheesePack;10008;4;140;Cheese pack line
+9;LineBread;ACTIVE;bakery,Bread;10009;3;300;Bread line
+10;LineCake;ACTIVE;bakery,Cake;10010;5;90;Cake line
+11;LineCroissant;ACTIVE;bakery,Croissant;10011;4;110;Croissant line
+12;LineChips;ACTIVE;snack,Chips;10012;3;210;Chips line
+13;LinePopcorn;ACTIVE;snack,Popcorn;10013;3;180;Popcorn line
+14;LineCrackers;ACTIVE;snack,Crackers;10014;4;130;Crackers line
+15;LineTea;ACTIVE;hotdrink,TeaCup;10015;4;250;Tea line
+16;LineCoffee;ACTIVE;hotdrink,CoffeeCup;10016;5;190;Coffee line
+17;LineChickenMeal;ACTIVE;meat,ChickenMeal;10017;5;75;Chicken meal line
+18;LineBeefMeal;ACTIVE;meat,BeefMeal;10018;5;65;Beef meal line
+19;LineCleaningPack;ACTIVE;home,CleaningPack;10019;3;150;Cleaning pack line
+20;LineCarePack;ACTIVE;home,CarePack;10020;3;140;Care pack line

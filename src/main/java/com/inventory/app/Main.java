@@ -20,6 +20,7 @@ public class Main {
         ProductLineRepository productLineRepository = new ProductLineRepository();
         TaskRepository taskRepository = new TaskRepository();
         UserRepository userRepository = new UserRepository();
+        ProductRepository productRepository = new ProductRepository();
 
         InventoryService inventoryService = new InventoryService(itemRepository, categoryRepository);
         ProductLineService productLineService = new ProductLineService(productLineRepository, taskRepository,
@@ -27,8 +28,9 @@ public class Main {
         ProductTypeService productTypeService = new ProductTypeService(productTypeRepository, itemRepository);
         TaskService taskService = new TaskService(taskRepository, productTypeRepository);
         AuthenticationService authenticationService = new AuthenticationService(userRepository);
+        ProductService productService = new ProductService(productRepository);
 
-        MainController mainController = new MainController(productTypeService, productLineService,authenticationService);
+        MainController mainController = new MainController(productTypeService, productService,productLineService,authenticationService);
         ItemController itemController = new ItemController(inventoryService);
         ProductLineController productLineController = new ProductLineController(productLineService);
         TaskController taskController = new TaskController(taskService);

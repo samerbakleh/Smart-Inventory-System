@@ -14,7 +14,10 @@ import java.util.List;
 
 public class ProductService {
     private ProductRepository productRepository = new ProductRepository();
-
+    public  ProductService (ProductRepository productRepository)
+    {
+        this.productRepository=productRepository;
+    }
     public boolean deleteById(int id) {
         if (!productRepository.isExist(id))
             return false;
@@ -36,15 +39,19 @@ public class ProductService {
             int productId,
             LocalDate fromDate,
             LocalDate toDate) {
+
         List<ProductLine> productLines = new ArrayList<>();
         Product product = productRepository.findById(productId);
         if (product != null) {
-
             for (ProductLine pL : product.getProductType().getProductLines()) {
-                for (Task t : pL.getTasks()) {
-                    if (t.getStartDate().isAfter(fromDate) && t.getDeliveryDate().isAfter(toDate) && t.getProduct().getProductType().toString().equals(product.getProductType().toString()))
-                        ;
-                    {
+                Queue<Task> queue = pL.getTasks(product.getProductType());
+                if (queue == null) continue;
+
+                for (Task t : queue) {
+                    if (t.getStartDate().isAfter(fromDate)
+                            && t.getDeliveryDate().isAfter(toDate)
+                            && t.getProductName().equals(product.getProductType().toString())) {
+
                         productLines.add(pL);
                         break;
                     }
@@ -53,19 +60,21 @@ public class ProductService {
         }
         return productLines;
     }
-
     List<ProductLine> findLinesByProductAndClient(
             int productId,
             String client) {
+
         List<ProductLine> productLines = new ArrayList<>();
         Product product = productRepository.findById(productId);
         if (product != null) {
-
             for (ProductLine pL : product.getProductType().getProductLines()) {
-                for (Task t : pL.getTasks()) {
-                    if (t.getClient().getFullName().equals(client) && t.getProduct().getProductType().toString().equals(product.getProductType().toString()))
-                        ;
-                    {
+                Queue<Task> queue = pL.getTasks(product.getProductType());
+                if (queue == null) continue;
+
+                for (Task t : queue) {
+                    if (t.getClientName().equals(client)
+                            && t.getProductName().equals(product.getProductType().toString())) {
+
                         productLines.add(pL);
                         break;
                     }
@@ -78,22 +87,50 @@ public class ProductService {
     List<ProductLine> findLinesByProductAndStatus(
             int productId,
             TaskStatus status) {
+
         List<ProductLine> productLines = new ArrayList<>();
         Product product = productRepository.findById(productId);
         if (product != null) {
             for (ProductLine pL : product.getProductType().getProductLines()) {
-                boolean isAllTaskCompleted = false;
-                for (Task t : pL.getTasks()) {
-                    if (t.getProduct().getProductType().toString().equals(product.getProductType().toString())) ;
-                    {
-                        isAllTaskCompleted = (status == t.getTaskStatus());
+                Queue<Task> queue = pL.getTasks(product.getProductType());
+                if (queue == null || queue.isEmpty()) continue;
+
+                boolean isAllTaskStatusMatch = true;
+                for (Task t : queue) {
+                    if (!t.getProductName().equals(product.getProductType().toString())
+                            || t.getTaskStatus() != status) {
+
+                        isAllTaskStatusMatch = false;
+                        break;
                     }
                 }
-                if (isAllTaskCompleted) productLines.add(pL);
+                if (isAllTaskStatusMatch) {
+                    productLines.add(pL);
+                }
             }
         }
         return productLines;
     }
 
+    public List<Product> getProductsProductLine(int productLineId)
+    {
+        List<Product> products = new ArrayList<>();
+        for(Product p : products)
+        {
+            if(p.getProductLineId()==productLineId)
+            {
+                products.add(p);
+            }
+        }
+        return products;
+    }
 
+ public void load ()
+ {
+     productRepository.load();
+ }
+ public List<Product> getProducts()
+ {
+     return new ArrayList<>(productRepository.getProducts().values());
+ }
 }

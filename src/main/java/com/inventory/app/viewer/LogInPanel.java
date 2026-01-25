@@ -158,6 +158,7 @@ public class LogInPanel extends JPanel {
                  */
             errorLabel.setForeground(Color.white);
             if(role.toUpperCase().equals(Role.MANAGER.toString())) {
+//                container.switchToManagerPanel();
                 container.switchToManagerPanel();
             } else {
                     /*
