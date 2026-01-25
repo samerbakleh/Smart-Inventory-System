@@ -3,13 +3,14 @@ package com.inventory.app.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProductType {
+
     private String name;
     private String subtype;
     private Map<Item, Double> requiredItems;
     private List<ProductLine> productLines;
+
     public ProductType(String name, String subtype) {
         this.name = name;
         this.subtype = subtype;
@@ -18,7 +19,6 @@ public class ProductType {
         this.name = name;
         this.subtype = subtype;
         setRequiredItems(requiredItems);
-        this.productLines = productLines;
     }
 
     public String getName() {
@@ -41,18 +41,21 @@ public class ProductType {
         this.subtype = subtype;
     }
     public void setRequiredItems(Map<Item, Double> requiredItems) {
-        for(Map.Entry<Item, Double> entry : requiredItems.entrySet())
-            if(entry.getValue() <= 0)
+        for(Map.Entry<Item, Double> entry : requiredItems.entrySet()) {
+            if(entry.getValue() <= 0) {
                 throw new IllegalArgumentException(entry.getKey().getName()
-                        + " required amount can't be negative or zero in " + this);
+                                                 + " required amount can't be negative or zero in " + this);
+            }
+        }
         this.requiredItems = requiredItems;
     }
     public void setProductLine(List<ProductLine> productLines) {
         this.productLines = productLines;
     }
     public void addProductLine(ProductLine pl) {
-        if(productLines == null)
+        if(productLines == null) {
             productLines = new ArrayList<>();
+        }
         productLines.add(pl);
     }
 

@@ -36,7 +36,7 @@ public class ProductTypeRepository {
 
     }
 
-    // name;subType;itemID1,quantity1,itemID2,quantity2,...
+                                             // name;subType;itemID1,quantity1,itemID2,quantity2,...
     public void save() throws IOException {
         BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE));
         for(ProductType pt : productTypes) {
@@ -48,8 +48,8 @@ public class ProductTypeRepository {
         }
     }
 
-    // returns a map with product types as keys and the corresponding values
-    // are required items by ID to link with the product type
+                                                // returns a map with product types as keys and the corresponding values
+                                                // are required items by ID to link with the product type
     public Map<ProductType, Map<Integer, Double>> load() throws IOException {
         productTypes = new ArrayList<>();
         Map<ProductType, Map<Integer, Double>> unlinkedProductTypes = new HashMap<>();

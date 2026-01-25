@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProductRepository {
-    private static Map<Integer, Product> products;
+    private static Map<Integer, Product> products = new HashMap<>();
 
 
     public void add(Product product) {
@@ -85,5 +85,7 @@ public class ProductRepository {
         return false;
     }
 
-
+    public Map<Integer, Product> getProducts() {
+        return products;
+    }
 }
