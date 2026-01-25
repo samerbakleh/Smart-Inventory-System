@@ -8,6 +8,7 @@ import com.inventory.app.model.ProductType;
 import com.inventory.app.repository.CategoryRepository;
 import com.inventory.app.repository.ItemRepository;
 import com.inventory.app.model.enums.Unit;
+import com.inventory.app.repository.ProductTypeRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,6 +20,7 @@ public class InventoryService {
 
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductTypeRepository productTypeRepository = new ProductTypeRepository();
 
     private final ReadWriteLock dataLock = new ReentrantReadWriteLock();
 
@@ -29,6 +31,8 @@ public class InventoryService {
     // cache
     private final List<Item> items = new ArrayList<>();
     private final Map<Integer, Category> categoriesById = new HashMap<>();
+    // reserved in-memory only
+    private final Map<Integer, Double> reservedByItemId = new HashMap<>();
 
     public InventoryService(ItemRepository itemRepository, CategoryRepository categoryRepository) {
         this.itemRepository = Objects.requireNonNull(itemRepository);
@@ -60,6 +64,7 @@ public class InventoryService {
 
             items.clear();
             items.addAll(loadedItems);
+            reservedByItemId.clear();
 
             version.incrementAndGet();
         } finally {
@@ -481,7 +486,260 @@ public class InventoryService {
         return canProduce(product.getProductType(), productCount);
     }
 
+    public Map<Item, Double> calcRequiredRawMaterials(ProductType productType, double productCount) {
+        if (productType == null) throw new IllegalArgumentException("ProductType is null");
+        if (productCount < -EPS) throw new IllegalArgumentException("Product count cannot be negative");
+        if (Math.abs(productCount) <= EPS) return Collections.emptyMap();
 
+        Map<Item, Double> perUnit = productType.getRequiredItems();
+        if (perUnit == null || perUnit.isEmpty()) return Collections.emptyMap();
+
+        dataLock.readLock().lock();
+        try {
+            Map<Item, Double> result = new LinkedHashMap<>();
+
+            for (Map.Entry<Item, Double> e : perUnit.entrySet()) {
+                Item key = e.getKey();
+                Double perUnitNeedObj = e.getValue();
+
+                if (key == null) throw new IllegalArgumentException("Required item is null in " + productType);
+                if (perUnitNeedObj == null) throw new IllegalArgumentException("Required qty is null");
+
+                double perUnitNeed = perUnitNeedObj;
+                if (perUnitNeed < -EPS) throw new IllegalArgumentException("Required qty cannot be negative for: " + key.getName());
+                if (Math.abs(perUnitNeed) <= EPS) continue;
+
+                Item invItem = null;
+                for (Item i : items) {
+                    if (i.getId() == key.getId()) { invItem = i; break; }
+                }
+                if (invItem == null) {
+                    throw new IllegalArgumentException("Item not found in inventory: id=" + key.getId() + " (" + key.getName() + ")");
+                }
+
+                if (invItem.getUnit() != key.getUnit()) {
+                    throw new IllegalArgumentException("Unit mismatch for itemId=" + invItem.getId());
+                }
+
+                double total = perUnitNeed * productCount;
+                if (Math.abs(total) <= EPS) continue;
+
+                result.merge(invItem, total, Double::sum);
+            }
+
+            return result;
+        } finally {
+            dataLock.readLock().unlock();
+        }
+
+    }
+    public void restock(Map<Item, Double> add) {
+        if (add == null || add.isEmpty()) return;
+
+        List<Item> itemsSnap;
+        List<Category> catsSnap;
+        long expectedVersion;
+
+        dataLock.writeLock().lock();
+        try {
+            for (Map.Entry<Item, Double> e : add.entrySet()) {
+                Item key = e.getKey();
+                Double addObj = e.getValue();
+
+                if (key == null) throw new IllegalArgumentException("Item is null");
+                if (addObj == null) throw new IllegalArgumentException("Add is null for itemId=" + key.getId());
+
+                double amount = addObj;
+                if (amount < -EPS) throw new IllegalArgumentException("Add amount cannot be negative for: " + key.getName());
+                if (Math.abs(amount) <= EPS) continue;
+
+
+                Item item = null;
+                for (Item i : items) {
+                    if (i.getId() == key.getId()) { item = i; break; }
+                }
+                if (item == null) throw new IllegalArgumentException("Item not found in inventory: id=" + key.getId());
+
+                if (item.getUnit() != key.getUnit()) {
+                    throw new IllegalArgumentException("Unit mismatch for itemId=" + item.getId());
+                }
+
+                item.setQuantity(item.getQuantity() + amount);
+            }
+
+            expectedVersion = version.incrementAndGet();
+            itemsSnap = new ArrayList<>(items);
+            catsSnap = new ArrayList<>(categoriesById.values());
+
+        } finally {
+            dataLock.writeLock().unlock();
+        }
+
+        persistIfCurrent(expectedVersion, itemsSnap, catsSnap);
+    }
+
+    public void restock(ProductType pt, double productCount) {
+        if (pt == null) throw new IllegalArgumentException("ProductType is null");
+        if (productCount < -EPS) throw new IllegalArgumentException("Product count cannot be negative");
+        if (Math.abs(productCount) <= EPS) return;
+
+        Map<Item, Double> add = calcRequiredRawMaterials(pt, productCount);
+        restock(add);
+    }
+    public void restock(Product product, double productCount) {
+        if (product == null) throw new IllegalArgumentException("Product is null");
+        restock(product.getProductType(), productCount);
+    }
+    private double getReserved(int itemId) {
+        return reservedByItemId.getOrDefault(itemId, 0.0);
+    }
+
+    private void addReserved(int itemId, double delta) {
+        double v = getReserved(itemId) + delta;
+        if (v <= EPS) reservedByItemId.remove(itemId);
+        else reservedByItemId.put(itemId, v);
+    }
+    public void reserve(Map<Item, Double> req) throws ReachedMinLimitException {
+        if (req == null || req.isEmpty()) return;
+
+        dataLock.writeLock().lock();
+        try {
+            class P { int itemId; double need; P(int itemId, double need){ this.itemId=itemId; this.need=need; } }
+            ArrayList<P> plan = new ArrayList<>();
+
+            for (Map.Entry<Item, Double> e : req.entrySet()) {
+                Item key = e.getKey();
+                Double needObj = e.getValue();
+
+                if (key == null) throw new IllegalArgumentException("Item is null");
+                if (needObj == null) throw new IllegalArgumentException("Need is null for itemId=" + key.getId());
+
+                double need = needObj;
+                if (need < -EPS) throw new IllegalArgumentException("Need cannot be negative for: " + key.getName());
+                if (Math.abs(need) <= EPS) continue;
+
+                Item item = null;
+                for (Item i : items) {
+                    if (i.getId() == key.getId()) { item = i; break; }
+                }
+                if (item == null) throw new IllegalArgumentException("Item not found: id=" + key.getId());
+
+                if (item.getUnit() != key.getUnit()) {
+                    throw new IllegalArgumentException("Unit mismatch for itemId=" + item.getId());
+                }
+
+                double current = item.getQuantity();
+                double reserved = getReserved(item.getId());
+                double available = current - reserved;
+                double after = available - need;
+
+                if (after < -EPS) {
+                    throw new IllegalArgumentException("Not enough AVAILABLE stock for " + item.getName() +
+                            " need=" + need + " available=" + available);
+                }
+
+                if (after <= item.getMinLimit() + EPS) {
+                    throw new ReachedMinLimitException(item.getId(), item.getName(), current, need, item.getMinLimit(), after);
+                }
+
+                plan.add(new P(item.getId(), need));
+            }
+
+            for (P p : plan) {
+                addReserved(p.itemId, p.need);
+            }
+
+        } finally {
+            dataLock.writeLock().unlock();
+        }
+    }
+    public void releaseReservation(Map<Item, Double> req) {
+        if (req == null || req.isEmpty()) return;
+
+        dataLock.writeLock().lock();
+        try {
+            for (Map.Entry<Item, Double> e : req.entrySet()) {
+                Item key = e.getKey();
+                Double needObj = e.getValue();
+                if (key == null || needObj == null) continue;
+
+                double need = needObj;
+                if (need <= EPS) continue;
+
+                double reserved = getReserved(key.getId());
+                double toRelease = Math.min(reserved, need);
+                addReserved(key.getId(), -toRelease);
+            }
+        } finally {
+            dataLock.writeLock().unlock();
+        }
+    }
+    public void consumeReserved(Map<Item, Double> req) throws ReachedMinLimitException {
+        if (req == null || req.isEmpty()) return;
+
+        List<Item> itemsSnap;
+        List<Category> catsSnap;
+        long expectedVersion;
+
+        dataLock.writeLock().lock();
+        try {
+            // validate: لازم يكون في حجز كافي + الخصم ما يكسر القواعد
+            for (Map.Entry<Item, Double> e : req.entrySet()) {
+                Item key = e.getKey();
+                Double needObj = e.getValue();
+
+                if (key == null) throw new IllegalArgumentException("Item is null");
+                if (needObj == null) throw new IllegalArgumentException("Need is null for itemId=" + key.getId());
+
+                double need = needObj;
+                if (need < -EPS) throw new IllegalArgumentException("Need cannot be negative");
+                if (need <= EPS) continue;
+
+                Item item = null;
+                for (Item i : items) {
+                    if (i.getId() == key.getId()) { item = i; break; }
+                }
+                if (item == null) throw new IllegalArgumentException("Item not found: id=" + key.getId());
+
+                double reserved = getReserved(item.getId());
+                if (reserved + EPS < need) {
+                    throw new IllegalStateException("ConsumeReserved needs reserved first. itemId=" +
+                            item.getId() + " need=" + need + " reserved=" + reserved);
+                }
+
+                double current = item.getQuantity();
+                double after = current - need;
+
+                if (after < -EPS) throw new IllegalArgumentException("Not enough stock for " + item.getName());
+                if (after <= item.getMinLimit() + EPS) {
+                    throw new ReachedMinLimitException(item.getId(), item.getName(), current, need, item.getMinLimit(), after);
+                }
+            }
+
+            // apply: خصم فعلي + فك الحجز بنفس الكمية
+            for (Map.Entry<Item, Double> e : req.entrySet()) {
+                Item key = e.getKey();
+                double need = e.getValue();
+                if (need <= EPS) continue;
+
+                Item item = null;
+                for (Item i : items) {
+                    if (i.getId() == key.getId()) { item = i; break; }
+                }
+                item.setQuantity(item.getQuantity() - need);
+                addReserved(item.getId(), -need);
+            }
+
+            expectedVersion = version.incrementAndGet();
+            itemsSnap = new ArrayList<>(items);
+            catsSnap = new ArrayList<>(categoriesById.values());
+
+        } finally {
+            dataLock.writeLock().unlock();
+        }
+
+        persistIfCurrent(expectedVersion, itemsSnap, catsSnap);
+    }
 
 
 }
