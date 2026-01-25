@@ -69,7 +69,7 @@ public class ProductLineRepository {
                 }
                 try {
                     int id = Integer.parseInt(mainParts[0]);
-                    if (id <= previousID) {
+                    if(id <= previousID) {
                         throw new IOException(ERROR_MESSAGE);
                     }
                     previousID = id;
@@ -98,7 +98,7 @@ public class ProductLineRepository {
                 }
                 List<String> taskIDs = List.of(mainParts[4].split(","));
                 for(String idString : taskIDs) {
-                    if (!idString.matches("[0-9]+")) {
+                    if(!idString.isEmpty() && !idString.matches("[0-9]+")) {
                         throw new IOException(ERROR_MESSAGE);
                     }
                 }

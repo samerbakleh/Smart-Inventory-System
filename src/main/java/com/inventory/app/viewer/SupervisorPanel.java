@@ -2,6 +2,7 @@ package com.inventory.app.viewer;
 
 import com.inventory.app.controller.ItemController;
 import com.inventory.app.controller.ProductLineController;
+import com.inventory.app.controller.ProductController;
 import com.inventory.app.controller.TaskController;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.GradientPanel;
@@ -15,15 +16,15 @@ public class SupervisorPanel extends JPanel {
 
     private JPanel cardPanel;
     private ItemViewerPanel itemViewerPanel;
-    private ProductViewerPanel productViewerPanel;
+    private ShowProductsPanel productViewerPanel;
     private ProductLineViewerPanel productLineViewerPanel;
     private TaskListPanel taskListPanel;
 
-    public SupervisorPanel(JFrame container, ItemController itemController, ProductLineController productLineController,
-                           TaskController taskController) {
+    public SupervisorPanel(JFrame container, ItemController itemController, ProductController productController,
+                           ProductLineController productLineController, TaskController taskController) {
         super(new GridBagLayout());
         this.itemViewerPanel = new ItemViewerPanel(itemController);
-        this.productViewerPanel = new ProductViewerPanel();
+        this.productViewerPanel = new ShowProductsPanel(productController);
         this.productLineViewerPanel = new ProductLineViewerPanel(productLineController);
         this.taskListPanel = new TaskListPanel(taskController, container);
         setName("Supervisor panel");
