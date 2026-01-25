@@ -1,5 +1,6 @@
 package com.inventory.app.viewer;
 
+import com.inventory.app.controller.ItemController;
 import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.controller.TaskController;
 import com.inventory.app.model.Task;
@@ -19,7 +20,7 @@ public class TaskListPanel extends JPanel{
 
     private JTable table;
 
-    public TaskListPanel(TaskController taskController, JFrame frame, ProductLineController productLineController) {
+    public TaskListPanel(TaskController taskController, JFrame frame, ProductLineController productLineController, ItemController itemController) {
 
         this.taskController = taskController;
         this.frame = frame;
@@ -68,7 +69,7 @@ public class TaskListPanel extends JPanel{
 
         addTaskBtn.addActionListener(e -> {
             TaskCreationDialog dialog =
-                    new TaskCreationDialog(frame, taskController,productLineController);
+                    new TaskCreationDialog(frame, taskController,productLineController,itemController);
             dialog.setVisible(true);
             refresh(taskController.getAllTasks());
         });

@@ -122,7 +122,8 @@ public class Task {
     }
     public int getProducedAmount()
     {
-        return quantityRequired * (int) progress /100;
+        double ans=quantityRequired * progress /100;
+        return (int)ans;
     }
     public ProductType getProductType ()
     {
