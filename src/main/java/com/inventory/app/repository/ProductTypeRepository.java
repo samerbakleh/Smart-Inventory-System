@@ -87,6 +87,7 @@ public class ProductTypeRepository {
 
             unlinkedProductTypes.put(pt, requiredItemsById);
         }
+        System.out.println(productTypes);
         return unlinkedProductTypes;
     }
 

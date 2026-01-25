@@ -1,5 +1,6 @@
 package com.inventory.app.viewer;
 
+import com.inventory.app.controller.ProductController;
 import com.inventory.app.model.Item;
 import com.inventory.app.model.Product;
 
@@ -16,12 +17,34 @@ import java.util.Map;
 
 public class ShowProductsPanel extends JPanel {
 
+    private final ProductController productController;
+
     private JTable table;
     private ProductTableModel tableModel;
+    private List<Product> products;
 
-
-    public ShowProductsPanel(List<Product> products) {
+    public ShowProductsPanel(ProductController productController) {
+        this.productController = productController;
         setLayout(new BorderLayout());
+        // لا نبني الجدول هنا
+    }
+
+    /**
+     * استدعِ هذا التابع عندما تريد تحميل المنتجات وبناء الجدول.
+     * يمكن استدعاؤه أكثر من مرة لتحديث البيانات.
+     */
+    public void loadProductsAndBuildTable() {
+        // تحميل المنتجات من الكونترولر
+        this.products = productController.getProducts();
+        System.out.println("ShowProducts :" + products);
+
+        // إذا كان الجدول مبنيًا من قبل، احذفه أولاً
+        removeAll();
+
+        // إذا لا توجد منتجات، يمكن عرض رسالة بسيطة (اختياري)
+        if (products == null) {
+            products = java.util.Collections.emptyList();
+        }
 
         tableModel = new ProductTableModel(products);
         table = new JTable(tableModel);
@@ -40,8 +63,10 @@ public class ShowProductsPanel extends JPanel {
 
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
-    }
 
+        revalidate();
+        repaint();
+    }
 
     private void showRequiredItemsDialog(int row) {
         Product product = tableModel.getProductAt(row);
@@ -76,6 +101,7 @@ public class ShowProductsPanel extends JPanel {
         );
     }
 
+    // ================== TableModel ==================
 
     private static class ProductTableModel extends AbstractTableModel {
         private final String[] columnNames = {
@@ -134,6 +160,7 @@ public class ShowProductsPanel extends JPanel {
         }
     }
 
+    // ================== Renderer ==================
 
     private static class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
@@ -158,6 +185,7 @@ public class ShowProductsPanel extends JPanel {
         }
     }
 
+    // ================== Editor ==================
 
     private static class ButtonEditor extends AbstractCellEditor
             implements TableCellEditor, ActionListener {

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProductRepository {
-    private static Map<Integer, Product> products = new HashMap<>();
+    private static Map<Integer, Product> products ;
 
 
     public void add(Product product) {
@@ -43,6 +43,7 @@ public class ProductRepository {
                 }
             }
         } catch (Exception e) {
+            System.out.println("Failed To Read Products File");
             throw new RuntimeException(e);
         }
     }
@@ -57,7 +58,7 @@ public class ProductRepository {
 
         if (productType == null) {
             throw new IllegalArgumentException(
-                    "ProductType not found for  : " + productTypeName+subtype
+                    "ProductType not found for  : " + productTypeName+" "+subtype
             );
         }
 
