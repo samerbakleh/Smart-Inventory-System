@@ -25,6 +25,7 @@ public class TaskListPanel extends JPanel{
 
         setLayout(new BorderLayout(10, 10));
         setName("Tasks Viewer Panel");
+        setBackground(Color.white);
 
         tableModel = new DefaultTableModel(
                 new String[]{
@@ -44,6 +45,7 @@ public class TaskListPanel extends JPanel{
         JButton addTaskBtn = new JButton("Add Task");
         JButton refreshTaskBtn = new JButton("Refresh");
 
+        topPanel.setBackground(Color.white);
         topPanel.add(new JLabel("Filter: "));
         topPanel.add(filterBox);
         topPanel.add(addTaskBtn);
