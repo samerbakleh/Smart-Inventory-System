@@ -330,7 +330,7 @@ public class InventoryService {
             ioLock.unlock();
         }
     }
-    public static final double EPS = 1e-9;
+    private static final double EPS = 1e-9;
 
     private void validate(Map<Item, Double> req) throws ReachedMinLimitException {
         if (req == null || req.isEmpty()) return;
@@ -738,6 +738,8 @@ public class InventoryService {
 
         persistIfCurrent(expectedVersion, itemsSnap, catsSnap);
     }
+
+
 
 
 }

@@ -51,5 +51,11 @@ public class ProductLineController {
     public void changeProductLineNote(ProductLine pl, String note) {
         productLineService.changeProductLineNote(pl, note);
     }
+    public int getLeastBusyProductLineID(ProductType pt) {
+        return productLineService.getLeastBusyProductLine(pt).getID();
+    }
 
+    public ProductLineService getProductLineService() {
+        return productLineService;
+    }
 }

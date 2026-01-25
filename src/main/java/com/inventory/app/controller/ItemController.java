@@ -2,10 +2,10 @@ package com.inventory.app.controller;
 
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.Unit;
 import com.inventory.app.service.InventoryService;
-import com.inventory.app.util.ErrorLog;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -127,5 +127,9 @@ public class ItemController {
 
     public void reload() {
         service.reload();
+    }
+    public boolean getCanProduced(ProductType pt , int QTY)
+    {
+        return service.canProduce(pt,QTY);
     }
 }

@@ -1,6 +1,10 @@
 package com.inventory.app.viewer;
 
+import com.inventory.app.controller.ItemController;
+import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.controller.TaskController;
+import com.inventory.app.model.ProductLine;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 
 import javax.swing.*;
@@ -9,7 +13,7 @@ import java.time.LocalDate;
 
 public class TaskCreationDialog extends JDialog{
 
-    public TaskCreationDialog(JFrame frame,TaskController controller){
+    public TaskCreationDialog(JFrame frame, TaskController controller, ProductLineController productLineController, ItemController itemController){
             super(frame,"Create Task", true);
             setSize(600,200);
             setLocationRelativeTo(frame);
@@ -43,16 +47,29 @@ public class TaskCreationDialog extends JDialog{
 
         saveBtn.addActionListener(e -> {
             try {
+                ProductType pt =   controller.getTaskService().getProductTypeRepository().findByFullName((String) productCombo.getSelectedItem());
+                int plId =  productLineController.getLeastBusyProductLineID(pt);
                 Task task = new Task(Integer.parseInt(quantityField.getText()),
-                        controller.getTaskService().getProductTypeRepository().findByFullName((String) productCombo.getSelectedItem()),
+                        pt,
                         clientField.getText(),
-                        12,//حط تابع احمد
+                       plId,
                         LocalDate.parse(deliveryDateField.getText())
                 );
-                controller.addTask(task);
+                ProductLine pl = productLineController.getProductLineService().getProductLineRepository().findByID(plId);
+                if (itemController.getCanProduced(pt,Integer.parseInt(quantityField.getText()))) {
+                    pl.addTask(task);
+                    JOptionPane.showMessageDialog(this, "Task added successfully");
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "No enough items",
+                            "Broken Up",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
                 dispose();
-                JOptionPane.showMessageDialog(this, "Task added successfully");
-
             } catch (Exception ex){
                 JOptionPane.showMessageDialog(
                         this,
