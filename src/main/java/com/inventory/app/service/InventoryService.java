@@ -683,7 +683,6 @@ public class InventoryService {
 
         dataLock.writeLock().lock();
         try {
-            // validate: لازم يكون في حجز كافي + الخصم ما يكسر القواعد
             for (Map.Entry<Item, Double> e : req.entrySet()) {
                 Item key = e.getKey();
                 Double needObj = e.getValue();
@@ -716,7 +715,6 @@ public class InventoryService {
                 }
             }
 
-            // apply: خصم فعلي + فك الحجز بنفس الكمية
             for (Map.Entry<Item, Double> e : req.entrySet()) {
                 Item key = e.getKey();
                 double need = e.getValue();
