@@ -4,10 +4,15 @@ import com.inventory.app.model.enums.Role;
 import com.inventory.app.service.AuthenticationService;
 
 public class AuthenticationController {
+    private AuthenticationService authenticationService;
 
-    public static boolean loginController(String username, String password, String role) {
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
+
+    public boolean loginController(String username, String password, String role) {
         LoginRequest request = new LoginRequest(username, password, Role.textToRole(role));
-        return AuthenticationService.login(request);
+        return authenticationService.login(request);
     }
 
 }

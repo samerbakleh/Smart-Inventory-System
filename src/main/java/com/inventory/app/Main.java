@@ -2,10 +2,7 @@ package com.inventory.app;
 
 import com.inventory.app.controller.*;
 import com.inventory.app.repository.*;
-import com.inventory.app.service.InventoryService;
-import com.inventory.app.service.ProductLineService;
-import com.inventory.app.service.ProductTypeService;
-import com.inventory.app.service.TaskService;
+import com.inventory.app.service.*;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.MainFrame;
 
@@ -22,18 +19,20 @@ public class Main {
         ItemRepository itemRepository = new ItemRepository(categoryRepository);
         ProductLineRepository productLineRepository = new ProductLineRepository();
         TaskRepository taskRepository = new TaskRepository();
+        UserRepository userRepository = new UserRepository();
 
         InventoryService inventoryService = new InventoryService(itemRepository, categoryRepository);
         ProductLineService productLineService = new ProductLineService(productLineRepository, taskRepository,
                                                                        productTypeRepository);
         ProductTypeService productTypeService = new ProductTypeService(productTypeRepository, itemRepository);
         TaskService taskService = new TaskService(taskRepository, productTypeRepository);
+        AuthenticationService authenticationService = new AuthenticationService(userRepository);
 
-        MainController mainController = new MainController(productTypeService, productLineService);
+        MainController mainController = new MainController(productTypeService, productLineService,authenticationService);
         ItemController itemController = new ItemController(inventoryService);
         ProductLineController productLineController = new ProductLineController(productLineService);
         TaskController taskController = new TaskController(taskService);
-        AuthenticationController authenticationController = new AuthenticationController();
+        AuthenticationController authenticationController = new AuthenticationController(authenticationService);
 
 
         SwingUtilities.invokeLater(new Runnable() {
@@ -49,13 +48,11 @@ public class Main {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController,
                         productLineController, taskController);
             }
         });
 
     }
-
 }
 
