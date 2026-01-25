@@ -17,8 +17,11 @@ public class AddProductLineDialog extends JDialog {
     private JLabel invalidSubtypeLabel;
     private RemovableLabelPanel subtypePanel;
 
-    public AddProductLineDialog(ProductLineController productLineController) {
+    private ManagerPanel container;
+
+    public AddProductLineDialog(ProductLineController productLineController, ManagerPanel container) {
         this.productLineController = productLineController;
+        this.container = container;
         setLayout(new GridBagLayout());
         getContentPane().setBackground(Color.white);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -28,7 +31,7 @@ public class AddProductLineDialog extends JDialog {
 
     public void resetDisplay() {
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(container);
         setVisible(true);
     }
 
@@ -98,6 +101,7 @@ public class AddProductLineDialog extends JDialog {
             invalidNameLabel.setForeground(Color.red);
             return;
         }
+        container.refreshTable();
         invalidSubtypeLabel.setForeground(Color.white);
         invalidNameLabel.setForeground(Color.white);
         nameField.setText("");

@@ -28,9 +28,8 @@ public class ManagerPanel extends JPanel{
     public ManagerPanel(ProductLineController productLineController) {
         super(new GridBagLayout());
         this.productLineController = productLineController;
-        this.addProductLineDialog = new AddProductLineDialog(productLineController);
-        this.productLineInfoDialog = new ProductLineInfoDialog(productLineController);
-        this.productLineInfoDialog.setContainer(this);
+        this.addProductLineDialog = new AddProductLineDialog(productLineController, this);
+        this.productLineInfoDialog = new ProductLineInfoDialog(productLineController, this);
         setName("Manager panel");
         setBackground(Color.white);
         addComponents();
