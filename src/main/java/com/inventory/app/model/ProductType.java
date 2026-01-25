@@ -15,6 +15,7 @@ public class ProductType {
         this.name = name;
         this.subtype = subtype;
     }
+    public ProductType(String name, String subtype, Map<Item, Double> requiredItems, List<ProductLine> productLines) {
     public ProductType(String name, String subtype, Map<Item, Double> requiredItems) {
         this.name = name;
         this.subtype = subtype;
