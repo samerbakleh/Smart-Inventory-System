@@ -15,12 +15,19 @@ public class RemovableLabelPanel extends JPanel {
     private Color labelColor = getBackground();
     private Color labelBorderColor = Color.gray;
 
-    public List<String> getLabels() {
+
+    public List<JComponent> getLabels() {
+        return new ArrayList<JComponent>(labels);
+    }
+    public List<String> getContent() {
         List<String> result = new ArrayList<>();
         for(RemovableLabel label : labels) {
             result.add(label.getText());
         }
         return result;
+    }
+    public boolean isEmpty() {
+        return labels.isEmpty();
     }
 
     public void setLabelColor(Color labelColor) {
@@ -44,6 +51,13 @@ public class RemovableLabelPanel extends JPanel {
         add(label);
         revalidate();
         repaint();
+    }
+
+    public void clearContent() {
+        int n = labels.size();
+        for(int i = n - 1; i >= 0; i--) {
+            removeLabel(labels.get(i));
+        }
     }
 
     protected void removeLabel(RemovableLabel label) {

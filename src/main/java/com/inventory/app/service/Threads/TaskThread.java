@@ -1,4 +1,4 @@
-package com.inventory.app.service.Threads;
+package com.inventory.app.service.threads;
 
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.LogLevel;

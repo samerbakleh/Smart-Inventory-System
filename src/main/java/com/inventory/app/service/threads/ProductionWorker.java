@@ -54,17 +54,11 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
             }
             time *= 5000.0/productLine.getName().length();
             while(task.getProgress() != 100 && !task.getTaskStatus().equals(TaskStatus.CANCELLED)) {
-                inventoryService.consume(productType.getRequiredItems());
+                inventoryService.consumeReserved(productType.getRequiredItems());
                 try {
                     Thread.sleep((int) time);
                 } catch(InterruptedException e) {
-                    /*
-
-                    log to error file
-
-                     */
                     ErrorLog.log(LogLevel.ERROR," Thread ","InterruptedException",e);
-
                 }
                 productService.add(productType, productLine.getID());
                 productLine.incrementTotalProduction();
@@ -90,11 +84,7 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
                  */
             }
         } catch(InterruptedException e) {
-            /*
-
-            log to error file
-
-             */ErrorLog.log(LogLevel.ERROR," Thread ","InterruptedException",e);
+            ErrorLog.log(LogLevel.ERROR," Thread ","InterruptedException",e);
         }
     }
 

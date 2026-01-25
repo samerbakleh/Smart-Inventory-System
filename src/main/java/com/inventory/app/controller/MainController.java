@@ -1,55 +1,49 @@
 package com.inventory.app.controller;
 
 import com.inventory.app.model.ProductLine;
+import com.inventory.app.model.Task;
 import com.inventory.app.repository.UserRepository;
-import com.inventory.app.service.AuthenticationService;
-import com.inventory.app.service.ProductLineService;
-import com.inventory.app.service.ProductService;
-import com.inventory.app.service.ProductTypeService;
+import com.inventory.app.service.*;
 
 import java.io.IOException;
 
 public class MainController {
 
+    private InventoryService inventoryService;
     private ProductTypeService productTypeService;
     private ProductLineService productLineService;
+    private TaskService taskService;
     private AuthenticationService authenticationService;
     private ProductService productService;
-    /*
-    private ItemService itemService;
-        other class Services ....
-     */
 
-    public MainController(ProductTypeService productTypeService, ProductService productService, ProductLineService productLineService, AuthenticationService authenticationService) {
+    public MainController(InventoryService inventoryService, ProductTypeService productTypeService, ProductService productService,
+                          ProductLineService productLineService, TaskService taskService,
+                          AuthenticationService authenticationService) {
+        this.inventoryService = inventoryService;
         this.productTypeService = productTypeService;
         this.productLineService = productLineService;
+        this.taskService = taskService;
         this.authenticationService = authenticationService;
-        this.productService=productService;
+        this.productService = productService;
     }
 
     public void loadFiles() throws IOException {
+        authenticationService.loadUsersFromFile();
+        inventoryService.reload();
+        productService.load();
         var unlinkedProductTypes = productTypeService.loadFromRepository();
         var unlinkedProductLines = productLineService.loadFromRepository();
-        authenticationService.loadUsersFromFile();
-        productService.load();
+        //taskService.loadFromRepository()
 
-        /*
-        itemService.loadFromRepository();
-        productLineService.loadFromRepository();
-            ....
-         */
         productTypeService.linkItemToProductType(unlinkedProductTypes);
         productLineService.linkToProductLine(unlinkedProductLines);
     }
 
     public void saveFiles() throws IOException {
-
+        inventoryService.save();
         productTypeService.saveToRepository();
-        /*
-        itemService.saveToRepository();
         productLineService.saveToRepository();
-            ...
-         */
+        //taskService.saveToRepository()
     }
 
 }

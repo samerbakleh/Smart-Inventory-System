@@ -2,11 +2,9 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
-import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.model.ProductLine;
-import com.inventory.app.util.ErrorLog;
 
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -60,27 +58,30 @@ public class ProductLineRepository {
         int previousID = -1;
         final String ERROR_MESSAGE = AppConstants.PRODUCT_LINES_FILE + " content is corrupted";
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_LINES_FILE))) {
-            for(String line = bfReader.readLine();line!=null;bfReader.readLine()) {
+            for(String line = bfReader.readLine(); line != null; line = bfReader.readLine()) {
                 if(line.isEmpty()) {
                     continue;
                 }
                 ProductLine pl;
                 String[] mainParts = line.split(";");
-                if(mainParts.length < 8 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
+                if(mainParts.length < 7 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
                     throw new IOException(ERROR_MESSAGE);
                 }
                 try {
                     int id = Integer.parseInt(mainParts[0]);
-                    if (id <= previousID) {
+                    if(id <= previousID) {
                         throw new IOException(ERROR_MESSAGE);
                     }
                     previousID = id;
                     ProductLineStatus status = ProductLineStatus.valueOf(mainParts[2]);
                     int rating = Integer.parseInt(mainParts[5]);
                     int totalProduction = Integer.parseInt(mainParts[6]);
-                    String note = mainParts[7];
-                    for(int i = 8; i < mainParts.length; i++) {
-                        note += ";" + mainParts[i];
+                    String note = "";
+                    if(mainParts.length > 7) {
+                        note = mainParts[7];
+                        for(int i = 8; i < mainParts.length; i++) {
+                            note += ";" + mainParts[i];
+                        }
                     }
                     pl = new ProductLine(id, mainParts[1], status, rating, note, totalProduction);
                 } catch(IllegalArgumentException e) {
@@ -97,7 +98,7 @@ public class ProductLineRepository {
                 }
                 List<String> taskIDs = List.of(mainParts[4].split(","));
                 for(String idString : taskIDs) {
-                    if (!idString.matches("[0-9]+")) {
+                    if(!idString.isEmpty() && !idString.matches("[0-9]+")) {
                         throw new IOException(ERROR_MESSAGE);
                     }
                 }

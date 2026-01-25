@@ -24,15 +24,12 @@ public class ProductLineInfoDialog extends JDialog {
     private ManagerPanel container;
     private int rowIndex;
 
-    public ProductLineInfoDialog(ProductLineController productLineController) {
+    public ProductLineInfoDialog(ProductLineController productLineController, ManagerPanel container) {
         this.productLineController = productLineController;
+        this.container = container;
         setLayout(new GridBagLayout());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addComponents();
-    }
-
-    public void setContainer(ManagerPanel container) {
-        this.container = container;
     }
 
     public void display(ProductLine productLine, int rowIndex) {
@@ -51,7 +48,7 @@ public class ProductLineInfoDialog extends JDialog {
         }
 
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(container);
         setVisible(true);
     }
 

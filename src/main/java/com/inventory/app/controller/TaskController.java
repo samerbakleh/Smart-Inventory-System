@@ -41,7 +41,7 @@ public class TaskController {
     }
 
     public ArrayList<Task> getAllTasks(){
-        System.out.println("Controller: getAllTasks()");return taskService.getAllTasks();
+        return taskService.getAllTasks();
     }
 
     public Task getTaskById(int taskId){

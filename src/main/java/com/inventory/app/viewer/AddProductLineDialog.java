@@ -1,63 +1,104 @@
 package com.inventory.app.viewer;
 import com.inventory.app.controller.ProductLineController;
+import com.inventory.app.controller.ProductTypeController;
+import com.inventory.app.model.ProductType;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.RemovableLabelPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AddProductLineDialog extends JDialog {
 
     private ProductLineController productLineController;
+    private ProductTypeController productTypeController;
 
     private JTextField nameField;
     private JLabel invalidNameLabel;
-    private JTextField subtypeField;
+    private JComboBox<String> productNameBox;
+    private JLabel invalidSubtypeLabel;
     private RemovableLabelPanel subtypePanel;
 
-    public AddProductLineDialog(ProductLineController productLineController) {
+    private ManagerPanel container;
+    private HashMap<String, List<String>> productTypeNames;
+
+    public AddProductLineDialog(ProductLineController productLineController, ProductTypeController productTypeController,
+                                ManagerPanel container) {
         this.productLineController = productLineController;
+        this.productTypeController = productTypeController;
+        this.container = container;
         setLayout(new GridBagLayout());
         getContentPane().setBackground(Color.white);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addComponents();
+        updateProductTypes();
         pack();
     }
 
     public void resetDisplay() {
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(container);
         setVisible(true);
+    }
+
+    public void updateProductTypes() {
+        productTypeNames = new HashMap<>();
+        List<ProductType> productTypes = productTypeController.getProductTypes();
+        if(productTypes.isEmpty()) {
+            return;
+        }
+        productNameBox.removeAllItems();
+        String productName = productTypes.get(0).getName();
+        List<String> subtypes = new ArrayList<>();
+        for(ProductType pt : productTypes) {
+            if(pt.getName().equals(productName)) {
+                subtypes.add(pt.getSubtype());
+            } else {
+                productTypeNames.put(productName, subtypes);
+                productName = pt.getName();
+                subtypes = new ArrayList<>();
+                productNameBox.addItem(productName);
+            }
+        }
+        productTypeNames.put(productName, subtypes);
+        productNameBox.addItem(productName);
     }
 
     private void addComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE;
-        gbc.gridwidth = 3;
 
         nameField = new JTextField(30);
         invalidNameLabel = new JLabel("name must only contain letters, numbers, and -");
-        JTextField productNameField = new JTextField(30);
-        JLabel invalidProductNameLabel = new JLabel("name must only contain letters, numbers, and -");
-        nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
-        productNameField.setBorder(BorderFactory.createTitledBorder("Product Name"));
-        invalidNameLabel.setForeground(Color.white);
-        invalidProductNameLabel.setForeground(Color.white);
-        invalidNameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(11f));
-        invalidProductNameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(11f));
-
-        JLabel subtypeLabel = new JLabel("Add subtypes to the product");
-        subtypeLabel.setHorizontalAlignment(JLabel.LEFT);
-        subtypeField = new JTextField(10);
-        JButton submitButton = new JButton("Submit");
-        subtypePanel = new RemovableLabelPanel();
-        submitButton.setBackground(AppConstants.SECONDARY_COLOR);
-        submitButton.setForeground(Color.white);
-        submitButton.addActionListener((ActionEvent event) -> {
-            submitSubtype();
+        productNameBox = new JComboBox<>();
+        productNameBox.addActionListener((ActionEvent event) -> {
+            String name = (String) productNameBox.getSelectedItem();
+            if(name == null) {
+                return;
+            }
+            subtypePanel.clearContent();
+            for(String subtype : productTypeNames.get(name)) {
+                subtypePanel.addLabel(name + " " + subtype);
+            }
         });
+        nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
+        JLabel productNameLabel = new JLabel("Product Name");
+        productNameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 12f));
+        invalidSubtypeLabel = new JLabel("Add at least one product type");
+        invalidNameLabel.setForeground(Color.white);
+        invalidNameLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(12f));
+        invalidSubtypeLabel.setForeground(Color.white);
+        invalidSubtypeLabel.setFont(AppConstants.DEFAULT_FONT.deriveFont(12f));
+
+        JLabel subtypeLabel = new JLabel("Product subtypes : ");
+        subtypeLabel.setHorizontalAlignment(JLabel.LEFT);
+        subtypePanel = new RemovableLabelPanel();
         subtypePanel.setBackground(Color.white);
         subtypePanel.setLabelColor(Color.white);
         subtypePanel.setFont(AppConstants.DEFAULT_FONT.deriveFont(13f));
@@ -66,62 +107,50 @@ public class AddProductLineDialog extends JDialog {
         addButton.setBackground(AppConstants.SECONDARY_COLOR);
         addButton.setForeground(Color.white);
         addButton.addActionListener((ActionEvent event) -> {
-            disposeSuccessfully();
+            submit();
         });
 
 
-        gbc.anchor = GridBagConstraints.WEST;
-        add(nameField, gbc);
-        gbc.insets = new Insets(0, 5, 0, 0);
-        add(invalidNameLabel, gbc);
-        gbc.insets = new Insets(0, 0, 0, 0);
-        add(productNameField, gbc);
-        gbc.insets = new Insets(0, 5, 0, 0);
-        add(invalidProductNameLabel, gbc);
         gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(5, 5, 5, 0);
+        gbc.insets = new Insets(10, 20, 0, 20);
+        add(nameField, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(0, 20, 0, 0);
+        add(invalidNameLabel, gbc);
+        gbc.insets = new Insets(5, 25, 0, 0);
+        add(productNameLabel, gbc);
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 20, 0, 20);
+        add(productNameBox, gbc);
+        gbc.insets = new Insets(5, 25, 5, 0);
         add(subtypeLabel, gbc);
-        gbc.gridx = 1;
-        gbc.insets = new Insets(0, 5, 5, 0);
-        add(subtypeField, gbc);
-        gbc.gridx = 2;
-        gbc.insets = new Insets(0, 5, 5, 5);
-        add(submitButton, gbc);
-        gbc.gridwidth = 3;
+        gbc.insets = new Insets(0, 25, 5, 0);
+        add(invalidSubtypeLabel, gbc);
         gbc.fill = GridBagConstraints.VERTICAL;
-        gbc.gridx = 0;
         gbc.insets = new Insets(0, 0, 5, 0);
         add(subtypePanel, gbc);
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(0, 15, 5, 15);
+        gbc.insets = new Insets(0, 35, 5, 35);
         add(addButton, gbc);
     }
 
-    private void submitSubtype() {
-        String input = subtypeField.getText();
-        if(!input.isBlank()/*&& check subtype name*/) {
-            subtypePanel.addLabel(input);
-            subtypeField.setText("");
-            this.pack();
+    private void submit() {
+        if(subtypePanel.isEmpty()) {
+            invalidSubtypeLabel.setForeground(Color.red);
+            return;
         }
-    }
-
-    private void disposeSuccessfully() {
+        invalidSubtypeLabel.setForeground(Color.white);
         String productLineName = nameField.getText();
-        if(productLineController.addProductLine(productLineName, /*productTypes*/null)) {
-            invalidNameLabel.setForeground(Color.white);
-            nameField.setText("");
-            this.dispose();
-        } else {
+        if(!productLineController.addProductLine(productLineName, subtypePanel.getContent())) {
             invalidNameLabel.setForeground(Color.red);
+            return;
         }
-            /*
-
-            check for product types to add with product line
-
-             */
+        invalidNameLabel.setForeground(Color.white);
+        nameField.setText("");
+        container.refreshTable();
+        subtypePanel.clearContent();
+        dispose();
     }
 
 }

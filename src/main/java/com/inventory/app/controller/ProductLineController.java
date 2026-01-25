@@ -23,7 +23,7 @@ public class ProductLineController {
         return productLineService.calculateProductionPercentage();
     }
 
-    public boolean addProductLine(String productLineName, List<ProductType> productTypes) {
+    public boolean addProductLine(String productLineName, List<String> productTypes) {
         if(productLineService.validateProductLineName(productLineName)) {
             productLineService.addNewProductLine(productLineName, productTypes);
             return true;
@@ -51,6 +51,7 @@ public class ProductLineController {
     public void changeProductLineNote(ProductLine pl, String note) {
         productLineService.changeProductLineNote(pl, note);
     }
+
     public int getLeastBusyProductLineID(ProductType pt) {
         return productLineService.getLeastBusyProductLine(pt).getID();
     }

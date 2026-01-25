@@ -2,9 +2,7 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.Item;
 import com.inventory.app.model.ProductType;
-import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.util.AppConstants;
-import com.inventory.app.util.ErrorLog;
 
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -15,9 +13,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 public class ProductTypeRepository {
@@ -40,13 +35,14 @@ public class ProductTypeRepository {
 
                                              // name;subType;itemID1,quantity1,itemID2,quantity2,...
     public void save() throws IOException {
-        BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE));
-        for(ProductType pt : productTypes) {
-            bfWriter.write(pt.getName() + ";" + pt.getSubtype() + ";");
-            for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet()) {
-                bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
+        try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE))) {
+            for(ProductType pt : productTypes) {
+                bfWriter.write(pt.getName() + ";" + pt.getSubtype() + ";");
+                for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet()) {
+                    bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
+                }
+                bfWriter.newLine();
             }
-            bfWriter.newLine();
         }
     }
 
@@ -56,7 +52,7 @@ public class ProductTypeRepository {
         productTypes = new ArrayList<>();
         Map<ProductType, Map<Integer, Double>> unlinkedProductTypes = new HashMap<>();
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_TYPES_FILE))) {
-            for(String line = bfReader.readLine() ; line!= null;bfReader.readLine()) {
+            for(String line = bfReader.readLine(); line != null; line = bfReader.readLine()) {
                 if(line.isEmpty()) {
                     continue;
                 }
@@ -68,7 +64,7 @@ public class ProductTypeRepository {
                 ProductType pt = new ProductType(mainParts[0], mainParts[1]);
                 productTypes.add(pt);
                 Map<Integer, Double> requiredItemsByID = new HashMap<>();
-                String[] requiredItemsParts = mainParts[1].split(",");
+                String[] requiredItemsParts = mainParts[2].split(",");
                 for(int i = 0; i < requiredItemsParts.length; i += 2) {
                     try {
                         Integer id = Integer.valueOf(requiredItemsParts[i]);
@@ -81,7 +77,6 @@ public class ProductTypeRepository {
                 unlinkedProductTypes.put(pt, requiredItemsByID);
             }
         }
-        System.out.println(productTypes);
         return unlinkedProductTypes;
     }
 

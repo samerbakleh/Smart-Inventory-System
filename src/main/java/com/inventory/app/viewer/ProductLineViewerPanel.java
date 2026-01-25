@@ -4,7 +4,7 @@ import com.inventory.app.util.AppConstants;
 import com.inventory.app.viewer.components.ProductLineTable;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class ProductLineViewerPanel extends JPanel {
@@ -20,6 +20,22 @@ public class ProductLineViewerPanel extends JPanel {
         addComponents();
     }
 
+    public void refresh() {
+        refreshTable();
+    }
+
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        int n = model.getColumnCount();
+        String[] names = new String[n];
+        for(int i = 0; i < n; i++) {
+            names[i] = model.getColumnName(i);
+        }
+        model.setDataVector(table.generateTableContent(), names);
+        table.changeColumnsWidth();
+    }
+
+
     private void addComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -29,11 +45,7 @@ public class ProductLineViewerPanel extends JPanel {
         table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
         table.setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setRowHeight(30);
-        double[] relativeColumnWidth = {0.05, 0.2, 0.15, 0.05, 0.05, 0.4};
-        for(int i = 0; i < table.getColumnCount(); i++) {
-            TableColumn column = table.getColumnModel().getColumn(i);
-            column.setPreferredWidth((int) (1000 * relativeColumnWidth[i]));
-        }
+        table.changeColumnsWidth();
 
         gbc.weightx = 1.0;
         gbc.weighty = 0.6;

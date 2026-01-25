@@ -1,6 +1,7 @@
 package com.inventory.app.viewer;
 
 import com.inventory.app.controller.*;
+import com.inventory.app.util.ErrorLog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,17 +16,16 @@ public class MainFrame extends JFrame {
     private LogInPanel logInPanel;
     private ManagerPanel managerPanel;
     private SupervisorPanel supervisorPanel;
-    private ShowProductsPanel showProductsPanel;
 
     public MainFrame(MainController mainController, AuthenticationController authenticationController,
                      ItemController itemController, ProductLineController productLineController,
-                     TaskController taskController,ProductController productController) {
+                     ProductTypeController productTypeController, TaskController taskController,
+                     ProductController productController) {
         super("Production & Inventory Management System");
         this.mainController = mainController;
         this.logInPanel = new LogInPanel(authenticationController);
-        this.managerPanel = new ManagerPanel(productLineController);
-        this.supervisorPanel = new SupervisorPanel(this, itemController, productLineController, taskController);
-        this.showProductsPanel = new ShowProductsPanel(productController);
+        this.managerPanel = new ManagerPanel(productLineController, productTypeController);
+        this.supervisorPanel = new SupervisorPanel(this, itemController, productController, productLineController, taskController);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -42,35 +42,20 @@ public class MainFrame extends JFrame {
                             get();
                             System.exit(0);
                         } catch(ExecutionException e) {
-                            Throwable throwable = e.getCause();
-                            /*
-
-                            show throwable error message
-
-                             */
+                            ErrorLog.error("File", e.getCause());
                         } catch(InterruptedException e) {
-                            /*
-
-                            show error message
-
-                             */
+                            ErrorLog.error("Thread Interruption", e);
                         }
                     }
                 };
                 saveFilesWorker.execute();
             }
         });
-
-        logInPanel.setName("login");
-        managerPanel.setName("manager");
-        supervisorPanel.setName("supervisor");
-        showProductsPanel.setName("showProducts");
-
         addComponents();
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
 
-        // start program operations: load files, start tasks, ...
+        // start program operations: start tasks, ...
         SwingWorker<Object, Object> loadFilesWorker = new SwingWorker<>() {
             @Override
             protected Object doInBackground() throws IOException {
@@ -82,18 +67,9 @@ public class MainFrame extends JFrame {
                 try {
                     get();
                 } catch(ExecutionException e) {
-                    Throwable throwable = e.getCause();
-                            /*
-
-                            show throwable error message
-
-                             */
+                     ErrorLog.error("Files", e.getCause());
                 } catch(InterruptedException e) {
-                            /*
-
-                            show error message
-
-                             */
+                    ErrorLog.error("Thread interruption", e);
                 }
             }
         };
@@ -101,6 +77,22 @@ public class MainFrame extends JFrame {
     }
 
     private void addComponents() {
+
+        JMenuBar menuBar = new JMenuBar();
+        JButton logOutButton = new JButton(new ImageIcon("src/main/resources/icons/log-out.png"));
+        JButton refreshButton = new JButton(new ImageIcon("src/main/resources/icons/refresh.png"));
+        logOutButton.setContentAreaFilled(false);
+        logOutButton.addActionListener((ActionEvent event) -> {
+            switchToLogInPanel();
+        });
+        refreshButton.setContentAreaFilled(false);
+        refreshButton.addActionListener((ActionEvent event) -> {
+            refresh();
+        });
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(refreshButton);
+        menuBar.add(logOutButton);
+
         cardPanel = new JPanel(new CardLayout());
 
         logInPanel.setContainer(this);
@@ -108,13 +100,15 @@ public class MainFrame extends JFrame {
         cardPanel.add(logInPanel, logInPanel.getName());
         cardPanel.add(managerPanel, managerPanel.getName());
         cardPanel.add(supervisorPanel, supervisorPanel.getName());
-        cardPanel.add(showProductsPanel, showProductsPanel.getName());
+
+        add(menuBar, BorderLayout.NORTH);
         add(cardPanel);
     }
 
     public void switchCard(String cardName) {
         CardLayout layout = (CardLayout) cardPanel.getLayout();
         layout.show(cardPanel, cardName);
+        refresh();
     }
     public void switchToLogInPanel() {
         switchCard(logInPanel.getName());
@@ -125,10 +119,10 @@ public class MainFrame extends JFrame {
     public void switchToSupervisorPanel() {
         switchCard(supervisorPanel.getName());
     }
-public void switchToShowProductsPanel()
-{
-    showProductsPanel.loadProductsAndBuildTable();
-    switchCard(showProductsPanel.getName());
 
-}
+    public void refresh() {
+        managerPanel.refresh();
+        supervisorPanel.refresh();
+    }
+
 }
