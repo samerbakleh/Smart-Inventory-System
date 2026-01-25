@@ -56,7 +56,7 @@ public class ProductTypeRepository {
         productTypes = new ArrayList<>();
         Map<ProductType, Map<Integer, Double>> unlinkedProductTypes = new HashMap<>();
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_TYPES_FILE))) {
-            for(String line : bfReader.readAllLines()) {
+            for(String line = bfReader.readLine() ; line!= null;bfReader.readLine()) {
                 if(line.isEmpty()) {
                     continue;
                 }

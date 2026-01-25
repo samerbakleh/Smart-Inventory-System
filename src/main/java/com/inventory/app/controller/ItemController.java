@@ -6,6 +6,7 @@ import com.inventory.app.model.ProductType;
 import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.Unit;
 import com.inventory.app.service.InventoryService;
+import com.inventory.app.util.ErrorLog;
 
 import java.util.List;
 import java.util.NoSuchElementException;

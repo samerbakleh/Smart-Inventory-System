@@ -24,7 +24,7 @@ public class Main {
 
         InventoryService inventoryService = new InventoryService(itemRepository, categoryRepository);
         ProductLineService productLineService = new ProductLineService(productLineRepository, taskRepository,
-                                                                       productTypeRepository);
+                productTypeRepository);
         ProductTypeService productTypeService = new ProductTypeService(productTypeRepository, itemRepository);
         TaskService taskService = new TaskService(taskRepository, productTypeRepository);
         AuthenticationService authenticationService = new AuthenticationService(userRepository);
@@ -35,7 +35,7 @@ public class Main {
         ProductLineController productLineController = new ProductLineController(productLineService);
         TaskController taskController = new TaskController(taskService);
         AuthenticationController authenticationController = new AuthenticationController(authenticationService);
-
+        ProductController productController = new ProductController(productService);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -51,11 +51,10 @@ public class Main {
                     e.printStackTrace();
                 }
                 MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController,
-                        productLineController, taskController);
+                        productLineController, taskController,productController);
                 mainFrame.switchToSupervisorPanel();
             }
         });
 
     }
 }
-
