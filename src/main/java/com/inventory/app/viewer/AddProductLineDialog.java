@@ -32,11 +32,11 @@ public class AddProductLineDialog extends JDialog {
         this.productLineController = productLineController;
         this.productTypeController = productTypeController;
         this.container = container;
-        updateProductTypes();
         setLayout(new GridBagLayout());
         getContentPane().setBackground(Color.white);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addComponents();
+        updateProductTypes();
         pack();
     }
 
@@ -52,6 +52,7 @@ public class AddProductLineDialog extends JDialog {
         if(productTypes.isEmpty()) {
             return;
         }
+        productNameBox.removeAllItems();
         String productName = productTypes.get(0).getName();
         List<String> subtypes = new ArrayList<>();
         for(ProductType pt : productTypes) {
@@ -63,8 +64,9 @@ public class AddProductLineDialog extends JDialog {
                 subtypes = new ArrayList<>();
                 productNameBox.addItem(productName);
             }
-            productTypeNames.put(productName, subtypes);
         }
+        productTypeNames.put(productName, subtypes);
+        productNameBox.addItem(productName);
     }
 
     private void addComponents() {
@@ -75,13 +77,14 @@ public class AddProductLineDialog extends JDialog {
         nameField = new JTextField(30);
         invalidNameLabel = new JLabel("name must only contain letters, numbers, and -");
         productNameBox = new JComboBox<>();
-        productNameBox.addItemListener((ItemEvent event) -> {
-            if(event.getStateChange() == ItemEvent.SELECTED) {
-                subtypePanel.clearContent();
-                String name = (String) event.getItem();
-                for(String subtype : productTypeNames.get(name)) {
-                    subtypePanel.addLabel(name + " " + subtype);
-                }
+        productNameBox.addActionListener((ActionEvent event) -> {
+            String name = (String) productNameBox.getSelectedItem();
+            if(name == null) {
+                return;
+            }
+            subtypePanel.clearContent();
+            for(String subtype : productTypeNames.get(name)) {
+                subtypePanel.addLabel(name + " " + subtype);
             }
         });
         nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
@@ -137,17 +140,17 @@ public class AddProductLineDialog extends JDialog {
             invalidSubtypeLabel.setForeground(Color.red);
             return;
         }
+        invalidSubtypeLabel.setForeground(Color.white);
         String productLineName = nameField.getText();
         if(!productLineController.addProductLine(productLineName, subtypePanel.getContent())) {
             invalidNameLabel.setForeground(Color.red);
             return;
         }
-        container.refreshTable();
-        invalidSubtypeLabel.setForeground(Color.white);
         invalidNameLabel.setForeground(Color.white);
         nameField.setText("");
+        container.refreshTable();
         subtypePanel.clearContent();
-        this.dispose();
+        dispose();
     }
 
 }

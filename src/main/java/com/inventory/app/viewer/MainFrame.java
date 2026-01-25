@@ -1,6 +1,7 @@
 package com.inventory.app.viewer;
 
 import com.inventory.app.controller.*;
+import com.inventory.app.util.ErrorLog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,18 +41,9 @@ public class MainFrame extends JFrame {
                             get();
                             System.exit(0);
                         } catch(ExecutionException e) {
-                            Throwable throwable = e.getCause();
-                            /*
-
-                            show throwable error message
-
-                             */
+                            ErrorLog.error("File", e.getCause());
                         } catch(InterruptedException e) {
-                            /*
-
-                            show error message
-
-                             */
+                            ErrorLog.error("Thread Interruption", e);
                         }
                     }
                 };
@@ -62,7 +54,7 @@ public class MainFrame extends JFrame {
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
 
-        // start program operations: load files, start tasks, ...
+        // start program operations: start tasks, ...
         SwingWorker<Object, Object> loadFilesWorker = new SwingWorker<>() {
             @Override
             protected Object doInBackground() throws IOException {
@@ -74,18 +66,9 @@ public class MainFrame extends JFrame {
                 try {
                     get();
                 } catch(ExecutionException e) {
-                    Throwable throwable = e.getCause();
-                            /*
-
-                            show throwable error message
-
-                             */
+                     ErrorLog.error("Files", e.getCause());
                 } catch(InterruptedException e) {
-                            /*
-
-                            show error message
-
-                             */
+                    ErrorLog.error("Thread interruption", e);
                 }
             }
         };
@@ -124,6 +107,7 @@ public class MainFrame extends JFrame {
     public void switchCard(String cardName) {
         CardLayout layout = (CardLayout) cardPanel.getLayout();
         layout.show(cardPanel, cardName);
+        refresh();
     }
     public void switchToLogInPanel() {
         switchCard(logInPanel.getName());

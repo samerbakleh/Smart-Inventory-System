@@ -64,7 +64,7 @@ public class ProductLineRepository {
                 }
                 ProductLine pl;
                 String[] mainParts = line.split(";");
-                if(mainParts.length < 8 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
+                if(mainParts.length < 7 || !mainParts[1].matches("[a-zA-Z0-9-]+")) {
                     throw new IOException(ERROR_MESSAGE);
                 }
                 try {
@@ -76,9 +76,12 @@ public class ProductLineRepository {
                     ProductLineStatus status = ProductLineStatus.valueOf(mainParts[2]);
                     int rating = Integer.parseInt(mainParts[5]);
                     int totalProduction = Integer.parseInt(mainParts[6]);
-                    String note = mainParts[7];
-                    for(int i = 8; i < mainParts.length; i++) {
-                        note += ";" + mainParts[i];
+                    String note = "";
+                    if(mainParts.length > 7) {
+                        note = mainParts[7];
+                        for(int i = 8; i < mainParts.length; i++) {
+                            note += ";" + mainParts[i];
+                        }
                     }
                     pl = new ProductLine(id, mainParts[1], status, rating, note, totalProduction);
                 } catch(IllegalArgumentException e) {

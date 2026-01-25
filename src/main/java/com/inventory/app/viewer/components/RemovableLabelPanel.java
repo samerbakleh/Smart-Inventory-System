@@ -54,8 +54,9 @@ public class RemovableLabelPanel extends JPanel {
     }
 
     public void clearContent() {
-        for(RemovableLabel label : labels) {
-            removeLabel(label);
+        int n = labels.size();
+        for(int i = n - 1; i >= 0; i--) {
+            removeLabel(labels.get(i));
         }
     }
 
