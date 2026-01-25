@@ -21,8 +21,6 @@ public class ProductTypeService {
         return productTypeRepository;
     }
 
-    public void setProductTypeRepository(ProductTypeRepository productTypeRepository) {
-        this.productTypeRepository = productTypeRepository;
     private ItemRepository itemRepository;
 
     public ProductTypeService(ProductTypeRepository productTypeRepository, ItemRepository itemRepository) {
@@ -42,7 +40,7 @@ public class ProductTypeService {
         for (Map.Entry<ProductType, Map<Integer, Double>> entry : unlinkedProductTypes.entrySet()) {
             Map<Item, Double> requiredItems = new HashMap<>();
             for (Map.Entry<Integer, Double> reqItem : entry.getValue().entrySet()) {
-                Item item = itemRepository.findByID(reqItem.getKey());
+                Item item = itemRepository.findById(reqItem.getKey());
                 if (item == null) {
                     throw new IOException("Some of the files content is corrupted");
                 }
