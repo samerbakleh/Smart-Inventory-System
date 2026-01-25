@@ -19,10 +19,6 @@ public class ShowProductsPanel extends JPanel {
     private JTable table;
     private ProductTableModel tableModel;
 
-    // نفترض أن Product عندك تقريباً هكذا:
-    // private int id;
-    // private int productLineId;
-    // private ProductType productType;   // فيه name, subtype, requiredItems
 
     public ShowProductsPanel(List<Product> products) {
         setLayout(new BorderLayout());
@@ -30,14 +26,12 @@ public class ShowProductsPanel extends JPanel {
         tableModel = new ProductTableModel(products);
         table = new JTable(tableModel);
 
-        // ضبط عرض الأعمدة (اختياري)
         table.getColumnModel().getColumn(0).setPreferredWidth(150); // name
         table.getColumnModel().getColumn(1).setPreferredWidth(100); // subtype
         table.getColumnModel().getColumn(2).setPreferredWidth(60);  // id
         table.getColumnModel().getColumn(3).setPreferredWidth(120); // required items (button)
         table.getColumnModel().getColumn(4).setPreferredWidth(100); // productLineId
 
-        // تعيين زر في عمود required items
         int requiredItemsColumnIndex = 3;
         table.getColumnModel().getColumn(requiredItemsColumnIndex)
                 .setCellRenderer(new ButtonRenderer());
@@ -48,15 +42,11 @@ public class ShowProductsPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    /**
-     * يفتح Dialog يعرض محتوى الـ Map<Item, Double> الخاصة بالصف المحدد.
-     */
+
     private void showRequiredItemsDialog(int row) {
         Product product = tableModel.getProductAt(row);
-        // نفترض أن ProductType فيه: Map<Item, Double> getRequiredItems()
         Map<Item, Double> requiredItems = product.getProductType().getRequiredItems();
 
-        // جدول بسيط داخل الـ Dialog لعرض (Item name, quantity)
         String[] columnNames = {"Item", "Quantity"};
         Object[][] data;
 
@@ -68,7 +58,6 @@ public class ShowProductsPanel extends JPanel {
             for (Map.Entry<Item, Double> entry : requiredItems.entrySet()) {
                 Item item = entry.getKey();
                 Double qty = entry.getValue();
-                // نفترض أن Item عنده getName()
                 data[i][0] = item != null ? item.getName() : "null";
                 data[i][1] = qty;
                 i++;
@@ -87,7 +76,6 @@ public class ShowProductsPanel extends JPanel {
         );
     }
 
-    // ================== TableModel للمنتجات ==================
 
     private static class ProductTableModel extends AbstractTableModel {
         private final String[] columnNames = {
@@ -123,18 +111,17 @@ public class ShowProductsPanel extends JPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             Product p = products.get(rowIndex);
             return switch (columnIndex) {
-                case 0 -> p.getProductType().getName();       // name
-                case 1 -> p.getProductType().getSubtype();    // subtype
-                case 2 -> p.getId();                          // id
-                case 3 -> "Show";                             // زر required items
-                case 4 -> p.getProductLineId();               // productlineid كعدد صحيح
+                case 0 -> p.getProductType().getName();
+                case 1 -> p.getProductType().getSubtype();
+                case 2 -> p.getId();
+                case 3 -> "Show";
+                case 4 -> p.getProductLineId();
                 default -> null;
             };
         }
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            // فقط عمود الزر قابل للتعديل ليعمل الـ editor
             return columnIndex == 3;
         }
 
@@ -147,7 +134,6 @@ public class ShowProductsPanel extends JPanel {
         }
     }
 
-    // ================== Renderer للزر داخل الخلية ==================
 
     private static class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
@@ -172,13 +158,12 @@ public class ShowProductsPanel extends JPanel {
         }
     }
 
-    // ================== Editor للزر داخل الخلية ==================
 
     private static class ButtonEditor extends AbstractCellEditor
             implements TableCellEditor, ActionListener {
 
         private final JButton button;
-        private final JCheckBox checkBox; // فقط لإكمال الـ constructor
+        private final JCheckBox checkBox;
         private final RequiredItemsCallback callback;
         private int currentRow = -1;
 
@@ -216,7 +201,6 @@ public class ShowProductsPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // ننهي التحرير أولاً
             fireEditingStopped();
             if (callback != null && currentRow >= 0) {
                 callback.showRequiredItems(currentRow);
