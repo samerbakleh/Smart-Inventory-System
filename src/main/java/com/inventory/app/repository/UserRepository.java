@@ -1,4 +1,5 @@
 package com.inventory.app.repository;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.Role;
 import java.util.ArrayList;
 import java.nio.file.Files;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import com.inventory.app.util.AppConstants;
 
 import com.inventory.app.model.User;
+import com.inventory.app.util.ErrorLog;
 
 public class UserRepository {
     private static ArrayList<User> arrayUsers = new ArrayList<>();
@@ -21,6 +23,7 @@ public class UserRepository {
             }
         } catch (IOException e) {
             System.out.println("Error while reading users file" + e.getMessage());
+            ErrorLog.log(LogLevel.ERROR," loadUsersFromFile ","IOException",e);
         }
 
     }

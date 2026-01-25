@@ -2,7 +2,9 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.Item;
 import com.inventory.app.model.ProductType;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.util.AppConstants;
+import com.inventory.app.util.ErrorLog;
 
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -80,8 +82,10 @@ public class ProductTypeRepository {
                     Integer id = Integer.valueOf(requiredItemsParts[i]);
                     Double quantity = Double.valueOf(requiredItemsParts[i + 1]);
                     requiredItemsById.put(id, quantity);
-                } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                } catch (NumberFormatException | IndexOutOfBoundsException e) {   ErrorLog.log(LogLevel.ERROR," load ","NumberFormatException | IndexOutOfBoundsException",e);
                     throw new IOException(AppConstants.PRODUCT_TYPES_FILE + " content is corrupted", e);
+
+
                 }
             }
 

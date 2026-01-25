@@ -2,9 +2,11 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.model.ProductLine;
+import com.inventory.app.util.ErrorLog;
 
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -82,6 +84,7 @@ public class ProductLineRepository {
                     }
                     pl = new ProductLine(id, mainParts[1], status, rating, note, totalProduction);
                 } catch(IllegalArgumentException e) {
+                    ErrorLog.log(LogLevel.ERROR," load ","IllegalArgumentException",e);
                     throw new IOException(ERROR_MESSAGE, e);
                 }
                 List<String> productTypeNames = List.of(mainParts[3].split(","));

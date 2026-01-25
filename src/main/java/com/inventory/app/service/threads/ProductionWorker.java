@@ -3,11 +3,13 @@ package com.inventory.app.service.threads;
 import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.exception.ReachedMinLimitException;
 import com.inventory.app.service.InventoryService;
 import com.inventory.app.service.ProductService;
 import com.inventory.app.service.TaskService;
+import com.inventory.app.util.ErrorLog;
 
 import javax.swing.*;
 import java.util.Queue;
@@ -61,6 +63,8 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
                     log to error file
 
                      */
+                    ErrorLog.log(LogLevel.ERROR," Thread ","InterruptedException",e);
+
                 }
                 productService.add(productType, productLine.getID());
                 productLine.incrementTotalProduction();
@@ -90,7 +94,7 @@ public class ProductionWorker extends SwingWorker<Object, Object> {
 
             log to error file
 
-             */
+             */ErrorLog.log(LogLevel.ERROR," Thread ","InterruptedException",e);
         }
     }
 

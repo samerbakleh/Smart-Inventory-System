@@ -2,7 +2,9 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.util.ErrorLog;
 
 
 import java.io.*;
@@ -62,6 +64,7 @@ public class TaskRepository {
              }
          }catch (IOException e){
              System.out.println(e);// insert e in logError function
+             ErrorLog.log(LogLevel.ERROR," saveTasks ","IOException",e);
          }
     }
     public void loadTasks (){
@@ -88,6 +91,7 @@ public class TaskRepository {
             }
         } catch (Exception e){
             System.out.println(e);//to logError file
+            ErrorLog.log(LogLevel.ERROR," saveTasks ","IOException",e);
         }
 
     }
