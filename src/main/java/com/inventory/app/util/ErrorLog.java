@@ -4,11 +4,16 @@ import com.inventory.app.model.ErrorLogEntry;
 import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.repository.ErrorLogRepository;
 
+import java.awt.AWTEvent;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 
 public final class ErrorLog {
 
     private static volatile ErrorLogRepository repo;
+
+    private static volatile boolean edtHookInstalled = false;
 
     private ErrorLog() {}
 
@@ -41,10 +46,42 @@ public final class ErrorLog {
     public static void installGlobalHandlers() {
         initIfNeeded();
 
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
-                ErrorLog.log(LogLevel.ERROR, "Uncaught(" + thread.getName() + ")", "", throwable)
-        );
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable) {
+                ErrorLog.log(LogLevel.ERROR, "Uncaught(" + thread.getName() + ")", "", throwable);
+            }
+        });
 
+        installEdtEventQueueHookOnce();
+    }
+
+    private static void installEdtEventQueueHookOnce() {
+        if (edtHookInstalled) return;
+        synchronized (ErrorLog.class) {
+            if (edtHookInstalled) return;
+
+            Toolkit.getDefaultToolkit()
+                    .getSystemEventQueue()
+                    .push(new LoggingEventQueue());
+
+            edtHookInstalled = true;
+        }
+    }
+
+    private static final class LoggingEventQueue extends EventQueue {
+        @Override
+        protected void dispatchEvent(AWTEvent event) {
+            try {
+                super.dispatchEvent(event);
+            } catch (Throwable t) {
+                ErrorLog.log(LogLevel.ERROR, "EDT", "Exception in Swing event: " + event, t);
+
+                if (t instanceof RuntimeException) throw (RuntimeException) t;
+                if (t instanceof Error) throw (Error) t;
+                throw new RuntimeException(t);
+            }
+        }
     }
 
     public static void runSafely(String context, Runnable action) {
@@ -55,7 +92,17 @@ public final class ErrorLog {
         }
     }
 
-    public static ActionListener safeAction(String context, java.awt.event.ActionListener real) {
-        return e -> runSafely(context, () -> real.actionPerformed(e));
+    public static ActionListener safeAction(String context, ActionListener real) {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                runSafely(context, new Runnable() {
+                    @Override
+                    public void run() {
+                        real.actionPerformed(e);
+                    }
+                });
+            }
+        };
     }
 }

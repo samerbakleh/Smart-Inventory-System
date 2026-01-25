@@ -2,8 +2,10 @@ package com.inventory.app.controller;
 
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.Unit;
 import com.inventory.app.service.InventoryService;
+import com.inventory.app.util.ErrorLog;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,7 +27,7 @@ public class ItemController {
     }
 
     public String addItem(String name, String priceStr, String qtyStr, String minStr, Unit unit, int categoryId) {
-        try {
+        try {if (unit == null) unit = Unit.PCS;
             double price = Double.parseDouble(priceStr.trim());
             double qty = Double.parseDouble(qtyStr.trim());
             double min = Double.parseDouble(minStr.trim());
@@ -45,7 +47,8 @@ public class ItemController {
     }
 
     public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, Unit unit, int categoryId) {
-        try {
+        try {if (unit == null) unit = Unit.PCS;
+
             double price = Double.parseDouble(priceStr.trim());
             double qty = Double.parseDouble(qtyStr.trim());
             double min = Double.parseDouble(minStr.trim());
@@ -64,6 +67,15 @@ public class ItemController {
     public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, int categoryId) {
         return updateItem(id, name, priceStr, qtyStr, minStr, Unit.PCS, categoryId);
     }
+    public String addItem(String name, String priceStr, String qtyStr, String minStr, String unitStr, int categoryId) {
+        Unit unit = Unit.parse(unitStr);
+        return addItem(name, priceStr, qtyStr, minStr, unit, categoryId);
+    }
+
+    public String updateItem(int id, String name, String priceStr, String qtyStr, String minStr, String unitStr, int categoryId) {
+        Unit unit = Unit.parse(unitStr);
+        return updateItem(id, name, priceStr, qtyStr, minStr, unit, categoryId);
+    }
 
     public String deleteItem(String idStr) {
         try {
@@ -71,8 +83,12 @@ public class ItemController {
             boolean removed = service.deleteItem(id);
             return removed ? null : "Item not found.";
         } catch (NumberFormatException e) {
+            ErrorLog.log(LogLevel.ERROR,"deleteItem","NumberFormatException",e);
             return "Invalid item id.";
+
         } catch (Exception e) {
+            ErrorLog.log(LogLevel.ERROR,"deleteItem","Unexpected error while deleting item:",e);
+
             return "Unexpected error while deleting item: " + e.getMessage();
         }
     }
@@ -100,6 +116,7 @@ public class ItemController {
         } catch (IllegalArgumentException e) {
             return e.getMessage();
         } catch (Exception e) {
+            ErrorLog.log(LogLevel.ERROR,"deleteItem","Unexpected error while adding category: " + e.getMessage(),e);
             return "Unexpected error while adding category: " + e.getMessage();
         }
     }
