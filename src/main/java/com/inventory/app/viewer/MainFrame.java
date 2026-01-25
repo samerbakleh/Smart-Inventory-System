@@ -93,6 +93,22 @@ public class MainFrame extends JFrame {
     }
 
     private void addComponents() {
+
+        JMenuBar menuBar = new JMenuBar();
+        JButton logOutButton = new JButton(new ImageIcon("src/main/resources/icons/log-out.png"));
+        JButton refreshButton = new JButton(new ImageIcon("src/main/resources/icons/refresh.png"));
+        logOutButton.setContentAreaFilled(false);
+        logOutButton.addActionListener((ActionEvent event) -> {
+            switchToLogInPanel();
+        });
+        refreshButton.setContentAreaFilled(false);
+        refreshButton.addActionListener((ActionEvent event) -> {
+            refresh();
+        });
+        menuBar.add(Box.createHorizontalGlue());
+        menuBar.add(refreshButton);
+        menuBar.add(logOutButton);
+
         cardPanel = new JPanel(new CardLayout());
 
         logInPanel.setContainer(this);
@@ -101,6 +117,7 @@ public class MainFrame extends JFrame {
         cardPanel.add(managerPanel, managerPanel.getName());
         cardPanel.add(supervisorPanel, supervisorPanel.getName());
 
+        add(menuBar, BorderLayout.NORTH);
         add(cardPanel);
     }
 
@@ -116,6 +133,10 @@ public class MainFrame extends JFrame {
     }
     public void switchToSupervisorPanel() {
         switchCard(supervisorPanel.getName());
+    }
+
+    public void refresh() {
+        managerPanel.refresh();
     }
 
 }

@@ -22,10 +22,8 @@ public class SupervisorPanel extends JPanel {
     public SupervisorPanel(JFrame container, ItemController itemController, ProductLineController productLineController,
                            TaskController taskController) {
         super(new GridBagLayout());
-        /*
-        this.productViewerPanel = new ProductViewerPanel();
-         */
         this.itemViewerPanel = new ItemViewerPanel(itemController);
+        //this.productViewerPanel = new ProductViewerPanel();
         this.productLineViewerPanel = new ProductLineViewerPanel(productLineController);
         this.taskListPanel = new TaskListPanel(taskController, container);
         setName("Supervisor panel");
@@ -87,12 +85,8 @@ public class SupervisorPanel extends JPanel {
 
 
         cardPanel = new JPanel(new CardLayout());
-        /*
-
-        add other viewer panels too ...
-
-         */
         cardPanel.add(itemViewerPanel, itemViewerPanel.getName());
+        //cardPanel.add(productViewerPanel, productViewerPanel.getName());
         cardPanel.add(productLineViewerPanel, productLineViewerPanel.getName());
         cardPanel.add(taskListPanel, taskListPanel.getName());
 

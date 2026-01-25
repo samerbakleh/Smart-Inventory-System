@@ -36,6 +36,21 @@ public class ManagerPanel extends JPanel{
         addComponents();
     }
 
+    public void refresh() {
+        refreshTable();
+    }
+
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        int n = model.getColumnCount();
+        String[] names = new String[n];
+        for(int i = 0; i < n; i++) {
+            names[i] = model.getColumnName(i);
+        }
+        model.setDataVector(loadProductLinesToTable(), names);
+        table.changeColumnsWidth();
+    }
+
     public void refreshTableContent() {
         int n = table.getRowCount();
         List<Float> percentages = productLineController.getProductLineProductionPercentage();
@@ -92,11 +107,7 @@ public class ManagerPanel extends JPanel{
         table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
         table.setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
         table.setRowHeight(23);
-        double[] relativeColumnWidth = {0.05, 0.25, 0.15, 0.05, 0.4};
-        for(int i = 0; i < table.getColumnCount(); i++) {
-            TableColumn column = table.getColumnModel().getColumn(i);
-            column.setPreferredWidth((int) (1000 * relativeColumnWidth[i]));
-        }
+        table.changeColumnsWidth();
 
         gbc.weightx = 1.0;
         gbc.weighty = 0.4;
@@ -155,6 +166,15 @@ public class ManagerPanel extends JPanel{
                 }
             });
         }
+
+        public void changeColumnsWidth() {
+            double[] relativeColumnWidth = {0.05, 0.25, 0.15, 0.05, 0.4};
+            for(int i = 0; i < table.getColumnCount(); i++) {
+                TableColumn column = table.getColumnModel().getColumn(i);
+                column.setPreferredWidth((int) (1000 * relativeColumnWidth[i]));
+            }
+        }
+
         private void initModel() {
             String[] columnName = {"ID", "Name", "Status", "Tasks", "Progress %"};
             model = new DefaultTableModel(loadProductLinesToTable(), columnName) {
@@ -179,15 +199,19 @@ public class ManagerPanel extends JPanel{
                 }
             };
             model.addTableModelListener((TableModelEvent event) -> {
+                if(event.getType() != TableModelEvent.UPDATE) {
+                    return;
+                }
                 int row = event.getFirstRow();
-                if(event.getType() == TableModelEvent.UPDATE) {
-                    ProductLine pl = (ProductLine) model.getValueAt(row, 0);
-                    boolean success = productLineController.changeProductLineName(pl, (String) model.getValueAt(row, 1));
-                    if(!success) {
-                        JOptionPane.showMessageDialog(null, "Production line name can only contain letters, numbers, and -",
-                                "Invalid Production Line Name", JOptionPane.WARNING_MESSAGE);
-                        model.setValueAt(pl.getName(), row, 1);
-                    }
+                if(row == -1) {
+                    return;
+                }
+                ProductLine pl = (ProductLine) model.getValueAt(row, 0);
+                boolean success = productLineController.changeProductLineName(pl, (String) model.getValueAt(row, 1));
+                if(!success) {
+                    JOptionPane.showMessageDialog(null, "Production line name can only contain letters, numbers, and -",
+                            "Invalid Production Line Name", JOptionPane.WARNING_MESSAGE);
+                    model.setValueAt(pl.getName(), row, 1);
                 }
             });
             setModel(model);
