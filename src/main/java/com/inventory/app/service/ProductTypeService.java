@@ -12,17 +12,6 @@ import java.util.Map;
 public class ProductTypeService {
 
     private ProductTypeRepository productTypeRepository;
-
-    public ProductTypeService() {
-        productTypeRepository = new ProductTypeRepository();
-    }
-
-    public ProductTypeRepository getProductTypeRepository() {
-        return productTypeRepository;
-    }
-
-    public void setProductTypeRepository(ProductTypeRepository productTypeRepository) {
-        this.productTypeRepository = productTypeRepository;
     private ItemRepository itemRepository;
 
     public ProductTypeService(ProductTypeRepository productTypeRepository, ItemRepository itemRepository) {
@@ -39,11 +28,11 @@ public class ProductTypeService {
     }
 
     public void linkItemToProductType(Map<ProductType, Map<Integer, Double>> unlinkedProductTypes) throws IOException {
-        for (Map.Entry<ProductType, Map<Integer, Double>> entry : unlinkedProductTypes.entrySet()) {
+        for(Map.Entry<ProductType, Map<Integer, Double>> entry : unlinkedProductTypes.entrySet()) {
             Map<Item, Double> requiredItems = new HashMap<>();
-            for (Map.Entry<Integer, Double> reqItem : entry.getValue().entrySet()) {
-                Item item = itemRepository.findByID(reqItem.getKey());
-                if (item == null) {
+            for(Map.Entry<Integer, Double> reqItem : entry.getValue().entrySet()) {
+                Item item = itemRepository.findById(reqItem.getKey());
+                if(item == null) {
                     throw new IOException("Some of the files content is corrupted");
                 }
                 requiredItems.put(item, reqItem.getValue());
