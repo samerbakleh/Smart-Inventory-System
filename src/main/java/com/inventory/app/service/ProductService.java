@@ -41,7 +41,7 @@ public class ProductService {
 
             for (ProductLine pL : product.getProductType().getProductLines()) {
                 for (Task t : pL.getTasks()) {
-                    if (t.getStartDate().isAfter(fromDate) && t.getDeliveryDate().isAfter(toDate) && t.getProduct().getProductType().toString().equals(product.getProductType().toString()))
+                    if (t.getStartDate().isAfter(fromDate) && t.getDeliveryDate().isAfter(toDate) && t.getProductName().equals(product.getProductType().toString()))
                         ;
                     {
                         productLines.add(pL);
@@ -62,7 +62,7 @@ public class ProductService {
 
             for (ProductLine pL : product.getProductType().getProductLines()) {
                 for (Task t : pL.getTasks()) {
-                    if (t.getClient().getFullName().equals(client) && t.getProduct().getProductType().toString().equals(product.getProductType().toString()))
+                    if (t.getClientName().equals(client) && t.getProductName().equals(product.getProductType().toString()))
                         ;
                     {
                         productLines.add(pL);
@@ -83,7 +83,7 @@ public class ProductService {
             for (ProductLine pL : product.getProductType().getProductLines()) {
                 boolean isAllTaskCompleted = false;
                 for (Task t : pL.getTasks()) {
-                    if (t.getProduct().getProductType().toString().equals(product.getProductType().toString())) ;
+                    if (t.getProductName().equals(product.getProductType().toString())) ;
                     {
                         isAllTaskCompleted = (status == t.getTaskStatus());
                     }
