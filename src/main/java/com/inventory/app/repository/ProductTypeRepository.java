@@ -35,13 +35,14 @@ public class ProductTypeRepository {
 
                                              // name;subType;itemID1,quantity1,itemID2,quantity2,...
     public void save() throws IOException {
-        BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE));
-        for(ProductType pt : productTypes) {
-            bfWriter.write(pt.getName() + ";" + pt.getSubtype() + ";");
-            for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet()) {
-                bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
+        try(BufferedWriter bfWriter = new BufferedWriter(new FileWriter(AppConstants.PRODUCT_TYPES_FILE))) {
+            for(ProductType pt : productTypes) {
+                bfWriter.write(pt.getName() + ";" + pt.getSubtype() + ";");
+                for(Map.Entry<Item, Double> entry : pt.getRequiredItems().entrySet()) {
+                    bfWriter.write(entry.getKey().getId() + "," + entry.getValue() + ",");
+                }
+                bfWriter.newLine();
             }
-            bfWriter.newLine();
         }
     }
 
@@ -63,7 +64,7 @@ public class ProductTypeRepository {
                 ProductType pt = new ProductType(mainParts[0], mainParts[1]);
                 productTypes.add(pt);
                 Map<Integer, Double> requiredItemsByID = new HashMap<>();
-                String[] requiredItemsParts = mainParts[1].split(",");
+                String[] requiredItemsParts = mainParts[2].split(",");
                 for(int i = 0; i < requiredItemsParts.length; i += 2) {
                     try {
                         Integer id = Integer.valueOf(requiredItemsParts[i]);

@@ -1,52 +1,46 @@
 package com.inventory.app.controller;
 
 import com.inventory.app.model.ProductLine;
+import com.inventory.app.model.Task;
 import com.inventory.app.repository.UserRepository;
-import com.inventory.app.service.AuthenticationService;
-import com.inventory.app.service.ProductLineService;
-import com.inventory.app.service.ProductTypeService;
+import com.inventory.app.service.*;
 
 import java.io.IOException;
 
 public class MainController {
 
+    private InventoryService inventoryService;
     private ProductTypeService productTypeService;
     private ProductLineService productLineService;
+    private TaskService taskService;
     private AuthenticationService authenticationService;
-    /*
-    private ItemService itemService;
-        other class Services ....
-     */
 
-    public MainController(ProductTypeService productTypeService, ProductLineService productLineService,
+    public MainController(InventoryService inventoryService, ProductTypeService productTypeService,
+                          ProductLineService productLineService, TaskService taskService,
                           AuthenticationService authenticationService) {
+        this.inventoryService = inventoryService;
         this.productTypeService = productTypeService;
         this.productLineService = productLineService;
+        this.taskService = taskService;
         this.authenticationService = authenticationService;
     }
 
     public void loadFiles() throws IOException {
+        authenticationService.loadUsersFromFile();
+        inventoryService.reload();
         var unlinkedProductTypes = productTypeService.loadFromRepository();
         var unlinkedProductLines = productLineService.loadFromRepository();
-        authenticationService.loadUsersFromFile();
+        //taskService.loadFromRepository()
 
-        /*
-        itemService.loadFromRepository();
-        productLineService.loadFromRepository();
-            ....
-         */
         productTypeService.linkItemToProductType(unlinkedProductTypes);
         productLineService.linkToProductLine(unlinkedProductLines);
     }
 
     public void saveFiles() throws IOException {
-
+        inventoryService.save();
         productTypeService.saveToRepository();
-        /*
-        itemService.saveToRepository();
         productLineService.saveToRepository();
-            ...
-         */
+        //taskService.saveToRepository()
     }
 
 }

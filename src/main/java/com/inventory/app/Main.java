@@ -28,7 +28,8 @@ public class Main {
         TaskService taskService = new TaskService(taskRepository, productTypeRepository);
         AuthenticationService authenticationService = new AuthenticationService(userRepository);
 
-        MainController mainController = new MainController(productTypeService, productLineService, authenticationService);
+        MainController mainController = new MainController(inventoryService, productTypeService, productLineService,
+                taskService, authenticationService);
         ItemController itemController = new ItemController(inventoryService);
         ProductTypeController productTypeController = new ProductTypeController(productTypeService);
         ProductLineController productLineController = new ProductLineController(productLineService);
