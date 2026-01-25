@@ -14,7 +14,10 @@ import java.util.List;
 
 public class ProductService {
     private ProductRepository productRepository = new ProductRepository();
-
+    public  ProductService (ProductRepository productRepository)
+    {
+        this.productRepository=productRepository;
+    }
     public boolean deleteById(int id) {
         if (!productRepository.isExist(id))
             return false;
@@ -122,5 +125,12 @@ public class ProductService {
         return products;
     }
 
-
+ public void load ()
+ {
+     productRepository.load();
+ }
+ public List<Product> getProducts()
+ {
+     return new ArrayList<>(productRepository.getProducts().values());
+ }
 }

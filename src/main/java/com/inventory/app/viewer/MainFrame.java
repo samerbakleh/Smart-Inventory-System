@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame(MainController mainController, AuthenticationController authenticationController,
                      ItemController itemController, ProductLineController productLineController,
-                     ProductTypeController productTypeController, TaskController taskController) {
+                     ProductTypeController productTypeController, TaskController taskController, ProductController productController) {
         super("Production & Inventory Management System");
         this.mainController = mainController;
         this.logInPanel = new LogInPanel(authenticationController);

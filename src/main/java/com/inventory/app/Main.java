@@ -20,6 +20,7 @@ public class Main {
         ProductLineRepository productLineRepository = new ProductLineRepository();
         TaskRepository taskRepository = new TaskRepository();
         UserRepository userRepository = new UserRepository();
+        ProductRepository productRepository = new ProductRepository();
 
         InventoryService inventoryService = new InventoryService(itemRepository, categoryRepository);
         ProductLineService productLineService = new ProductLineService(productLineRepository, taskRepository,
@@ -27,12 +28,14 @@ public class Main {
         ProductTypeService productTypeService = new ProductTypeService(productTypeRepository, itemRepository);
         TaskService taskService = new TaskService(taskRepository, productTypeRepository);
         AuthenticationService authenticationService = new AuthenticationService(userRepository);
+        ProductService productService = new ProductService(productRepository);
 
-        MainController mainController = new MainController(inventoryService, productTypeService, productLineService,
+        MainController mainController = new MainController(inventoryService, productTypeService, productService, productLineService,
                 taskService, authenticationService);
         ItemController itemController = new ItemController(inventoryService);
         ProductTypeController productTypeController = new ProductTypeController(productTypeService);
         ProductLineController productLineController = new ProductLineController(productLineService);
+        ProductController productController = new ProductController(productService);
         TaskController taskController = new TaskController(taskService);
         AuthenticationController authenticationController = new AuthenticationController(authenticationService);
 
@@ -50,9 +53,8 @@ public class Main {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController,
-                        productLineController, productTypeController, taskController);
+                        productLineController, productTypeController, taskController, productController);
             }
         });
 

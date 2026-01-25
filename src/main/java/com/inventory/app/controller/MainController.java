@@ -14,8 +14,9 @@ public class MainController {
     private ProductLineService productLineService;
     private TaskService taskService;
     private AuthenticationService authenticationService;
+    private ProductService productService;
 
-    public MainController(InventoryService inventoryService, ProductTypeService productTypeService,
+    public MainController(InventoryService inventoryService, ProductTypeService productTypeService, ProductService productService,
                           ProductLineService productLineService, TaskService taskService,
                           AuthenticationService authenticationService) {
         this.inventoryService = inventoryService;
@@ -23,11 +24,13 @@ public class MainController {
         this.productLineService = productLineService;
         this.taskService = taskService;
         this.authenticationService = authenticationService;
+        this.productService = productService;
     }
 
     public void loadFiles() throws IOException {
         authenticationService.loadUsersFromFile();
         inventoryService.reload();
+        productService.load();
         var unlinkedProductTypes = productTypeService.loadFromRepository();
         var unlinkedProductLines = productLineService.loadFromRepository();
         //taskService.loadFromRepository()
