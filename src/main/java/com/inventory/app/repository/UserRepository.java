@@ -12,7 +12,7 @@ import com.inventory.app.model.User;
 public class UserRepository {
     private static ArrayList<User> arrayUsers = new ArrayList<>();
 
-    public static void loadUsersFromFile() {
+    public void loadUsersFromFile() {
         String filePath = AppConstants.USERS_FILE;
         try {
             List<String> arrayLines = Files.readAllLines(Paths.get(filePath));
@@ -26,11 +26,11 @@ public class UserRepository {
     }
 
 
-    private static User convertLineToUserObject(String line) {
+    private  User convertLineToUserObject(String line) {
         return convertLineToUserObject(line, "#//#");
     }
 
-    private static User convertLineToUserObject(String line, String separator) {
+    private  User convertLineToUserObject(String line, String separator) {
 
         String[] data = line.split(separator);
 
@@ -45,7 +45,7 @@ public class UserRepository {
         );
     }
 
-    public static User findByUsername(String username) {
+    public User findByUsername(String username) {
         for (User u : arrayUsers) {
             if (u.getUserName().equals(username)) return u;
         }
