@@ -1,8 +1,7 @@
 package com.inventory.app.viewer;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -200,5 +199,17 @@ public class MainFrame extends JFrame {
             }
         } catch (Exception ignored) {
         }
+    }
+    public static void startMainFrame()
+    {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                // محاولة تفعيل الستايل الخاص بالنظام
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            new MainFrame().setVisible(true);
+        });
     }
 }
