@@ -26,7 +26,7 @@ public class SupervisorPanel extends JPanel {
         this.itemViewerPanel = new ItemViewerPanel(itemController);
         this.productViewerPanel = new ShowProductsPanel(productController);
         this.productLineViewerPanel = new ProductLineViewerPanel(productLineController);
-        this.taskListPanel = new TaskListPanel(taskController, container);
+        this.taskListPanel = new TaskListPanel(taskController, container,productLineController,itemController);
         setName("Supervisor panel");
         setBackground(Color.white);
         addComponents();

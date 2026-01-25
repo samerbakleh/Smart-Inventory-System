@@ -18,12 +18,16 @@ public class TaskThread implements Runnable {
     public void run(){
         try {
             taskService.startTask(task.getTaskID());
-
-            for (int i= task.getProgress();i<=100;i++){
-                Thread.sleep(10*task.getQuantityRequired());//chose your time
-                taskService.updateProgress(task.getTaskID(), i);
+            int producedProducts = 0;
+            while (producedProducts < task.getQuantityRequired())
+            {
+                Thread.sleep(500);
+                taskService.updateProgress(task.getTaskID(), 1.0*(100/task.getQuantityRequired()));
                 taskService.getTaskRepository().saveTasks();
+                System.out.println("1 Product produced ");
+                producedProducts++;
             }
+
         }catch (InterruptedException e){
             taskService.cancelTask(task.getTaskID());
             Thread.currentThread().interrupt();

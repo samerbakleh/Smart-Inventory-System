@@ -52,4 +52,11 @@ public class ProductLineController {
         productLineService.changeProductLineNote(pl, note);
     }
 
+    public int getLeastBusyProductLineID(ProductType pt) {
+        return productLineService.getLeastBusyProductLine(pt).getID();
+    }
+
+    public ProductLineService getProductLineService() {
+        return productLineService;
+    }
 }

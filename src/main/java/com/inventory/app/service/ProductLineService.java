@@ -152,4 +152,7 @@ public class ProductLineService {
         pl.setNote(note);
     }
 
+    public ProductLineRepository getProductLineRepository() {
+        return productLineRepository;
+    }
 }

@@ -23,7 +23,7 @@ public class TaskRepository {
 
     public void save (Task task){
 
-             tasks.add(task);
+             tasks.add  (task);
              System.out.println("saved");
              task.setSaved(true);
 
@@ -84,7 +84,7 @@ public class TaskRepository {
                 t.setTaskStatus(TaskStatus.valueOf(data[5]));
                 if (!"null".equals(data[6]))
                     t.setStartDate(LocalDate.parse(data[6]));
-                int p = Integer.parseInt(data[8]);
+                double p = Double.parseDouble(data[8]);
                 t.setProgress(p);
                 t.setSaved(false);
                 tasks.add(t);

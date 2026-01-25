@@ -12,12 +12,11 @@ public class Task {
 
     private int quantityRequired ;
     private String clientName;
-    private int progress;// 0 - 100
+    private double progress;// 0 - 100
     private String productName;
     private int productLineID;
 
     private TaskStatus taskStatus ;
-
     private LocalDate startDate; // when status become "IN_PROGRESS"
     private LocalDate deliveryDate;
 
@@ -54,11 +53,11 @@ public class Task {
         this.clientName = clientName;
     }
 
-    public int getProgress() {
+    public double getProgress() {
         return progress;
     }
 
-    public void setProgress(int progress) {
+    public void setProgress(double progress) {
         this.progress = progress;
     }
 
@@ -123,7 +122,8 @@ public class Task {
     }
     public int getProducedAmount()
     {
-        return quantityRequired * progress /100;
+        double ans=quantityRequired * progress /100;
+        return (int)ans;
     }
     public ProductType getProductType ()
     {

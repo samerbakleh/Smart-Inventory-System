@@ -62,7 +62,7 @@ public class TaskService {
         task.setProgress(0);
         task.setTaskStatus(TaskStatus.CANCELLED);
     }
-    public void updateProgress(int taskId, int progress){
+    public void updateProgress(int taskId, double progress){
         Task task = taskRepository.findById(taskId);
 
         if (task == null)
@@ -76,7 +76,7 @@ public class TaskService {
 
         task.setProgress(progress);
 
-        if (progress == 100){
+        if (progress >= 100){
             completeTask(taskId);
             //here we should add the qty of the task to product's qty
         }

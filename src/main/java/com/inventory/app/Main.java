@@ -24,7 +24,7 @@ public class Main {
 
         InventoryService inventoryService = new InventoryService(itemRepository, categoryRepository);
         ProductLineService productLineService = new ProductLineService(productLineRepository, taskRepository,
-                                                                       productTypeRepository);
+                productTypeRepository);
         ProductTypeService productTypeService = new ProductTypeService(productTypeRepository, itemRepository);
         TaskService taskService = new TaskService(taskRepository, productTypeRepository);
         AuthenticationService authenticationService = new AuthenticationService(userRepository);
