@@ -2,15 +2,17 @@
 package com.inventory.app.repository;
 
 import com.inventory.app.model.Product;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.model.ProductType;
+import com.inventory.app.util.ErrorLog;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProductRepository {
-    private static Map<Integer, Product> products;
+    private static Map<Integer, Product> products = new HashMap<>();
 
 
     public void add(Product product) {
@@ -27,6 +29,7 @@ public class ProductRepository {
                 bw.newLine();
             }
         } catch (IOException e) {
+            ErrorLog.log(LogLevel.ERROR," IO ","IOException",e);
         }
     }
 
@@ -39,6 +42,7 @@ public class ProductRepository {
                     Product p = getProductObjectFromLine(line);
                     products.put(p.getId(), p);
                 } catch (IllegalArgumentException e) {
+                    ErrorLog.log(LogLevel.ERROR," load ","IllegalArgumentException",e);
                     System.out.println(e.getMessage());
                 }
             }
@@ -85,5 +89,7 @@ public class ProductRepository {
         return false;
     }
 
-
+    public Map<Integer, Product> getProducts() {
+        return products;
+    }
 }

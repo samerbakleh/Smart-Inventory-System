@@ -2,7 +2,9 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.Item;
 import com.inventory.app.model.ProductType;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.util.AppConstants;
+import com.inventory.app.util.ErrorLog;
 
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -13,6 +15,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 public class ProductTypeRepository {
@@ -51,7 +56,7 @@ public class ProductTypeRepository {
         productTypes = new ArrayList<>();
         Map<ProductType, Map<Integer, Double>> unlinkedProductTypes = new HashMap<>();
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_TYPES_FILE))) {
-            for(String line = bfReader.readLine();line!=null;bfReader.readLine()) {
+            for(String line : bfReader.readAllLines()) {
                 if(line.isEmpty()) {
                     continue;
                 }

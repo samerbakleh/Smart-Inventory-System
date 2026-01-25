@@ -1,4 +1,5 @@
 package com.inventory.app.repository;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.Role;
 import java.util.ArrayList;
 import java.nio.file.Files;
@@ -8,11 +9,12 @@ import java.io.IOException;
 import com.inventory.app.util.AppConstants;
 
 import com.inventory.app.model.User;
+import com.inventory.app.util.ErrorLog;
 
 public class UserRepository {
     private static ArrayList<User> arrayUsers = new ArrayList<>();
 
-    public static void loadUsersFromFile() {
+    public void loadUsersFromFile() {
         String filePath = AppConstants.USERS_FILE;
         try {
             List<String> arrayLines = Files.readAllLines(Paths.get(filePath));
@@ -21,16 +23,17 @@ public class UserRepository {
             }
         } catch (IOException e) {
             System.out.println("Error while reading users file" + e.getMessage());
+            ErrorLog.log(LogLevel.ERROR," loadUsersFromFile ","IOException",e);
         }
 
     }
 
 
-    private static User convertLineToUserObject(String line) {
+    private  User convertLineToUserObject(String line) {
         return convertLineToUserObject(line, "#//#");
     }
 
-    private static User convertLineToUserObject(String line, String separator) {
+    private  User convertLineToUserObject(String line, String separator) {
 
         String[] data = line.split(separator);
 
@@ -45,7 +48,7 @@ public class UserRepository {
         );
     }
 
-    public static User findByUsername(String username) {
+    public User findByUsername(String username) {
         for (User u : arrayUsers) {
             if (u.getUserName().equals(username)) return u;
         }

@@ -2,9 +2,11 @@ package com.inventory.app.repository;
 
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.util.AppConstants;
 import com.inventory.app.model.ProductLine;
+import com.inventory.app.util.ErrorLog;
 
 import java.io.FileWriter;
 import java.io.FileReader;
@@ -58,7 +60,7 @@ public class ProductLineRepository {
         int previousID = -1;
         final String ERROR_MESSAGE = AppConstants.PRODUCT_LINES_FILE + " content is corrupted";
         try(BufferedReader bfReader = new BufferedReader(new FileReader(AppConstants.PRODUCT_LINES_FILE))) {
-            for(String line = bfReader.readLine();line!=null;bfReader.readLine()) {
+            for(String line : bfReader.readAllLines()) {
                 if(line.isEmpty()) {
                     continue;
                 }

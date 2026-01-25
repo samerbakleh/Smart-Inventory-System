@@ -1,7 +1,9 @@
-package com.inventory.app.service.threads;
+package com.inventory.app.service.Threads;
 
 import com.inventory.app.model.Task;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.service.TaskService;
+import com.inventory.app.util.ErrorLog;
 
 public class TaskThread implements Runnable {
 
@@ -29,6 +31,7 @@ public class TaskThread implements Runnable {
         }catch (InterruptedException e){
             taskService.cancelTask(task.getTaskID());
             Thread.currentThread().interrupt();
+            ErrorLog.log(LogLevel.ERROR," Thread ","InterruptedException",e);
         }
     }
 }

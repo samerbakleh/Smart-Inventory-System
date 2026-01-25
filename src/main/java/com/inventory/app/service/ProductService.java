@@ -6,6 +6,7 @@ import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.repository.ProductRepository;
+import java.util.Queue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ProductService {
     }
 
 
-   /* public List<ProductLine> findLinesByProductAndDateRange(
+    public List<ProductLine> findLinesByProductAndDateRange(
             int productId,
             LocalDate fromDate,
             LocalDate toDate) {
@@ -51,9 +52,9 @@ public class ProductService {
             }
         }
         return productLines;
-    }*/
+    }
 
-   /* List<ProductLine> findLinesByProductAndClient(
+    List<ProductLine> findLinesByProductAndClient(
             int productId,
             String client) {
         List<ProductLine> productLines = new ArrayList<>();
@@ -92,7 +93,7 @@ public class ProductService {
             }
         }
         return productLines;
-    }*/
+    }
 
 
 }

@@ -7,6 +7,7 @@ import com.inventory.app.repository.ProductTypeRepository;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ProductTypeService {
@@ -61,4 +62,9 @@ public class ProductTypeService {
             productTypeRepository.add(pt);
         return true;
     }
+
+   public List<ProductType> getProductTypes ()
+   {
+       return productTypeRepository.getProductTypes();
+   }
 }

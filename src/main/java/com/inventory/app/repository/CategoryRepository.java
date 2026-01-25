@@ -1,7 +1,9 @@
 package com.inventory.app.repository;
 
 import com.inventory.app.model.Category;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.util.AppConstants;
+import com.inventory.app.util.ErrorLog;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -42,6 +44,7 @@ public class CategoryRepository {
             }
 
         } catch (Exception e) {
+            ErrorLog.log(LogLevel.ERROR,"Cat File","Error reading categories file: " + e.getMessage(),e);
             System.err.println("Error reading categories file: " + e.getMessage());
         }
 
@@ -73,6 +76,8 @@ public class CategoryRepository {
             }
 
         } catch (IOException e) {
+            ErrorLog.log(LogLevel.ERROR,"Cat File","Error reading categories file: " + e.getMessage(),e);
+
             System.err.println("Error saving categories file: " + e.getMessage());
         }
     }

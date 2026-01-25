@@ -1,10 +1,11 @@
-//package com.inventory.app.repository;
 package com.inventory.app.repository;
+import com.inventory.app.model.enums.LogLevel;
 import com.inventory.app.model.enums.Unit;
 
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
 import com.inventory.app.util.AppConstants;
+import com.inventory.app.util.ErrorLog;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -41,6 +42,8 @@ public class ItemRepository {
         try {
             Files.createDirectories(dataDir);
         } catch (IOException e) {
+            ErrorLog.log(LogLevel.ERROR," File","Cannot create data directory: " + dataDir,e);
+
             throw new RepositoryException("Cannot create data directory: " + dataDir, e);
         }
     }
@@ -168,6 +171,8 @@ public class ItemRepository {
         try {
             return Integer.parseInt(s.trim());
         } catch (Exception e) {
+            ErrorLog.log(LogLevel.ERROR," File","Invalid " + field + ": " + s,e);
+
             throw new RepositoryException("Invalid " + field + ": " + s);
         }
     }
@@ -176,6 +181,7 @@ public class ItemRepository {
         try {
             return Double.parseDouble(s.trim());
         } catch (Exception e) {
+            ErrorLog.log(LogLevel.ERROR," File","Invalid " + field + ": " + s,e);
             throw new RepositoryException("Invalid " + field + ": " + s);
         }
     }
@@ -230,6 +236,7 @@ public class ItemRepository {
             }
 
         } catch (IOException e) {
+            ErrorLog.log(LogLevel.ERROR," File","Error reading items file: " + itemsFile,e);
             throw new RepositoryException("Error reading items file: " + itemsFile, e);
         }
 
