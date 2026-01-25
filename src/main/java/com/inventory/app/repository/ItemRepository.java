@@ -1,6 +1,5 @@
 //package com.inventory.app.repository;
 package com.inventory.app.repository;
-
 import com.inventory.app.model.enums.Unit;
 
 import com.inventory.app.model.Category;
@@ -9,7 +8,6 @@ import com.inventory.app.util.AppConstants;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -18,13 +16,8 @@ import java.util.*;
 public class ItemRepository {
 
     public static class RepositoryException extends RuntimeException {
-        public RepositoryException(String message) {
-            super(message);
-        }
-
-        public RepositoryException(String message, Throwable cause) {
-            super(message, cause);
-        }
+        public RepositoryException(String message) { super(message); }
+        public RepositoryException(String message, Throwable cause) { super(message, cause); }
     }
 
     private static final String HEADER = "id,name,price,qty,minLimit,unit,categoryId";
@@ -52,174 +45,51 @@ public class ItemRepository {
         }
     }
 
-
-        public List<Item> loadAll () {
-            Map<Integer, Category> categoriesById = categoryRepository.loadById();
-            return loadAll(categoriesById, false);
-        }
-
-
-        public List<Item> loadAll (Map < Integer, Category > categoriesById){
-            return loadAll(categoriesById, false);
-        }
+    public List<Item> loadAll() {
+        Map<Integer, Category> categoriesById = categoryRepository.loadById();
+        return loadAll(categoriesById, false);
+    }
 
 
-        public List<Item> loadAll (Map < Integer, Category > categoriesById,boolean strict){
-            ensureDataDir();
-
-            List<Item> items = new ArrayList<>();
-            if (!Files.exists(itemsFile)) return items;
-
-            try (BufferedReader br = Files.newBufferedReader(itemsFile, StandardCharsets.UTF_8)) {
-                String line;
-                boolean headerChecked = false;
-
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (line.isEmpty()) continue;
-
-                    if (!headerChecked) {
-                        headerChecked = true;
-                        String lower = line.toLowerCase(Locale.ROOT);
-                        if (lower.startsWith("id" + delimiter)) continue;
-                    }
-
-                    try {
-                        List<String> parts = Csv.parseLine(line, delimiter);
-
-                        if (parts.size() < MIN_COLS_OLD) {
-                            if (strict) throw new RepositoryException("Corrupted line (missing columns): " + line);
-                            continue;
-                        }
-
-                        int id = parseInt(parts.get(0), "id");
-                        String name = parts.get(1).trim();
-                        double price = parseDouble(parts.get(2), "price");
-                        double qty = parseDouble(parts.get(3), "qty");
-                        double minLimit = parseDouble(parts.get(4), "minLimit");
+    public List<Item> loadAll(Map<Integer, Category> categoriesById) {
+        return loadAll(categoriesById, false);
+    }
 
 
-                        Unit unit;
-                        int categoryId;
+    public List<Item> loadAll(Map<Integer, Category> categoriesById, boolean strict) {
+        ensureDataDir();
 
-                        if (parts.size() >= COLS_NEW) {
-                            unit = Unit.parse(parts.get(5));
-                            categoryId = parseInt(parts.get(6), "categoryId");
-                        } else {
-                            unit = Unit.PCS;
-                            categoryId = parseInt(parts.get(5), "categoryId");
-                        }
+        List<Item> items = new ArrayList<>();
+        if (!Files.exists(itemsFile)) return items;
 
-                        Category category = categoriesById.get(categoryId);
-                        if (category == null) {
-                            if (strict)
-                                throw new RepositoryException("Unknown categoryId=" + categoryId + " in line: " + line);
-                            continue;
-                        }
+        try (BufferedReader br = Files.newBufferedReader(itemsFile, StandardCharsets.UTF_8)) {
+            String line;
+            boolean headerChecked = false;
 
-                        items.add(new Item(id, name, price, qty, minLimit, unit, category));
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
 
-
-                    } catch (RuntimeException ex) {
-                        if (strict) throw ex;
-                    }
-                }
-            } catch (IOException e) {
-                throw new RepositoryException("Error reading items file: " + itemsFile, e);
-            }
-
-            return items;
-        }
-
-        public void saveAll (Collection < Item > items) {
-            ensureDataDir();
-
-            Path tmp = itemsFile.resolveSibling(itemsFile.getFileName().toString() + ".tmp");
-
-            try (BufferedWriter bw = Files.newBufferedWriter(
-                    tmp, StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-
-                bw.write(HEADER);
-                bw.newLine();
-
-                for (Item item : items) {
-                    String line = String.join(String.valueOf(delimiter),
-                            String.valueOf(item.getId()),
-                            Csv.escape(item.getName(), delimiter),
-                            Double.toString(item.getPrice()),
-                            String.valueOf(item.getQuantity()),
-                            String.valueOf(item.getMinLimit()),
-                            item.getUnit().name(),
-                            String.valueOf(item.getCategory().getId())
-                    );
-
-                    bw.write(line);
-                    bw.newLine();
+                if (!headerChecked) {
+                    headerChecked = true;
+                    String lower = line.toLowerCase(Locale.ROOT);
+                    if (lower.startsWith("id" + delimiter)) continue;
                 }
 
-            } catch (IOException e) {
-                throw new RepositoryException("Error saving items file: " + itemsFile, e);
-            }
-
-            try {
-                Files.move(tmp, itemsFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            } catch (IOException atomicFail) {
                 try {
-                    Files.move(tmp, itemsFile, StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e2) {
-                    throw new RepositoryException("Error replacing items file: " + itemsFile, e2);
-                }
-            }
-        }
+                    List<String> parts = Csv.parseLine(line, delimiter);
 
-        private static int parseInt (String s, String field){
-            try {
-                return Integer.parseInt(s.trim());
-            } catch (Exception e) {
-                throw new RepositoryException("Invalid " + field + ": " + s);
-            }
-        }
-
-        private static double parseDouble (String s, String field){
-            try {
-                return Double.parseDouble(s.trim());
-            } catch (Exception e) {
-                throw new RepositoryException("Invalid " + field + ": " + s);
-            }
-        }
-        public Item findById ( int id){
-            if (id <= 0) throw new IllegalArgumentException("id must be positive");
-
-            ensureDataDir();
-            if (!Files.exists(itemsFile)) return null;
-
-            Map<Integer, Category> categoriesById = categoryRepository.loadById();
-
-            try (BufferedReader br = Files.newBufferedReader(itemsFile, StandardCharsets.UTF_8)) {
-                String line;
-                boolean headerChecked = false;
-
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
-                    if (line.isEmpty()) continue;
-
-                    if (!headerChecked) {
-                        headerChecked = true;
-                        String lower = line.toLowerCase(Locale.ROOT);
-                        if (lower.startsWith("id" + delimiter)) continue;
+                    if (parts.size() < MIN_COLS_OLD) {
+                        if (strict) throw new RepositoryException("Corrupted line (missing columns): " + line);
+                        continue;
                     }
 
-                    List<String> parts = Csv.parseLine(line, delimiter);
-                    if (parts.size() < MIN_COLS_OLD) continue;
-
-                    int rowId = parseInt(parts.get(0), "id");
-                    if (rowId != id) continue;
-
+                    int id = parseInt(parts.get(0), "id");
                     String name = parts.get(1).trim();
                     double price = parseDouble(parts.get(2), "price");
                     double qty = parseDouble(parts.get(3), "qty");
                     double minLimit = parseDouble(parts.get(4), "minLimit");
+
 
                     Unit unit;
                     int categoryId;
@@ -233,70 +103,190 @@ public class ItemRepository {
                     }
 
                     Category category = categoriesById.get(categoryId);
-                    if (category == null) return null;
+                    if (category == null) {
+                        if (strict) throw new RepositoryException("Unknown categoryId=" + categoryId + " in line: " + line);
+                        continue;
+                    }
 
-                    return new Item(rowId, name, price, qty, minLimit, unit, category);
+                    items.add(new Item(id, name, price, qty, minLimit, unit, category));
+
+
+                } catch (RuntimeException ex) {
+                    if (strict) throw ex;
                 }
-
-            } catch (IOException e) {
-                throw new RepositoryException("Error reading items file: " + itemsFile, e);
             }
-
-            return null;
+        } catch (IOException e) {
+            throw new RepositoryException("Error reading items file: " + itemsFile, e);
         }
 
-        private static final class Csv {
-            private Csv() {
+        return items;
+    }
+
+    public void saveAll(Collection<Item> items) {
+        ensureDataDir();
+
+        Path tmp = itemsFile.resolveSibling(itemsFile.getFileName().toString() + ".tmp");
+
+        try (BufferedWriter bw = Files.newBufferedWriter(
+                tmp, StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+
+            bw.write(HEADER);
+            bw.newLine();
+
+            for (Item item : items) {
+                String line = String.join(String.valueOf(delimiter),
+                        String.valueOf(item.getId()),
+                        Csv.escape(item.getName(), delimiter),
+                        Double.toString(item.getPrice()),
+                        String.valueOf(item.getQuantity()),
+                        String.valueOf(item.getMinLimit()),
+                        item.getUnit().name(),
+                        String.valueOf(item.getCategory().getId())
+                );
+
+                bw.write(line);
+                bw.newLine();
             }
 
-            static List<String> parseLine(String line, char delimiter) {
-                List<String> out = new ArrayList<>();
-                StringBuilder cur = new StringBuilder();
-                boolean inQuotes = false;
+        } catch (IOException e) {
+            throw new RepositoryException("Error saving items file: " + itemsFile, e);
+        }
 
-                for (int i = 0; i < line.length(); i++) {
-                    char ch = line.charAt(i);
+        try {
+            Files.move(tmp, itemsFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException atomicFail) {
+            try {
+                Files.move(tmp, itemsFile, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e2) {
+                throw new RepositoryException("Error replacing items file: " + itemsFile, e2);
+            }
+        }
+    }
 
-                    if (inQuotes) {
-                        if (ch == '"') {
-                            if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
-                                cur.append('"');
-                                i++;
-                            } else {
-                                inQuotes = false;
-                            }
+    private static int parseInt(String s, String field) {
+        try {
+            return Integer.parseInt(s.trim());
+        } catch (Exception e) {
+            throw new RepositoryException("Invalid " + field + ": " + s);
+        }
+    }
+
+    private static double parseDouble(String s, String field) {
+        try {
+            return Double.parseDouble(s.trim());
+        } catch (Exception e) {
+            throw new RepositoryException("Invalid " + field + ": " + s);
+        }
+    }
+    public Item findById(int id) {
+        if (id <= 0) throw new IllegalArgumentException("id must be positive");
+
+        ensureDataDir();
+        if (!Files.exists(itemsFile)) return null;
+
+        Map<Integer, Category> categoriesById = categoryRepository.loadById();
+
+        try (BufferedReader br = Files.newBufferedReader(itemsFile, StandardCharsets.UTF_8)) {
+            String line;
+            boolean headerChecked = false;
+
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty()) continue;
+
+                if (!headerChecked) {
+                    headerChecked = true;
+                    String lower = line.toLowerCase(Locale.ROOT);
+                    if (lower.startsWith("id" + delimiter)) continue;
+                }
+
+                List<String> parts = Csv.parseLine(line, delimiter);
+                if (parts.size() < MIN_COLS_OLD) continue;
+
+                int rowId = parseInt(parts.get(0), "id");
+                if (rowId != id) continue;
+
+                String name = parts.get(1).trim();
+                double price = parseDouble(parts.get(2), "price");
+                double qty = parseDouble(parts.get(3), "qty");
+                double minLimit = parseDouble(parts.get(4), "minLimit");
+
+                Unit unit;
+                int categoryId;
+
+                if (parts.size() >= COLS_NEW) {
+                    unit = Unit.parse(parts.get(5));
+                    categoryId = parseInt(parts.get(6), "categoryId");
+                } else {
+                    unit = Unit.PCS;
+                    categoryId = parseInt(parts.get(5), "categoryId");
+                }
+
+                Category category = categoriesById.get(categoryId);
+                if (category == null) return null;
+
+                return new Item(rowId, name, price, qty, minLimit, unit, category);
+            }
+
+        } catch (IOException e) {
+            throw new RepositoryException("Error reading items file: " + itemsFile, e);
+        }
+
+        return null;
+    }
+
+    private static final class Csv {
+        private Csv() {}
+
+        static List<String> parseLine(String line, char delimiter) {
+            List<String> out = new ArrayList<>();
+            StringBuilder cur = new StringBuilder();
+            boolean inQuotes = false;
+
+            for (int i = 0; i < line.length(); i++) {
+                char ch = line.charAt(i);
+
+                if (inQuotes) {
+                    if (ch == '"') {
+                        if (i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                            cur.append('"');
+                            i++;
                         } else {
-                            cur.append(ch);
+                            inQuotes = false;
                         }
                     } else {
-                        if (ch == '"') {
-                            inQuotes = true;
-                        } else if (ch == delimiter) {
-                            out.add(cur.toString());
-                            cur.setLength(0);
-                        } else {
-                            cur.append(ch);
-                        }
+                        cur.append(ch);
+                    }
+                } else {
+                    if (ch == '"') {
+                        inQuotes = true;
+                    } else if (ch == delimiter) {
+                        out.add(cur.toString());
+                        cur.setLength(0);
+                    } else {
+                        cur.append(ch);
                     }
                 }
-                out.add(cur.toString());
-                return out;
             }
-
-            static String escape(String s, char delimiter) {
-                if (s == null) return "";
-                boolean needQuotes = false;
-                for (int i = 0; i < s.length(); i++) {
-                    char ch = s.charAt(i);
-                    if (ch == delimiter || ch == '"' || ch == '\n' || ch == '\r') {
-                        needQuotes = true;
-                        break;
-                    }
-                }
-                if (!needQuotes) return s;
-                return "\"" + s.replace("\"", "\"\"") + "\"";
-            }
+            out.add(cur.toString());
+            return out;
         }
 
+        static String escape(String s, char delimiter) {
+            if (s == null) return "";
+            boolean needQuotes = false;
+            for (int i = 0; i < s.length(); i++) {
+                char ch = s.charAt(i);
+                if (ch == delimiter || ch == '"' || ch == '\n' || ch == '\r') {
+                    needQuotes = true;
+                    break;
+                }
+            }
+            if (!needQuotes) return s;
+            return "\"" + s.replace("\"", "\"\"") + "\"";
+        }
     }
+}
+
 

@@ -5,7 +5,7 @@ import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.repository.ProductTypeRepository;
 import com.inventory.app.repository.TaskRepository;
-import com.inventory.app.service.Threads.TaskThread;
+import com.inventory.app.service.threads.TaskThread;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

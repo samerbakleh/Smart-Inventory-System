@@ -11,6 +11,7 @@ public class ItemViewerPanel extends JPanel {
 
     public ItemViewerPanel(ItemController controller) {
         this.controller = controller;
+        setName("Items Viewer Panel");
         buildUI();
     }
 
