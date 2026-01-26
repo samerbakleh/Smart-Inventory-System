@@ -30,13 +30,13 @@ public class MainController {
     public void loadFiles() throws IOException {
         authenticationService.loadUsersFromFile();
         inventoryService.reload();
-        productService.load();
         var unlinkedProductTypes = productTypeService.loadFromRepository();
         var unlinkedProductLines = productLineService.loadFromRepository();
         taskService.loadFromRepository();
-
         productTypeService.linkItemToProductType(unlinkedProductTypes);
         productLineService.linkToProductLine(unlinkedProductLines);
+        productService.load();
+
     }
 
     public void saveFiles() throws IOException {
