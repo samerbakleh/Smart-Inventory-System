@@ -42,7 +42,7 @@ public class ItemViewerPanel extends JPanel {
         setBackground(Color.WHITE);
 
         addComponents();
-        refreshAll();
+        refresh();
         applyFilters();
         hookFilters();
     }
@@ -63,9 +63,6 @@ public class ItemViewerPanel extends JPanel {
         // ======= Table =======
         table = new ItemTable(Collections.emptyList());
         JScrollPane sp = new JScrollPane(table);
-        sp.getViewport().setBackground(Color.WHITE);
-        sp.setBackground(Color.WHITE);
-        sp.setBorder(BorderFactory.createLineBorder(new Color(225, 232, 245)));
 
         styleTable();
 
@@ -99,11 +96,6 @@ public class ItemViewerPanel extends JPanel {
         top.setOpaque(false);
         top.setBorder(new EmptyBorder(6, 6, 6, 6));
 
-        JLabel title = new JLabel("Inventory - Items");
-        title.setFont(AppConstants.DEFAULT_FONT.deriveFont(Font.BOLD, 22f));
-        title.setForeground(new Color(20, 35, 70));
-        top.add(title, BorderLayout.NORTH);
-
         // Buttons row
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
         row1.setOpaque(false);
@@ -112,23 +104,16 @@ public class ItemViewerPanel extends JPanel {
         JButton editBtn = btn("Edit");
         JButton delBtn = btnDanger("Delete");
         JButton addCatBtn = btn("Add Category");
-        JButton reloadBtn = btn("Reload");
 
         addBtn.addActionListener(e -> onAdd());
         editBtn.addActionListener(e -> onEdit());
         delBtn.addActionListener(e -> onDelete());
         addCatBtn.addActionListener(e -> onAddCategory());
-        reloadBtn.addActionListener(e -> {
-            controller.reload();
-            refreshAll();
-            applyFilters();
-        });
 
         row1.add(addBtn);
         row1.add(editBtn);
         row1.add(delBtn);
         row1.add(addCatBtn);
-        row1.add(reloadBtn);
 
         // Filters row
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
@@ -195,7 +180,7 @@ public class ItemViewerPanel extends JPanel {
         stockBox.addActionListener(e -> applyFilters());
     }
 
-    private void refreshAll() {
+    public void refresh() {
         allItems = controller.getAllItems();
 
         // categories
@@ -300,7 +285,7 @@ public class ItemViewerPanel extends JPanel {
         String err = controller.addItem(r.name, r.priceStr, r.qtyStr, r.minStr, r.unit, r.categoryId);
         if (err != null) JOptionPane.showMessageDialog(this, err, "Add Item", JOptionPane.WARNING_MESSAGE);
 
-        refreshAll();
+        refresh();
         applyFilters();
     }
 
@@ -317,7 +302,7 @@ public class ItemViewerPanel extends JPanel {
         String err = controller.updateItem(sel.getId(), r.name, r.priceStr, r.qtyStr, r.minStr, r.unit, r.categoryId);
         if (err != null) JOptionPane.showMessageDialog(this, err, "Edit Item", JOptionPane.WARNING_MESSAGE);
 
-        refreshAll();
+        refresh();
         applyFilters();
     }
 
@@ -335,7 +320,7 @@ public class ItemViewerPanel extends JPanel {
         String err = controller.deleteItem(String.valueOf(sel.getId()));
         if (err != null) JOptionPane.showMessageDialog(this, err, "Delete", JOptionPane.WARNING_MESSAGE);
 
-        refreshAll();
+        refresh();
         applyFilters();
     }
 
@@ -348,7 +333,7 @@ public class ItemViewerPanel extends JPanel {
         String err = controller.addCategory(name);
         if (err != null) JOptionPane.showMessageDialog(this, err, "Add Category", JOptionPane.WARNING_MESSAGE);
 
-        refreshAll();
+        refresh();
         applyFilters();
     }
 
@@ -377,28 +362,22 @@ public class ItemViewerPanel extends JPanel {
         JButton b = new JButton(text);
         b.setFocusPainted(false);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        b.setForeground(new Color(30, 30, 30));
-        b.setBackground(new Color(245, 248, 255));
         b.setFont(AppConstants.DEFAULT_FONT.deriveFont(14f));
-        b.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 228, 245)),
-                BorderFactory.createEmptyBorder(8, 14, 8, 14)
-        ));
+
         return b;
     }
 
     private JButton btnPrimary(String text) {
         JButton b = btn(text);
         b.setForeground(Color.WHITE);
-        b.setBackground(new Color(45, 110, 255));
-        b.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        b.setBackground(AppConstants.PRIMARY_COLOR);
         return b;
     }
 
     private JButton btnDanger(String text) {
         JButton b = btn(text);
         b.setForeground(Color.WHITE);
-        b.setBackground(new Color(220, 60, 70));
+        b.setBackground(new Color(255, 0, 100));
         b.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
         return b;
     }
@@ -418,6 +397,5 @@ public class ItemViewerPanel extends JPanel {
         box.setBackground(Color.WHITE);
         box.setForeground(new Color(30, 30, 30));
         box.setFont(AppConstants.DEFAULT_FONT.deriveFont(14f));
-        box.setBorder(BorderFactory.createLineBorder(new Color(220, 228, 245)));
     }
 }

@@ -3,6 +3,7 @@ package com.inventory.app.viewer;
 import com.inventory.app.model.Category;
 import com.inventory.app.model.Item;
 import com.inventory.app.model.enums.Unit;
+import com.inventory.app.util.AppConstants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,6 +78,7 @@ public class ItemFormDialog extends JDialog {
         }
 
         JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(Color.white);
         GridBagConstraints g = new GridBagConstraints();
         g.insets = new Insets(6,6,6,6);
         g.fill = GridBagConstraints.HORIZONTAL;
@@ -91,7 +93,11 @@ public class ItemFormDialog extends JDialog {
 
         JButton save = new JButton("Save");
         JButton cancel = new JButton("Cancel");
+        save.setBackground(AppConstants.SECONDARY_COLOR);
+        save.setForeground(Color.white);
         save.addActionListener(e -> onSave());
+        cancel.setBackground(AppConstants.SECONDARY_COLOR);
+        cancel.setForeground(Color.white);
         cancel.addActionListener(e -> { result = null; dispose(); });
 
         JPanel btns = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 8));

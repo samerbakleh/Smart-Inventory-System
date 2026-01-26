@@ -161,5 +161,12 @@ public class TaskService {
         taskRepository.update(task);
     }
 
+    public void loadFromRepository() {
+        taskRepository.loadTasks();
+    }
+
+    public void saveToRepository() {
+        taskRepository.saveTasks();
+    }
 
 }

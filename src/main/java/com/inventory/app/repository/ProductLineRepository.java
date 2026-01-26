@@ -84,6 +84,7 @@ public class ProductLineRepository {
                         }
                     }
                     pl = new ProductLine(id, mainParts[1], status, rating, note, totalProduction);
+                    productLines.add(pl);
                 } catch(IllegalArgumentException e) {
                     throw new IOException(ERROR_MESSAGE, e);
                 }
@@ -96,9 +97,12 @@ public class ProductLineRepository {
                         throw new IOException(ERROR_MESSAGE);
                     }
                 }
-                List<String> taskIDs = List.of(mainParts[4].split(","));
+                List<String> taskIDs = new ArrayList<>(List.of(mainParts[4].split(",")));
+                if(taskIDs.size() == 1 && taskIDs.get(0).isEmpty()) {
+                    taskIDs.clear();
+                }
                 for(String idString : taskIDs) {
-                    if(!idString.isEmpty() && !idString.matches("[0-9]+")) {
+                    if(!idString.matches("[0-9]+")) {
                         throw new IOException(ERROR_MESSAGE);
                     }
                 }

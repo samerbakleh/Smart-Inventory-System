@@ -60,9 +60,10 @@ public class AddProductLineDialog extends JDialog {
                 subtypes.add(pt.getSubtype());
             } else {
                 productTypeNames.put(productName, subtypes);
+                productNameBox.addItem(productName);
                 productName = pt.getName();
                 subtypes = new ArrayList<>();
-                productNameBox.addItem(productName);
+                subtypes.add(pt.getSubtype());
             }
         }
         productTypeNames.put(productName, subtypes);
@@ -79,13 +80,15 @@ public class AddProductLineDialog extends JDialog {
         productNameBox = new JComboBox<>();
         productNameBox.addActionListener((ActionEvent event) -> {
             String name = (String) productNameBox.getSelectedItem();
-            if(name == null) {
+            List<String> nameList = productTypeNames.get(name);
+            if(nameList == null) {
                 return;
             }
             subtypePanel.clearContent();
             for(String subtype : productTypeNames.get(name)) {
                 subtypePanel.addLabel(name + " " + subtype);
             }
+            pack();
         });
         nameField.setBorder(BorderFactory.createTitledBorder("Production Line Name"));
         JLabel productNameLabel = new JLabel("Product Name");
