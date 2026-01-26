@@ -93,7 +93,6 @@ public class ProductTypeRepository {
     public ProductType findByFullName(String fullName) {
         for(ProductType pt : productTypes) {
             if (pt.toString().equals(fullName)) {
-
                 return pt;
             }
         }
