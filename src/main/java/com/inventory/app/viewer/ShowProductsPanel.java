@@ -27,7 +27,7 @@ public class ShowProductsPanel extends JPanel {
         this.productController = productController;
         setLayout(new BorderLayout());
         setName("Products Viewer Panel");
-        // لا نبني الجدول هنا
+        loadProductsAndBuildTable();
     }
 
     /**

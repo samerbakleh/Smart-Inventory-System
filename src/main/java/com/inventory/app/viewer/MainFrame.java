@@ -23,6 +23,11 @@ public class MainFrame extends JFrame {
                      ProductController productController) {
         super("Production & Inventory Management System");
         this.mainController = mainController;
+        try {
+            mainController.loadFiles();
+        } catch(IOException e) {
+            ErrorLog.error("Files", e.getCause());
+        }
         this.logInPanel = new LogInPanel(authenticationController);
         this.managerPanel = new ManagerPanel(productLineController, productTypeController);
         this.supervisorPanel = new SupervisorPanel(this, itemController, productController, productLineController, taskController);
@@ -54,26 +59,6 @@ public class MainFrame extends JFrame {
         addComponents();
         setVisible(true);
         setExtendedState(MAXIMIZED_BOTH);
-
-        // start program operations: start tasks, ...
-        SwingWorker<Object, Object> loadFilesWorker = new SwingWorker<>() {
-            @Override
-            protected Object doInBackground() throws IOException {
-                mainController.loadFiles();
-                return null;
-            }
-            @Override
-            protected void done() {
-                try {
-                    get();
-                } catch(ExecutionException e) {
-                     ErrorLog.error("Files", e.getCause());
-                } catch(InterruptedException e) {
-                    ErrorLog.error("Thread interruption", e);
-                }
-            }
-        };
-        loadFilesWorker.execute();
     }
 
     private void addComponents() {

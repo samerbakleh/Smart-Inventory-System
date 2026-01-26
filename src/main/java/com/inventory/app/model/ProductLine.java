@@ -28,6 +28,7 @@ public class ProductLine {
         this.id = idCounter++;
         this.name = name;
         this.status = ProductLineStatus.ACTIVE;
+        this.tasks = new HashMap<>();
         setProductTypes(productTypes);
         this.rating = 0;
         this.note = "";
@@ -41,6 +42,7 @@ public class ProductLine {
         idCounter = id + 1;
         this.name = name;
         this.status = status;
+        this.tasks = new HashMap<>();
         this.rating = rating;
         this.note = note;
         this.totalProduction = totalProduction;
@@ -105,7 +107,7 @@ public class ProductLine {
         }
     }
     public void setProductTypes(List<ProductType> productTypes) {
-        tasks = new HashMap<>();
+        tasks.clear();
         sublineWorkingStatus = new HashMap<>();
         if(!productTypes.isEmpty()) {
             String name = productTypes.getFirst().getName();
