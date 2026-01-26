@@ -4,6 +4,7 @@ import com.inventory.app.controller.*;
 import com.inventory.app.repository.*;
 import com.inventory.app.service.*;
 import com.inventory.app.util.AppConstants;
+import com.inventory.app.util.ErrorLog;
 import com.inventory.app.viewer.MainFrame;
 
 import javax.swing.*;
@@ -50,8 +51,8 @@ public class Main {
                             break;
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch(Exception e) {
+                    ErrorLog.error("Look & Feel", e);
                 }
                 MainFrame mainFrame = new MainFrame(mainController, authenticationController, itemController,
                         productLineController, productTypeController, taskController, productController);
