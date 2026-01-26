@@ -60,9 +60,10 @@ public class AddProductLineDialog extends JDialog {
                 subtypes.add(pt.getSubtype());
             } else {
                 productTypeNames.put(productName, subtypes);
+                productNameBox.addItem(productName);
                 productName = pt.getName();
                 subtypes = new ArrayList<>();
-                productNameBox.addItem(productName);
+                subtypes.add(pt.getSubtype());
             }
         }
         productTypeNames.put(productName, subtypes);

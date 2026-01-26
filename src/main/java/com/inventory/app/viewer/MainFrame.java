@@ -26,7 +26,7 @@ public class MainFrame extends JFrame {
         try {
             mainController.loadFiles();
         } catch(IOException e) {
-            ErrorLog.error("Files", e.getCause());
+            ErrorLog.error("Files", e);
         }
         this.logInPanel = new LogInPanel(authenticationController);
         this.managerPanel = new ManagerPanel(productLineController, productTypeController);
