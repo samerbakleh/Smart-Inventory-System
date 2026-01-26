@@ -58,8 +58,6 @@ public class ProductRepository {
         String productTypeName = tokens[1];
         String subtype = tokens[2];
         int productLineId = Integer.parseInt(tokens[3]);
-        System.out.println("sub is : "+subtype);
-        System.out.println("name is : "+productTypeName);
         ProductType productType = new ProductTypeRepository().findByFullName(productTypeName,subtype);
 
         if (productType == null) {

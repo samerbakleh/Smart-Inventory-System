@@ -35,6 +35,7 @@ public class SupervisorPanel extends JPanel {
     public void refresh() {
         productLineViewerPanel.refresh();
         itemViewerPanel.refresh();
+        taskListPanel.refresh();
     }
 
     private void addComponents() {
