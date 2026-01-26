@@ -33,7 +33,7 @@ public class MainController {
         productService.load();
         var unlinkedProductTypes = productTypeService.loadFromRepository();
         var unlinkedProductLines = productLineService.loadFromRepository();
-        //taskService.loadFromRepository()
+        taskService.loadFromRepository();
 
         productTypeService.linkItemToProductType(unlinkedProductTypes);
         productLineService.linkToProductLine(unlinkedProductLines);
@@ -43,7 +43,7 @@ public class MainController {
         inventoryService.save();
         productTypeService.saveToRepository();
         productLineService.saveToRepository();
-        //taskService.saveToRepository()
+        taskService.saveToRepository();
     }
 
 }
