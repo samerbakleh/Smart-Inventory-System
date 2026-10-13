@@ -12,6 +12,8 @@ import com.inventory.app.repository.ProductTypeRepository;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,6 +25,8 @@ public class InventoryService {
     private final ProductTypeRepository productTypeRepository = new ProductTypeRepository();
 
     private final ReadWriteLock dataLock = new ReentrantReadWriteLock();
+    // signalled whenever stock becomes more available, production threads waiting for raw materials wait on it
+    private final Condition stockChanged = dataLock.writeLock().newCondition();
 
     private final ReentrantLock ioLock = new ReentrantLock(true);
 
@@ -64,7 +68,8 @@ public class InventoryService {
 
             items.clear();
             items.addAll(loadedItems);
-            reservedByItemId.clear();
+            // reservations are kept: they belong to production threads that are still running
+            stockChanged.signalAll();
 
             version.incrementAndGet();
         } finally {
@@ -215,6 +220,7 @@ public class InventoryService {
                 if (existing.getId() == id) {
                     Item updated =  new Item(id, name, price, quantity, minLimit, unit, category);
                     items.set(idx, updated);
+                    stockChanged.signalAll();
 
                     expectedVersion = version.incrementAndGet();
                     itemsSnap = new ArrayList<>(items);
@@ -566,6 +572,7 @@ public class InventoryService {
 
                 item.setQuantity(item.getQuantity() + amount);
             }
+            stockChanged.signalAll();
 
             expectedVersion = version.incrementAndGet();
             itemsSnap = new ArrayList<>(items);
@@ -633,13 +640,15 @@ public class InventoryService {
                 double available = current - reserved;
                 double after = available - need;
 
+                // checked first so a shortage is reported as ReachedMinLimitException,
+                // the production thread then waits for a restock instead of failing
+                if (after <= item.getMinLimit() + EPS) {
+                    throw new ReachedMinLimitException(item.getId(), item.getName(), current, need, item.getMinLimit(), after);
+                }
+
                 if (after < -EPS) {
                     throw new IllegalArgumentException("Not enough AVAILABLE stock for " + item.getName() +
                             " need=" + need + " available=" + available);
-                }
-
-                if (after <= item.getMinLimit() + EPS) {
-                    throw new ReachedMinLimitException(item.getId(), item.getName(), current, need, item.getMinLimit(), after);
                 }
 
                 plan.add(new P(item.getId(), need));
@@ -670,10 +679,21 @@ public class InventoryService {
                 double toRelease = Math.min(reserved, need);
                 addReserved(key.getId(), -toRelease);
             }
+            stockChanged.signalAll();
         } finally {
             dataLock.writeLock().unlock();
         }
     }
+    // blocks the calling production thread until stock is restocked / released or the timeout passes
+    public void awaitStockChange(long timeoutMs) throws InterruptedException {
+        dataLock.writeLock().lock();
+        try {
+            stockChanged.await(timeoutMs, TimeUnit.MILLISECONDS);
+        } finally {
+            dataLock.writeLock().unlock();
+        }
+    }
+
     public void consumeReserved(Map<Item, Double> req) throws ReachedMinLimitException {
         if (req == null || req.isEmpty()) return;
 

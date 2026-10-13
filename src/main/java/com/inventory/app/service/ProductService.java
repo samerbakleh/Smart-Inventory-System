@@ -129,6 +129,10 @@ public class ProductService {
  {
      productRepository.load();
  }
+ public void save ()
+ {
+     productRepository.save();
+ }
  public List<Product> getProducts()
  {
      return new ArrayList<>(productRepository.getProducts().values());
