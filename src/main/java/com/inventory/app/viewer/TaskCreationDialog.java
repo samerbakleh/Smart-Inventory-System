@@ -74,6 +74,11 @@ public class TaskCreationDialog extends JDialog{
             try {
                 ProductType pt =   controller.getTaskService().getProductTypeRepository().findByFullName((String) productCombo.getSelectedItem());
                 int plId =  productLineController.getLeastBusyProductLineID(pt);
+                if (plId < 0) {
+                    JOptionPane.showMessageDialog(this, "No production line makes " + pt,
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 Task task = new Task(Integer.parseInt(quantityField.getText()),
                         pt,
                         clientField.getText(),
@@ -82,7 +87,7 @@ public class TaskCreationDialog extends JDialog{
                 );
                 ProductLine pl = productLineController.getProductLineService().getProductLineRepository().findByID(plId);
                 if (itemController.getCanProduced(pt,Integer.parseInt(quantityField.getText()))) {
-                    pl.addTask(task);
+                    controller.addTask(task, pl);
                     JOptionPane.showMessageDialog(this, "Task added successfully");
                 }
                 else

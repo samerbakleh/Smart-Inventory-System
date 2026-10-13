@@ -8,11 +8,12 @@ import com.inventory.app.model.ProductType;
 import com.inventory.app.util.ErrorLog;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ProductRepository {
-    private static Map<Integer, Product> products ;
+    // production threads add products while the UI reads them
+    private static final Map<Integer, Product> products = new ConcurrentHashMap<>();
 
 
     public void add(Product product) {
@@ -34,7 +35,7 @@ public class ProductRepository {
     }
 
     public void load() {
-        products = new HashMap<>();
+        products.clear();
         try (BufferedReader br = new BufferedReader(new FileReader(AppConstants.PRODUCT_FILE))) {
             String line = br.readLine();
             while ((line = br.readLine()) != null) {

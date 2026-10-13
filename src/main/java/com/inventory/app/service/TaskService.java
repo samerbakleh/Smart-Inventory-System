@@ -5,12 +5,13 @@ import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
 import com.inventory.app.repository.ProductTypeRepository;
 import com.inventory.app.repository.TaskRepository;
-import com.inventory.app.service.threads.TaskThread;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+// Task state is changed both from the UI (cancel / edit) and from the production threads,
+// so every method that reads-then-changes a task's status is synchronized on this service.
 public class TaskService {
     private final TaskRepository taskRepository ;
     //private final ProductTypeRepository productTypeRepository;
@@ -29,7 +30,7 @@ public class TaskService {
                 task.setIsTaken(true);
             }
     }
-    public void startTask(int taskID){
+    public synchronized void startTask(int taskID){
         Task task = taskRepository.findById(taskID);
         if (task == null ){
             throw new IllegalArgumentException("Task not found ");
@@ -41,7 +42,7 @@ public class TaskService {
         task.setStartDate(LocalDate.now());
 
     }
-    public void completeTask (int taskID){
+    public synchronized void completeTask (int taskID){
         Task task = taskRepository.findById(taskID);
         if (task == null){
             throw new IllegalArgumentException("Task not found ");
@@ -51,7 +52,7 @@ public class TaskService {
         //here I have to call the function which will add the products to the inventory
     }
 
-    public void cancelTask (int taskID){
+    public synchronized void cancelTask (int taskID){
         Task task = taskRepository.findById(taskID);
         if (task == null){
             throw new IllegalArgumentException("Task not found ");
@@ -62,7 +63,7 @@ public class TaskService {
         task.setProgress(0);
         task.setTaskStatus(TaskStatus.CANCELLED);
     }
-    public void updateProgress(int taskId, double progress){
+    public synchronized void updateProgress(int taskId, double progress){
         Task task = taskRepository.findById(taskId);
 
         if (task == null)
@@ -102,7 +103,7 @@ public class TaskService {
         return taskRepository.findById (taskId);
     }
 
-    public void updateQuantity(int taskId,int newQuantity){
+    public synchronized void updateQuantity(int taskId,int newQuantity){
         Task task = taskRepository.findById (taskId);
 
         if (task == null)
@@ -113,7 +114,7 @@ public class TaskService {
 
         task.setQuantityRequired(newQuantity);
     }
-    public void updateDeliveryDate (int taskId,LocalDate newDate){
+    public synchronized void updateDeliveryDate (int taskId,LocalDate newDate){
         Task task = taskRepository.findById (taskId);
 
         if (task == null)
@@ -124,7 +125,7 @@ public class TaskService {
 
         task.setDeliveryDate(newDate);
     }
-    public void updateClientName (int taskId,String newClientName){
+    public synchronized void updateClientName (int taskId,String newClientName){
         Task task = taskRepository.findById (taskId);
 
         if (task == null)
@@ -135,7 +136,7 @@ public class TaskService {
 
         task.setClientName(newClientName);
     }
-    public void updateProductName (int taskId,String newProductName){
+    public synchronized void updateProductName (int taskId,String newProductName){
         Task task = taskRepository.findById(taskId);
 
         if (task == null)
@@ -146,13 +147,32 @@ public class TaskService {
 
         task.setProductName(newProductName);
     }
-    public void executeTask(Task task){
-
-        if (task.getTaskStatus() == TaskStatus.CANCELLED) {
-            throw new IllegalStateException("Task can not be started");
+    // called by a production thread when it picks the task from its queue,
+    // returns false if the task can't be worked on anymore (cancelled / completed)
+    public synchronized boolean tryStartTask(Task task) {
+        if (task.getTaskStatus() == TaskStatus.PENDING) {
+            task.setTaskStatus(TaskStatus.IN_PROGRESS);
+            task.setStartDate(LocalDate.now());
+            return true;
         }
-        Thread thread = new Thread(new TaskThread(task, this));
-        thread.start();
+        return task.getTaskStatus() == TaskStatus.IN_PROGRESS;   // resumed after a pause or a restart
+    }
+
+    // called by a production thread after each finished product,
+    // returns false if the task was cancelled meanwhile so the product must not be counted
+    public synchronized boolean recordProducedUnit(Task task, int producedAmount) {
+        if (task.getTaskStatus() != TaskStatus.IN_PROGRESS)
+            return false;
+        if (producedAmount >= task.getQuantityRequired()) {
+            completeTask(task.getTaskID());
+        } else {
+            task.setProgress(100.0 * producedAmount / task.getQuantityRequired());
+        }
+        return true;
+    }
+
+    public synchronized boolean isPending(Task task) {
+        return task.getTaskStatus() == TaskStatus.PENDING;
     }
     public ArrayList<Task> getTasksByStatus(TaskStatus status){
         return taskRepository.getTasksByStatus(status);

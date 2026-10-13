@@ -3,6 +3,8 @@ package com.inventory.app.controller;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.model.ProductLine;
+import com.inventory.app.service.ProductionService;
 import com.inventory.app.service.TaskService;
 
 import java.time.LocalDate;
@@ -12,17 +14,20 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService ;
+    private final ProductionService productionService;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, ProductionService productionService) {
         this.taskService = taskService;
+        this.productionService = productionService;
     }
 
     public TaskService getTaskService() {
         return taskService;
     }
 
-    public void addTask (Task task){
-        taskService.addTask(task);
+    // adds the task to its product line queue and starts producing it if the line is free
+    public void addTask (Task task, ProductLine productLine){
+        productionService.addTask(task, productLine);
     }
     public List<String>getProductTypesFullNames()
     {
@@ -30,14 +35,14 @@ public class TaskController {
     }
 
     public void startTask(Task task){
-        taskService.executeTask(task);
+        productionService.startTask(task);
     }
 
     public void updateProgress (int id,int progress){
         taskService.updateProgress(id,progress);
     }
     public void cancelTask (int id){
-        taskService.cancelTask(id);
+        productionService.cancelTask(id);
     }
 
     public ArrayList<Task> getAllTasks(){
