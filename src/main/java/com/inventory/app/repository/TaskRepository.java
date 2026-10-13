@@ -11,9 +11,11 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TaskRepository {
-    private ArrayList <Task> tasks = new ArrayList<>();
+    // read by production threads, changed rarely from the UI
+    private final List<Task> tasks = new CopyOnWriteArrayList<>();
     private ProductTypeRepository productTypeRepository;
     private final String TASK_FILE = "src/main/resources/data/tasks.csv";
     public TaskRepository() {}
@@ -30,7 +32,7 @@ public class TaskRepository {
      }
 
      public ArrayList<Task> getTasks() {
-         return tasks;
+         return new ArrayList<>(tasks);
      }
      public List<ProductType>getProductTypes()
      {
@@ -45,7 +47,7 @@ public class TaskRepository {
         }
         return null;
     }
-    public void saveTasks(){
+    public synchronized void saveTasks(){
          try (PrintWriter printWriter = new PrintWriter(new FileWriter(TASK_FILE))) {
              for (Task task : tasks){
                 // System.out.println(task.getTaskID());
@@ -75,6 +77,7 @@ public class TaskRepository {
             while ((Line = br.readLine())!=null){
                 String data[] = Line.split(",");
                 Task t = new Task(
+                        Integer.parseInt(data[0]),//ID
                         Integer.parseInt(data[2]),//QTY
                         productTypeRepository.findByFullName(data[1]), //ProductName
                         data[4], // clientName

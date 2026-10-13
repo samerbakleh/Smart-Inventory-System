@@ -31,13 +31,15 @@ public class Main {
         AuthenticationService authenticationService = new AuthenticationService(userRepository);
         ProductService productService = new ProductService(productRepository);
 
+        ProductionService productionService = new ProductionService(inventoryService, productService, taskService,
+                productLineService);
         MainController mainController = new MainController(inventoryService, productTypeService, productService, productLineService,
-                taskService, authenticationService);
+                taskService, authenticationService, productionService);
         ItemController itemController = new ItemController(inventoryService);
         ProductTypeController productTypeController = new ProductTypeController(productTypeService);
-        ProductLineController productLineController = new ProductLineController(productLineService);
+        ProductLineController productLineController = new ProductLineController(productLineService, productionService);
         ProductController productController = new ProductController(productService);
-        TaskController taskController = new TaskController(taskService);
+        TaskController taskController = new TaskController(taskService, productionService);
         AuthenticationController authenticationController = new AuthenticationController(authenticationService);
 
 

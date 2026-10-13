@@ -83,7 +83,11 @@ public class ProductLineService {
         for(String fullName : productTypeNames) {
             productTypes.add(productTypeRepository.findByFullName(fullName));
         }
-        productLineRepository.add(new ProductLine(name, productTypes));
+        ProductLine pl = new ProductLine(name, productTypes);
+        for(ProductType pt : productTypes) {
+            pt.addProductLine(pl);          // so new tasks of this type can be assigned to the new line
+        }
+        productLineRepository.add(pl);
     }
 
     public List<Float> calculateProductionPercentage() {
@@ -106,16 +110,23 @@ public class ProductLineService {
         return result;
     }
 
+    // returns null if no line makes this product type, active lines are preferred over stopped ones
     public ProductLine getLeastBusyProductLine(ProductType pt) {
         List<ProductLine> productLines = pt.getProductLines();
+        if(productLines == null) {
+            return null;
+        }
         int minWork = Integer.MAX_VALUE;
         ProductLine leastBusyProductLine = null;
         for(ProductLine pl : productLines) {
             int work = 0;
             for(Task t : pl.getTasks(pt)) {
-                work += t.getQuantityRequired();
+                work += t.getQuantityRequired() - t.getProducedAmount();
             }
-            if(work < minWork) {
+            if(!pl.isActive()) {
+                work = Integer.MAX_VALUE - 1;
+            }
+            if(leastBusyProductLine == null || work < minWork) {
                 minWork = work;
                 leastBusyProductLine = pl;
             }

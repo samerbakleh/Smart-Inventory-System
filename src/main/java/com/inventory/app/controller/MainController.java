@@ -15,10 +15,12 @@ public class MainController {
     private TaskService taskService;
     private AuthenticationService authenticationService;
     private ProductService productService;
+    private ProductionService productionService;
 
     public MainController(InventoryService inventoryService, ProductTypeService productTypeService, ProductService productService,
                           ProductLineService productLineService, TaskService taskService,
-                          AuthenticationService authenticationService) {
+                          AuthenticationService authenticationService, ProductionService productionService) {
+        this.productionService = productionService;
         this.inventoryService = inventoryService;
         this.productTypeService = productTypeService;
         this.productLineService = productLineService;
@@ -36,14 +38,22 @@ public class MainController {
         productTypeService.linkItemToProductType(unlinkedProductTypes);
         productLineService.linkToProductLine(unlinkedProductLines);
         productService.load();
+        productionService.startAll();       // resumes the tasks that were in progress when the app was closed
 
     }
 
-    public void saveFiles() throws IOException {
+    // production is stopped first so the files are saved in a consistent state
+    public void saveFiles() throws IOException, InterruptedException {
+        productionService.shutdown();
         inventoryService.save();
         productTypeService.saveToRepository();
         productLineService.saveToRepository();
         taskService.saveToRepository();
+        productService.save();
     }
 
+
+    public void addProductionListener(ProductionService.Listener listener) {
+        productionService.addListener(listener);
+    }
 }

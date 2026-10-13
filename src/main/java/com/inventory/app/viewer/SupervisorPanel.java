@@ -32,6 +32,13 @@ public class SupervisorPanel extends JPanel {
         addComponents();
     }
 
+    // called after every produced product, only the visible panel is rebuilt
+    public void refreshProduction() {
+        if (taskListPanel.isShowing()) taskListPanel.refresh();
+        if (productLineViewerPanel.isShowing()) productLineViewerPanel.refresh();
+        if (productViewerPanel.isShowing()) productViewerPanel.loadProductsAndBuildTable();
+    }
+
     public void refresh() {
         productLineViewerPanel.refresh();
         itemViewerPanel.refresh();
@@ -130,6 +137,7 @@ public class SupervisorPanel extends JPanel {
     public void switchCard(String cardName) {
         CardLayout layout = (CardLayout) cardPanel.getLayout();
         layout.show(cardPanel, cardName);
+        refreshProduction();
     }
     public void switchToItemsPanel() {
         switchCard(itemViewerPanel.getName());

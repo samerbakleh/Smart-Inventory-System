@@ -5,19 +5,21 @@ import com.inventory.app.repository.ProductTypeRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Task {
-    private static int IDCounter = 10000;
-    private int taskID = IDCounter++;
+    private static final AtomicInteger IDCounter = new AtomicInteger(10000);
+    private final int taskID;
 
     private int quantityRequired ;
     private String clientName;
-    private double progress;// 0 - 100
+    // progress, status and start date are written by production threads and read by the UI
+    private volatile double progress;// 0 - 100
     private String productName;
     private int productLineID;
 
-    private TaskStatus taskStatus ;
-    private LocalDate startDate; // when status become "IN_PROGRESS"
+    private volatile TaskStatus taskStatus ;
+    private volatile LocalDate startDate; // when status become "IN_PROGRESS"
     private LocalDate deliveryDate;
 
     private boolean isTaken=false;
@@ -26,6 +28,13 @@ public class Task {
 
   //  private static ProductTypeRepository productTypeRepository= new ProductTypeRepository();
     public Task(int quantityRequired, ProductType productType ,String clientName , int productLineID,LocalDate deliveryDate) {
+        this(IDCounter.getAndIncrement(), quantityRequired, productType, clientName, productLineID, deliveryDate);
+    }
+
+    // used when loading from file, keeps the saved ID so product lines can find their tasks
+    public Task(int taskID, int quantityRequired, ProductType productType ,String clientName , int productLineID,LocalDate deliveryDate) {
+        this.taskID = taskID;
+        IDCounter.accumulateAndGet(taskID + 1, Math::max);
         this.quantityRequired = quantityRequired;
         this.clientName = clientName;
         this.productType=productType;
@@ -123,7 +132,7 @@ public class Task {
     public int getProducedAmount()
     {
         double ans=quantityRequired * progress /100;
-        return (int)ans;
+        return (int) Math.round(ans);   // e.g. 3 * 33.33/100 must give 1 not 0
     }
     public ProductType getProductType ()
     {

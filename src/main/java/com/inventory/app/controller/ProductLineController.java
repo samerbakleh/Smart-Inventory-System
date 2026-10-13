@@ -4,15 +4,18 @@ import com.inventory.app.model.ProductLine;
 import com.inventory.app.model.ProductType;
 import com.inventory.app.model.enums.ProductLineStatus;
 import com.inventory.app.service.ProductLineService;
+import com.inventory.app.service.ProductionService;
 
 import java.util.List;
 
 public class ProductLineController {
 
     private ProductLineService productLineService;
+    private ProductionService productionService;
 
-    public ProductLineController(ProductLineService productLineService) {
+    public ProductLineController(ProductLineService productLineService, ProductionService productionService) {
         this.productLineService = productLineService;
+        this.productionService = productionService;
     }
 
     public List<ProductLine> fetchProductLineMainData() {
@@ -39,6 +42,7 @@ public class ProductLineController {
         try {
             ProductLineStatus status = ProductLineStatus.valueOf(action);
             productLineService.changeProductLineStatus(pl, status);
+            productionService.onProductLineStatusChanged(pl);
         } catch(IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid production line status command", e);
         }
@@ -52,8 +56,10 @@ public class ProductLineController {
         productLineService.changeProductLineNote(pl, note);
     }
 
+    // -1 if no production line can make this product type
     public int getLeastBusyProductLineID(ProductType pt) {
-        return productLineService.getLeastBusyProductLine(pt).getID();
+        ProductLine pl = productLineService.getLeastBusyProductLine(pt);
+        return pl == null ? -1 : pl.getID();
     }
 
     public ProductLineService getProductLineService() {

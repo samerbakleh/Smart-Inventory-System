@@ -10,6 +10,7 @@ public class Product {
     public Product(int id , ProductType productType , int productLineId)
     {
         this.id=id;
+        idCounter.accumulateAndGet(id + 1, Math::max);
         this.productType=productType;
         this.productLineId = productLineId;
     }
@@ -17,7 +18,7 @@ public class Product {
 
 
     //this constructor used when creating new product
-    public Product(ProductType productType , int ProductLineId )
+    public Product(ProductType productType , int productLineId )
     {
         this.id=idCounter.getAndIncrement();
         this.productType=productType;

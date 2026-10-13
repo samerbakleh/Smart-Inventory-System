@@ -5,47 +5,46 @@ import com.inventory.app.model.enums.ProductLineStatus;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Queue;
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ProductLine {
 
-    private static int idCounter = 0;
+    private static final AtomicInteger idCounter = new AtomicInteger(0);
 
     private final int id;
-    private String name;
-    private ProductLineStatus status;
-    private Map<ProductType, Queue<Task>> tasks;
-    private int rating;
-    private String note;
-    private int totalProduction;
-    private Map<ProductType, Boolean> sublineWorkingStatus;     // true for each product type that the subline producing
-                                                                // it is working, false otherwise
+    private volatile String name;
+    private volatile ProductLineStatus status;              // read by production threads, changed from the UI
+    private Map<ProductType, Queue<Task>> tasks;            // one queue per subline, filled before production starts
+    private volatile int rating;
+    private volatile String note;
+    private final AtomicInteger totalProduction;
 
 
     public ProductLine(String name, List<ProductType> productTypes) {
-        this.id = idCounter++;
+        this.id = idCounter.getAndIncrement();
         this.name = name;
         this.status = ProductLineStatus.ACTIVE;
         this.tasks = new HashMap<>();
         setProductTypes(productTypes);
         this.rating = 0;
         this.note = "";
-        this.totalProduction = 0;
+        this.totalProduction = new AtomicInteger(0);
     }
     public ProductLine(int id, String name, ProductLineStatus status, int rating, String note, int totalProduction) {
         if(id < 0) {
             throw new IllegalArgumentException("Production Line ID can't be negative");
         }
         this.id = id;
-        idCounter = id + 1;
+        idCounter.accumulateAndGet(id + 1, Math::max);
         this.name = name;
         this.status = status;
         this.tasks = new HashMap<>();
         this.rating = rating;
         this.note = note;
-        this.totalProduction = totalProduction;
+        this.totalProduction = new AtomicInteger(totalProduction);
     }
 
     public int getID() {
@@ -75,14 +74,8 @@ public class ProductLine {
     public String getNote() {
         return note;
     }
-    public Map<ProductType, Boolean> getSublineWorkingStatus() {
-        return sublineWorkingStatus;
-    }
     public int getTotalProduction() {
-        return totalProduction;
-    }
-    public boolean getSublineWorkingStatus(ProductType pt) {
-        return sublineWorkingStatus.get(pt);
+        return totalProduction.get();
     }
     public int getNumOfTasks() {
         int total = 0;
@@ -108,13 +101,11 @@ public class ProductLine {
     }
     public void setProductTypes(List<ProductType> productTypes) {
         tasks.clear();
-        sublineWorkingStatus = new HashMap<>();
         if(!productTypes.isEmpty()) {
             String name = productTypes.getFirst().getName();
             for(ProductType pt : productTypes) {
                 if (pt.getName().equals(name)) {
-                    tasks.put(pt, new ArrayDeque<>());
-                    sublineWorkingStatus.put(pt, false);
+                    tasks.put(pt, new ConcurrentLinkedQueue<>());
                 } else {
                     throw new IllegalArgumentException("Can't add products of different names to one production line");
                 }
@@ -127,19 +118,13 @@ public class ProductLine {
     public void setNote(String note) {
         this.note = note;
     }
-    public void setSublineWorkingStatus(ProductType pt, boolean isWorking) {
-        if(sublineWorkingStatus.get(pt) == null) {
-            throw new IllegalArgumentException("Can't change the status of non-existent subline " + pt + " in " + this);
-        }
-        sublineWorkingStatus.put(pt, isWorking);
-    }
 
     public void incrementTotalProduction() {
-        totalProduction++;
+        totalProduction.incrementAndGet();
     }
 
     public boolean isActive() {
-        return status.equals(ProductLineStatus.ACTIVE);
+        return status == ProductLineStatus.ACTIVE;
     }
 
     public void addTask(Task task) {

@@ -118,6 +118,9 @@ public class TaskListPanel extends JPanel{
     }
 
     public void refresh() {
+        if (table.isEditing()) {
+            return;     // don't rebuild the rows under an edit / cancel click, the next update will do it
+        }
         String selected = (String) filterBox.getSelectedItem();
 
         if ("In Progress".equals(selected)) {

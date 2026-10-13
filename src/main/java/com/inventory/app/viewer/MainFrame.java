@@ -1,5 +1,6 @@
 package com.inventory.app.viewer;
 
+import com.inventory.app.service.ProductionService;
 import com.inventory.app.controller.*;
 import com.inventory.app.util.ErrorLog;
 
@@ -31,13 +32,27 @@ public class MainFrame extends JFrame {
         this.logInPanel = new LogInPanel(authenticationController);
         this.managerPanel = new ManagerPanel(productLineController, productTypeController);
         this.supervisorPanel = new SupervisorPanel(this, itemController, productController, productLineController, taskController);
+        mainController.addProductionListener(new ProductionService.Listener() {
+            @Override
+            public void productionUpdated() {
+                managerPanel.refreshTableContent();
+                supervisorPanel.refreshProduction();
+            }
+            @Override
+            public void materialsShortage(String message) {
+                JOptionPane pane = new JOptionPane(message, JOptionPane.WARNING_MESSAGE);
+                JDialog dialog = pane.createDialog(MainFrame.this, "Waiting for raw materials");
+                dialog.setModal(false);         // production and the UI keep going while it is shown
+                dialog.setVisible(true);
+            }
+        });
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
                 SwingWorker<Object, Object> saveFilesWorker = new SwingWorker<>() {
                     @Override
-                    protected Object doInBackground() throws IOException {
+                    protected Object doInBackground() throws Exception {
                         mainController.saveFiles();
                         return null;
                     }
