@@ -5,6 +5,7 @@ import com.inventory.app.controller.ProductLineController;
 import com.inventory.app.controller.TaskController;
 import com.inventory.app.model.Task;
 import com.inventory.app.model.enums.TaskStatus;
+import com.inventory.app.util.AppConstants;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,13 +20,14 @@ public class TaskListPanel extends JPanel{
     private JFrame frame;
 
     private JTable table;
+    private JComboBox<String> filterBox;
 
     public TaskListPanel(TaskController taskController, JFrame frame, ProductLineController productLineController, ItemController itemController) {
 
         this.taskController = taskController;
         this.frame = frame;
 
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new GridBagLayout());
         setName("Tasks Viewer Panel");
         setBackground(Color.white);
 
@@ -38,22 +40,36 @@ public class TaskListPanel extends JPanel{
         );
 
         table = new JTable(tableModel);
-        add(new JScrollPane(table), BorderLayout.CENTER);
+        table.getTableHeader().setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
+        table.setSelectionBackground(AppConstants.PRIMARY_COLOR);
+        table.setFont(AppConstants.DEFAULT_FONT.deriveFont(16f));
+        table.setRowHeight(23);
 
-        JComboBox<String> filterBox =
-                new JComboBox<>(new String[]{"All Tasks", "In Progress", "Completed"});
+        filterBox = new JComboBox<>(new String[]{"All Tasks", "In Progress", "Completed"});
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton addTaskBtn = new JButton("Add Task");
-        JButton refreshTaskBtn = new JButton("Refresh");
 
         topPanel.setBackground(Color.white);
         topPanel.add(new JLabel("Filter: "));
         topPanel.add(filterBox);
         topPanel.add(addTaskBtn);
-        topPanel.add(refreshTaskBtn);
 
-        add(topPanel, BorderLayout.NORTH);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
+
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(0, 0, 30, 0);
+        add(topPanel, gbc);
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(0, 40, 20, 40);
+        add(new JScrollPane(table), gbc);
 
         filterBox.addActionListener(e -> {
             String selected = (String) filterBox.getSelectedItem();
@@ -73,10 +89,6 @@ public class TaskListPanel extends JPanel{
             dialog.setVisible(true);
             refresh(taskController.getAllTasks());
         });
-
-        refreshTaskBtn.addActionListener(e ->
-                refresh(taskController.getAllTasks())
-        );
 
         refresh(taskController.getAllTasks());
 
@@ -103,6 +115,18 @@ public class TaskListPanel extends JPanel{
         cancelColumn.setCellEditor(
                 new TaskActionCellEditor(table, taskController, frame,false)
         );
+    }
+
+    public void refresh() {
+        String selected = (String) filterBox.getSelectedItem();
+
+        if ("In Progress".equals(selected)) {
+            refresh(taskController.getTasksByStatus(TaskStatus.IN_PROGRESS));
+        } else if ("Completed".equals(selected)) {
+            refresh(taskController.getTasksByStatus(TaskStatus.COMPLETED));
+        } else {
+            refresh(taskController.getAllTasks());
+        }
     }
 
     private void refresh(ArrayList<Task> tasks) {
